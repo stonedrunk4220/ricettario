@@ -487,6 +487,76 @@ header.top{padding-top:env(safe-area-inset-top)}
 .avatar{width:36px;height:36px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--accent),var(--spice))}
 .set-line{display:flex;align-items:center;gap:10px}
 .set-actions{display:flex;gap:8px;flex-wrap:wrap}
+/* ===== Healthy e varianti ===== */
+:root{--ok:#2F8F5B;--warn:#C98A12;--bad:#C2412F}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ok:#6CCB92;--warn:#E8B64E;--bad:#F2836F}}
+:root[data-theme="dark"]{--ok:#6CCB92;--warn:#E8B64E;--bad:#F2836F}
+.st-ok{--c:var(--ok)} .st-near{--c:var(--warn)} .st-out{--c:var(--bad)} .st-none{--c:var(--muted)}
+.hcard{background:var(--glass);border:1px solid var(--glass-line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;display:grid;gap:12px;animation:rise .4s var(--ease)}
+.hcard.v-ok{border-color:color-mix(in srgb,var(--ok) 45%,var(--glass-line))}
+.hcard.v-near{border-color:color-mix(in srgb,var(--warn) 50%,var(--glass-line))}
+.hcard.v-out{border-color:color-mix(in srgb,var(--bad) 50%,var(--glass-line))}
+.hc-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hc-title{display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:700;font-size:18px;color:var(--ok);flex:1}
+.hc-meals{display:flex;gap:4px;flex-wrap:wrap}
+.hc-meals button{border:1px solid var(--glass-line);background:transparent;border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted)}
+.hc-meals button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.hc-verdict{display:flex;gap:10px;align-items:flex-start;background:color-mix(in srgb,var(--c, var(--muted)) 12%,transparent);border-radius:12px;padding:10px 12px}
+.hcard.v-ok .hc-verdict{--c:var(--ok)} .hcard.v-near .hc-verdict{--c:var(--warn)} .hcard.v-out .hc-verdict{--c:var(--bad)}
+.hc-verdict b{display:block;color:var(--c)}
+.hc-verdict small{display:block;color:var(--ink);font-size:13.5px;margin-top:2px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--c);flex:none;margin-top:5px;box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 22%,transparent)}
+.hc-msg{margin:0;color:var(--muted)}
+.hc-wait{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px}
+.hc-stale{font-size:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--warn)}
+.hc-groups{display:grid;gap:10px}
+.hg-top{display:flex;align-items:baseline;gap:8px;font-size:14px}
+.hg-top span{flex:1}
+.hg-top b{color:var(--c);font-variant-numeric:tabular-nums}
+.hg-top small{color:var(--muted);font-size:12.5px;min-width:86px;text-align:right;font-variant-numeric:tabular-nums}
+.hg-bar{position:relative;height:7px;border-radius:999px;background:color-mix(in srgb,var(--c) 14%,transparent);overflow:hidden;margin-top:4px}
+.hg-bar i{display:block;height:100%;border-radius:inherit;background:var(--c);transition:width .6s var(--ease);animation:grow .7s var(--ease)}
+.hg-bar em{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);opacity:.55}
+@keyframes grow{from{width:0}}
+.hc-macros{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.hm{border-radius:12px;padding:8px 6px;text-align:center;background:color-mix(in srgb,var(--c) 10%,transparent);display:grid;gap:1px}
+.hm small{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.hm b{font-size:15px;color:var(--c);font-variant-numeric:tabular-nums}
+.hm span{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+@media (max-width:380px){.hc-macros{grid-template-columns:repeat(2,1fr)}}
+.hchip{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;color:var(--c);background:color-mix(in srgb,var(--c) 12%,transparent);border-radius:999px;padding:1px 7px 1px 6px;margin-left:4px;white-space:nowrap;vertical-align:1px;font-variant-numeric:tabular-nums}
+.hchip::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--c)}
+.ldot{display:inline-flex;align-items:center;gap:4px;color:var(--c);font-weight:600}
+.ldot::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
+.vtabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.vtabs button{border:1px solid var(--glass-line);background:var(--glass);border-radius:999px;padding:7px 14px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;color:var(--ink);transition:background-color .2s,color .2s}
+.vtabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.vtabs .vtab-add{width:36px;padding:0;font-size:20px;line-height:1;color:var(--accent);border-style:dashed;background:transparent}
+.vbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted);margin-top:-10px}
+.vbar span{flex:1}
+.nv-opts{display:grid;gap:8px}
+.nv-opt{text-align:left;border:1px solid var(--glass-line);background:var(--glass);border-radius:14px;padding:12px 14px;cursor:pointer;display:grid;gap:2px;color:var(--ink)}
+.nv-opt b{display:inline-flex;align-items:center;gap:8px}
+.nv-opt small{color:var(--muted)}
+.nv-opt:active{transform:scale(.985)}
+.switch-row{display:flex;align-items:center;gap:14px;background:var(--glass);border:1px solid var(--glass-line);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);cursor:pointer}
+.switch-row span{flex:1;display:grid;gap:2px}
+.switch-row small{color:var(--muted);font-size:13px}
+.switch{appearance:none;-webkit-appearance:none;width:50px;height:30px;border-radius:999px;background:var(--line);position:relative;cursor:pointer;flex:none;transition:background-color .25s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .25s var(--ease)}
+.switch:checked{background:var(--ok)}
+.switch:checked::after{transform:translateX(20px)}
+.hp-card{background:var(--glass);border:1px solid var(--glass-line);border-radius:var(--r);box-shadow:var(--shadow);padding:4px 12px}
+.hp-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.hp-row:first-child{border-top:0}
+.hp-l{flex:1;min-width:0;display:grid;line-height:1.3}
+.hp-l small{color:var(--muted);font-size:12.5px}
+.hp-mode{border:1px solid var(--glass-line);background:transparent;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);white-space:nowrap}
+.hp-in{display:flex;align-items:center;gap:4px;flex:none}
+.hp-in .inp{width:76px;text-align:right;padding:8px 10px;font-variant-numeric:tabular-nums}
+.hp-in span{font-size:12.5px;color:var(--muted);min-width:28px}
+.hp-copy{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+#sheetHealth .sheet-content{padding-bottom:28px}
 @media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
 </style>
 </head>
@@ -539,6 +609,7 @@ header.top{padding-top:env(safe-area-inset-top)}
 <div id="sheetEdit" class="sheet hidden" role="dialog" aria-modal="true" aria-label="Modifica ricetta"></div>
 <div id="cook" class="cook hidden" role="dialog" aria-modal="true" aria-label="Modalità cucina"></div>
 <div id="sheetSettings" class="sheet hidden" role="dialog" aria-modal="true" aria-label="Impostazioni"></div>
+<div id="sheetHealth" class="sheet hidden" role="dialog" aria-modal="true" aria-label="Piano alimentare"></div>
 <div id="auth" class="auth hidden"></div>
 <div id="modalRoot"></div>
 <div class="tdock" id="tdock" data-state="hidden">
@@ -588,7 +659,8 @@ const S = {
   db:null, assets:null, sample:null, sampleImages:false, downloads:null,
   openId:null, servings:null, checked:new Set(),
   edit:null, timers:[], cookIdx:0, wakeLock:null,
-  tab:'ricette', shop:[], shopLoaded:false, plan:{slots:{}}, planKey:null, planLoaded:false, planMonday:mondayOf(new Date()), dict:null, dictState:'idle'
+  tab:'ricette', shop:[], shopLoaded:false, plan:{slots:{}}, planKey:null, planLoaded:false, planMonday:mondayOf(new Date()), dict:null, dictState:'idle',
+  health:null, healthMeal:null, variantId:null, analyzing:new Set(), waitingJobs:new Set()
 };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -697,6 +769,8 @@ const IC = {
   timer:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg>',
   pot:'<svg class="i" viewBox="0 0 24 24"><path d="M3 10h18M5 10v7a3 3 0 003 3h8a3 3 0 003-3v-7M1 10h2M21 10h2M9 6c0-1 1-1 1-2M13 6c0-1 1-1 1-2"/></svg>',
   copy:'<svg class="i" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 00-1-1H5a1 1 0 00-1 1v10a1 1 0 001 1h3"/></svg>',
+  leaf:'<svg class="i" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 15-14-1 10-6 15-14 15"/><path d="M5 19l7-7"/></svg>',
+  spark:'<svg class="i" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5 13.8 11.3 12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg>',
   book:'<svg class="i" viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h11M9 8h6"/></svg>',
   plus:'<svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
   share:'<svg class="i" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>',
@@ -786,22 +860,28 @@ function renderList(){
     return '<button class="card" style="--i:' + Math.min(ci++, 12) + '" data-open="' + esc(r.id) + '"><div class="thumb" style="--tint:' + tint(r.title) + '">' + th + '</div><div class="card-body">' +
       '<div class="card-title">' + (r.favorite ? '<span class="fav">★</span> ' : '') + esc(r.title || 'Senza titolo') + '</div>' +
       '<div class="card-meta">' + (r.category ? '<span>' + esc(r.category) + '</span>' : '') + (t ? '<span>⏱ ' + fmtMin(t) + '</span>' : '') +
-      (r.servings ? '<span>' + esc(r.servings) + ' ' + esc(r.servingsUnit || 'porzioni') + '</span>' : '') + (r.difficulty ? '<span>' + esc(r.difficulty) + '</span>' : '') + '</div></div></button>';
+      (r.servings ? '<span>' + esc(r.servings) + ' ' + esc(r.servingsUnit || 'porzioni') + '</span>' : '') + (r.difficulty ? '<span>' + esc(r.difficulty) + '</span>' : '') + ((r.variants || []).length ? '<span>' + (r.variants.length + 1) + ' versioni</span>' : '') + listDot(r) + '</div></div></button>';
   }).join('');
 }
 
 /* ---------- Dettaglio ---------- */
 function getR(id){ return S.recipes.find(r => r.id === id); }
-function openDetail(id){
-  const r = getR(id); if(!r) return;
-  if(S.openId !== id){ S.servings = Number(r.servings) || null; S.checked = new Set(); }
+function openDetail(id, vid){
+  const r0 = getR(id); if(!r0) return;
+  if(S.openId !== id || vid !== undefined){
+    S.variantId = vid && (r0.variants || []).some(v => v.id === vid) ? vid : null; S.healthMeal = null;
+    S.servings = Number(effR(r0, S.variantId).servings) || null; S.checked = new Set();
+  }
   S.openId = id; renderDetail();
   const el = $('#sheetDetail'); el.classList.remove('hidden'); document.body.style.overflow = 'hidden'; tPos();
 }
 function closeDetail(){ S.openId = null; $('#sheetDetail').classList.add('hidden'); document.body.style.overflow = ''; tPos(); }
 function renderDetail(){
-  const r = getR(S.openId); const el = $('#sheetDetail');
-  if(!r){ if(S.openId) closeDetail(); return; }
+  const r0 = getR(S.openId); const el = $('#sheetDetail');
+  if(!r0){ if(S.openId) closeDetail(); return; }
+  if(S.variantId && !(r0.variants || []).some(v => v.id === S.variantId)) S.variantId = null;
+  const r = effR(r0, S.variantId);
+  const hc = healthOn() && r.nutrition ? healthCheck(r, mealFor(r)) : null;
   const base = Number(r.servings) || null;
   const factor = base && S.servings ? S.servings / base : 1;
   const ings = (r.ingredients || []).map(i => ingLine(typeof i === 'string' ? {text:i} : i, factor));
@@ -810,7 +890,7 @@ function renderDetail(){
     if(!l) return;
     if(l.group){ ingHtml += '<li class="ing-group">' + esc(l.group) + '</li>'; return; }
     const done = S.checked.has(i);
-    ingHtml += '<li class="' + (done ? 'done' : '') + '"><label><input type="checkbox" data-chk="' + i + '"' + (done ? ' checked' : '') + '><span class="ing-q">' + esc(l.q) + '</span><span><span class="ing-txt">' + esc(l.txt) + '</span>' + (l.note ? ' <span class="ing-note">· ' + esc(l.note) + '</span>' : '') + '</span></label></li>';
+    ingHtml += '<li class="' + (done ? 'done' : '') + '"><label><input type="checkbox" data-chk="' + i + '"' + (done ? ' checked' : '') + '><span class="ing-q">' + esc(l.q) + '</span><span><span class="ing-txt">' + esc(l.txt) + '</span>' + (l.note ? ' <span class="ing-note">· ' + esc(l.note) + '</span>' : '') + ingChip(r, i, hc) + '</span></label></li>';
   });
   ingHtml += '</ul>';
   const steps = (r.steps || []).map(s => typeof s === 'string' ? {text:s} : s);
@@ -840,9 +920,13 @@ function renderDetail(){
       (r.photoId
         ? '<div class="hero"><img src="' + esc(photoUrl(r.photoId)) + '" alt="Foto di ' + esc(r.title) + '"><div class="hero-cap"><h2 class="d-title">' + esc(r.title || 'Senza titolo') + '</h2>' + (r.category ? '<div class="d-sub">' + esc(r.category) + '</div>' : '') + '</div></div>'
         : '<div><h2 class="d-title">' + esc(r.title || 'Senza titolo') + '</h2>' + (r.category ? '<div class="d-sub">' + esc(r.category) + '</div>' : '') + '</div>') +
+      ((r0.variants || []).length ? '<div class="vtabs" role="tablist" aria-label="Varianti">' + [{id: '', name: r0.baseName || 'Originale'}].concat(r0.variants).map(v => '<button role="tab" data-vtab="' + esc(v.id) + '" aria-selected="' + ((S.variantId || '') === v.id) + '">' + esc(v.name) + '</button>').join('') + '<button class="vtab-add" data-act="addvariant" aria-label="Nuova variante">+</button></div>' +
+        (S.variantId ? '<div class="vbar"><span>Stai vedendo la variante <b>' + esc(r.variantName) + '</b>.</span><button class="btn small ghost danger" data-act="delvariant">Elimina variante</button></div>' : '') : '') +
       (pills.length ? '<div class="meta-row">' + pills.join('') + '</div>' : '') +
       '<div class="detail-actions">' + (steps.length ? '<button class="btn primary" data-act="cook">' + IC.pot + ' Inizia a cucinare</button>' : '') +
-        (ings.some(l => l && !l.group) ? '<button class="btn" data-act="toshop">Aggiungi alla spesa</button>' : '') + '<button class="btn" data-act="toplan">Aggiungi al menù</button></div>' +
+        (ings.some(l => l && !l.group) ? '<button class="btn" data-act="toshop">Aggiungi alla spesa</button>' : '') + '<button class="btn" data-act="toplan">Aggiungi al menù</button>' +
+        ((r0.variants || []).length ? '' : '<button class="btn" data-act="addvariant">+ Variante</button>') + '</div>' +
+      healthCardHtml(r) +
       '<section class="section"><h2><span class="grow">Ingredienti</span>' + servHtml + '</h2>' + (ings.length ? ingHtml : '<p class="hint">Nessun ingrediente.</p>') + '</section>' +
       '<section class="section"><h2>Procedimento</h2>' + (steps.length ? stepsHtml : '<p class="hint">Nessun passaggio.</p>') + '</section>' +
       (r.notes ? '<section class="section"><h2>Note</h2><div class="notes">' + esc(r.notes) + '</div></section>' : '') +
@@ -860,6 +944,306 @@ function recipeAsText(r){
   (r.steps||[]).forEach((s, i) => t += (i+1) + '. ' + (typeof s === 'string' ? s : s.text) + '\n');
   if(r.notes) t += '\nNOTE\n' + r.notes + '\n';
   return t;
+}
+
+/* ====================================================================
+   Healthy: piano alimentare personale e confronto con le ricette
+   ==================================================================== */
+const FOOD_GROUPS = [
+  ['carboidrati', 'Carboidrati', 'pasta, riso, pane, patate'],
+  ['proteine', 'Proteine', 'carne, pesce, uova, legumi'],
+  ['latticini', 'Latticini', 'formaggi, latte, yogurt'],
+  ['verdure', 'Verdure', 'verdure e ortaggi'],
+  ['frutta', 'Frutta', 'frutta fresca'],
+  ['grassi', 'Grassi', 'olio, burro, frutta secca'],
+  ['zuccheri', 'Zuccheri', 'zucchero, miele, dolci']
+];
+const MACROS = [['kcal', 'Calorie', 'kcal'], ['carbs', 'Carboidrati', 'g'], ['protein', 'Proteine', 'g'], ['fat', 'Grassi', 'g']];
+const MEAL_LIST = [['colazione', 'Colazione'], ['pranzo', 'Pranzo'], ['cena', 'Cena'], ['spuntino', 'Spuntino']];
+const DEFAULT_MODE = {verdure: 'min', frutta: 'min', protein: 'min'};
+function defaultHealth(){ return {enabled: false, tolerance: 10, defaultMeal: 'pranzo', meals: {}}; }
+function H(){ return S.health || (S.health = defaultHealth()); }
+function healthOn(){ return !!(S.health && S.health.enabled); }
+const groupLabel = k => (FOOD_GROUPS.find(g => g[0] === k) || [k, k === 'altro' ? 'Altro' : k])[1];
+const fmtG = v => (v >= 100 ? Math.round(v / 5) * 5 : Math.round(v)) + ' g';
+const fmtMacro = (k, v) => k === 'kcal' ? Math.round(v) + ' kcal' : Math.round(v) + ' g';
+
+/* --- varianti: la ricetta "effettiva" mostrata --- */
+const VARIANT_FIELDS = ['servings', 'servingsUnit', 'prepMin', 'cookMin', 'restMin', 'difficulty', 'ingredients', 'steps', 'notes', 'nutrition'];
+function effR(r, vid){
+  if(!r) return r;
+  const v = vid && (r.variants || []).find(x => x.id === vid);
+  if(!v) return Object.assign({}, r, {variantId: null, variantName: null, nutrition: r.nutrition});
+  const e = Object.assign({}, r);
+  VARIANT_FIELDS.forEach(k => { e[k] = v[k] !== undefined ? v[k] : (k === 'nutrition' ? null : r[k]); });
+  e.variantId = v.id; e.variantName = v.name;
+  return e;
+}
+const curR = () => effR(getR(S.openId), S.variantId);
+const titleWithVariant = r => r.title + (r.variantName ? ' (' + r.variantName + ')' : '');
+
+/* --- valori nutrizionali --- */
+function ingHash(r){
+  const s = (r.ingredients || []).map(ingToText).join('\n');
+  let h = 5381; for(let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return String(h >>> 0);
+}
+function perPortion(r){
+  const n = r && r.nutrition;
+  if(!n || !Array.isArray(n.items)) return null;
+  const serv = Number(r.servings) || 1;
+  const groups = {}, macros = {kcal: 0, carbs: 0, protein: 0, fat: 0}, byIdx = new Map();
+  n.items.forEach(it => {
+    const g = FOOD_GROUPS.some(x => x[0] === it.group) ? it.group : 'altro';
+    const grams = (Number(it.grams) || 0) / serv;
+    groups[g] = (groups[g] || 0) + grams;
+    MACROS.forEach(([k]) => { macros[k] += (Number(it[k]) || 0) / serv; });
+    byIdx.set(Number(it.i), {group: g, grams});
+  });
+  return {groups, macros, byIdx, stale: n.hash !== ingHash(r), servings: Number(r.servings) || null, notes: n.notes || ''};
+}
+function evalTarget(v, t, tol){
+  if(!t || !(Number(t.v) > 0)) return null;
+  const lim = Number(t.v);
+  if(t.mode === 'min'){ if(v >= lim) return 'ok'; if(v >= lim * (1 - tol / 100)) return 'near'; return 'out'; }
+  if(v <= lim) return 'ok'; if(v <= lim * (1 + tol / 100)) return 'near'; return 'out';
+}
+function healthCheck(r, meal){
+  const pp = perPortion(r); if(!pp) return null;
+  const plan = (H().meals || {})[meal] || {}, tol = Number(H().tolerance ?? 10);
+  const g = {}, m = {}, issues = [];
+  FOOD_GROUPS.forEach(([k, label]) => {
+    const t = plan.groups && plan.groups[k], v = pp.groups[k] || 0, st = evalTarget(v, t, tol);
+    if(!st) return; g[k] = st;
+    if(st !== 'ok') issues.push({st, txt: label + ' ' + (t.mode === 'min' ? '−' + fmtG(Number(t.v) - v) : '+' + fmtG(v - Number(t.v)))});
+  });
+  MACROS.forEach(([k, label]) => {
+    const t = plan.macros && plan.macros[k], v = pp.macros[k] || 0, st = evalTarget(v, t, tol);
+    if(!st) return; m[k] = st;
+    if(st !== 'ok') issues.push({st, txt: label + ' ' + (t.mode === 'min' ? '−' : '+') + fmtMacro(k, Math.abs(v - Number(t.v)))});
+  });
+  const all = [...Object.values(g), ...Object.values(m)];
+  const verdict = !all.length ? 'noplan' : all.includes('out') ? 'out' : all.includes('near') ? 'near' : 'ok';
+  issues.sort((a, b) => (a.st === 'out' ? 0 : 1) - (b.st === 'out' ? 0 : 1));
+  return {pp, g, m, verdict, plan, issues};
+}
+function mealFor(r){
+  if(S.healthMeal) return S.healthMeal;
+  if((r.category || '') === 'Colazione') return 'colazione';
+  return H().defaultMeal || 'pranzo';
+}
+function healthCardHtml(r){
+  if(!healthOn()) return '';
+  const key = r.id + '|' + (r.variantId || ''), busy = S.analyzing && S.analyzing.has(key);
+  const meal = mealFor(r), mealName = (MEAL_LIST.find(x => x[0] === meal) || ['', meal])[1];
+  const planEmpty = !Object.keys(H().meals || {}).length;
+  const head = '<div class="hc-head"><span class="hc-title">' + IC.leaf + ' Healthy</span><div class="hc-meals" role="group" aria-label="Confronta con il pasto">' + MEAL_LIST.map(([k, l]) => '<button data-hmeal="' + k + '" aria-pressed="' + (k === meal) + '">' + l + '</button>').join('') + '</div></div>';
+  if(busy) return '<section class="hcard">' + head + '<div class="hc-wait"><span class="spin"></span> Calcolo i valori nutrizionali… (puoi continuare a usare l\'app)</div></section>';
+  if(!r.nutrition) return '<section class="hcard">' + head + '<p class="hc-msg">Valori nutrizionali non ancora calcolati per questa ' + (r.variantName ? 'variante' : 'ricetta') + '.</p><div class="detail-actions"><button class="btn primary" data-act="analyze">' + IC.spark + ' Calcola con l\'AI</button></div></section>';
+  const hc = healthCheck(r, meal); if(!hc) return '';
+  const VERD = {ok: ['ok', 'In linea con il tuo piano'], near: ['near', 'Quasi in linea'], out: ['out', 'Fuori dal piano'], noplan: ['none', 'Nessun valore impostato per ' + mealName.toLowerCase()]};
+  const [vc, vt] = VERD[hc.verdict];
+  let h = '<section class="hcard v-' + vc + '">' + head +
+    '<div class="hc-verdict"><span class="dot st-' + vc + '"></span><div><b>' + vt + '</b>' + (hc.issues.length ? '<small>' + hc.issues.slice(0, 4).map(x => esc(x.txt)).join(' · ') + '</small>' : hc.verdict === 'ok' ? '<small>' + mealName + ', per una porzione</small>' : '') + '</div></div>';
+  if(hc.pp.stale) h += '<div class="hc-stale">Gli ingredienti sono cambiati dall\'ultimo calcolo. <button class="btn small" data-act="analyze">Ricalcola</button></div>';
+  // gruppi
+  const rows = FOOD_GROUPS.filter(([k]) => (hc.pp.groups[k] || 0) > 0.5 || (hc.plan.groups && hc.plan.groups[k] && Number(hc.plan.groups[k].v) > 0));
+  h += '<div class="hc-groups">' + rows.map(([k, label]) => {
+    const v = hc.pp.groups[k] || 0, t = hc.plan.groups && hc.plan.groups[k], st = hc.g[k] || 'none';
+    const lim = t && Number(t.v) > 0 ? Number(t.v) : 0;
+    return '<div class="hg st-' + st + '"><div class="hg-top"><span>' + label + '</span><b>' + fmtG(v) + '</b><small>' + (lim ? (t.mode === 'min' ? 'almeno ' : 'max ') + fmtG(lim) : 'senza limite') + '</small></div><div class="hg-bar"><i style="width:' + (lim ? Math.max(3, Math.min(100, v / lim * (t.mode === 'min' ? 100 : 100))) : 0) + '%"></i>' + (lim && t.mode !== 'min' && v > lim ? '<em style="left:' + Math.round(lim / v * 100) + '%"></em>' : '') + '</div></div>';
+  }).join('') + '</div>';
+  // macro
+  h += '<div class="hc-macros">' + MACROS.map(([k, label]) => {
+    const t = hc.plan.macros && hc.plan.macros[k], st = hc.m[k] || 'none';
+    return '<div class="hm st-' + st + '"><small>' + label + '</small><b>' + fmtMacro(k, hc.pp.macros[k]) + '</b>' + (t && Number(t.v) > 0 ? '<span>' + (t.mode === 'min' ? '≥ ' : '≤ ') + fmtMacro(k, Number(t.v)) + '</span>' : '<span>&nbsp;</span>') + '</div>';
+  }).join('') + '</div>';
+  h += '<div class="detail-actions">' + (hc.verdict === 'out' || hc.verdict === 'near' ? '<button class="btn primary" data-act="fitplan">' + IC.spark + ' Crea una variante adatta al piano</button>' : '') + (planEmpty ? '<button class="btn" data-act="healthplan">Imposta il tuo piano</button>' : '<button class="btn ghost small" data-act="healthplan">Modifica il piano</button>') + '</div>';
+  h += '<p class="hint">Per 1 porzione' + (hc.pp.servings ? ' (la ricetta è per ' + hc.pp.servings + ')' : ' — porzioni non indicate: valori per l\'intera ricetta') + ' · valori stimati dall\'AI, indicativi.</p>';
+  return h + '</section>';
+}
+/* pallino colorato accanto all'ingrediente */
+function ingChip(r, idx, hc){
+  if(!hc) return '';
+  const it = hc.pp.byIdx.get(idx); if(!it) return '';
+  if(it.group === 'altro' && it.grams < 1) return '';
+  const st = hc.g[it.group] || 'none';
+  return ' <span class="hchip st-' + st + '" title="' + esc(groupLabel(it.group)) + ', a porzione">' + esc(groupLabel(it.group).slice(0, 4).toLowerCase()) + ' ' + fmtG(it.grams) + '</span>';
+}
+function listDot(r){
+  if(!healthOn() || !r.nutrition) return '';
+  const hc = healthCheck(r, (r.category === 'Colazione') ? 'colazione' : (H().defaultMeal || 'pranzo'));
+  if(!hc || hc.verdict === 'noplan') return '';
+  return '<span class="ldot st-' + hc.verdict + '" title="' + (hc.verdict === 'ok' ? 'In linea con il piano' : hc.verdict === 'near' ? 'Quasi in linea con il piano' : 'Fuori dal piano') + '">' + (hc.verdict === 'ok' ? 'in dieta' : hc.verdict === 'near' ? 'quasi' : 'fuori') + '</span>';
+}
+
+/* --- calcolo con l'AI (in background, sopravvive allo standby) --- */
+async function analyzeNutrition(recipeId, variantId, opts){
+  opts = opts || {};
+  const r0 = getR(recipeId), r = effR(r0, variantId); if(!r || !store) return;
+  const lines = (r.ingredients || []).map(ingToText).filter(t => t.trim());
+  if(!lines.length){ if(!opts.silent) toast('Aggiungi prima gli ingredienti.'); return; }
+  S.analyzing = S.analyzing || new Set();
+  const key = recipeId + '|' + (variantId || ''); if(S.analyzing.has(key)) return;
+  S.analyzing.add(key); if(S.openId === recipeId) renderDetail();
+  let jobId = null;
+  try{
+    const res = await store.ai({action: 'nutrition', ingredients: (r.ingredients || []).map(ingToText), servings: r.servings, title: titleWithVariant(r), meta: {recipeId, variantId: variantId || null, hash: ingHash(r)}}, {onJob: id => { jobId = id; S.waitingJobs.add(id); }});
+    await applyNutrition(recipeId, variantId, {items: (res.result && res.result.items) || [], notes: (res.result && res.result.notes) || '', hash: ingHash(r), at: new Date().toISOString()});
+  }catch(e){ if(!opts.silent && e && e.code !== 'cancelled') toast(aiErrorText(e)); }
+  if(jobId){ S.waitingJobs.delete(jobId); store.markJobSeen(jobId).catch(() => {}); }
+  S.analyzing.delete(key); if(S.openId === recipeId) renderDetail();
+  renderList();
+}
+async function applyNutrition(recipeId, variantId, nut){
+  const r0 = getR(recipeId); if(!r0) return;
+  if(variantId){
+    const variants = JSON.parse(JSON.stringify(r0.variants || [])), v = variants.find(x => x.id === variantId);
+    if(!v || ingHash(effR(r0, variantId)) !== nut.hash) return;
+    v.nutrition = nut;
+    await S.db.collection('recipes').doc(recipeId).update({variants});
+  } else {
+    if(ingHash(r0) !== nut.hash) return;
+    await S.db.collection('recipes').doc(recipeId).update({nutrition: nut});
+  }
+}
+
+/* --- pagina del piano alimentare --- */
+let HP = null; // bozza in modifica
+function openHealthPlan(){
+  HP = JSON.parse(JSON.stringify(H())); HP.meals = HP.meals || {}; HP.tab = HP.defaultMeal || 'pranzo';
+  renderHealthPlan();
+  const el = $('#sheetHealth'); el.classList.remove('hidden'); el.scrollTop = 0; document.body.style.overflow = 'hidden';
+}
+function closeHealthPlan(){ HP = null; $('#sheetHealth').classList.add('hidden'); if(!S.openId && !S.edit && $('#sheetSettings').classList.contains('hidden')) document.body.style.overflow = ''; }
+function hpVal(kind, k){ const m = HP.meals[HP.tab] || {}; return (m[kind] || {})[k] || null; }
+function renderHealthPlan(){
+  const m = HP.tab;
+  const row = (kind, k, label, hint, unit) => {
+    const t = hpVal(kind, k), mode = (t && t.mode) || DEFAULT_MODE[k] || 'max';
+    return '<div class="hp-row"><div class="hp-l"><b>' + label + '</b>' + (hint ? '<small>' + hint + '</small>' : '') + '</div>' +
+      '<button class="hp-mode" data-hpmode="' + kind + ':' + k + '" aria-label="' + (mode === 'min' ? 'Almeno' : 'Al massimo') + ', tocca per cambiare">' + (mode === 'min' ? '≥ almeno' : '≤ max') + '</button>' +
+      '<label class="hp-in"><input class="inp" type="number" inputmode="decimal" min="0" step="any" data-hpv="' + kind + ':' + k + '" value="' + (t && t.v != null ? esc(t.v) : '') + '" placeholder="—" aria-label="' + label + ' (' + unit + ')"><span>' + unit + '</span></label></div>';
+  };
+  $('#sheetHealth').innerHTML =
+    '<div class="sheet-bar"><div class="sheet-bar-inner"><button class="btn icon-btn ghost" data-hp="close" aria-label="Chiudi">' + IC.back + '</button><strong style="font-size:17px">Il mio piano alimentare</strong><div class="spacer"></div></div></div>' +
+    '<div class="sheet-content">' +
+      '<label class="switch-row"><span><b>Attiva Healthy</b><small>Le ricette mostrano se sono in linea con il tuo piano, con i valori verdi, gialli o rossi accanto agli ingredienti.</small></span><input type="checkbox" class="switch" id="hp_on"' + (HP.enabled ? ' checked' : '') + '></label>' +
+      '<div class="field"><span class="lbl">Quantità per una porzione al pasto</span><div class="seg" role="tablist">' + MEAL_LIST.map(([k, l]) => '<button role="tab" data-hptab="' + k + '" aria-pressed="' + (k === m) + '">' + l + '</button>').join('') + '</div>' +
+        '<span class="hint">Scrivi solo i valori che ti servono; i campi vuoti non vengono controllati. «≤ max» segnala quando sfori, «≥ almeno» quando ne manca.</span></div>' +
+      '<section class="section"><h2>Gruppi alimentari</h2><div class="hp-card">' + FOOD_GROUPS.map(([k, l, hint]) => row('groups', k, l, hint, 'g')).join('') + '</div></section>' +
+      '<section class="section"><h2>Calorie e macronutrienti</h2><div class="hp-card">' + MACROS.map(([k, l, u]) => row('macros', k, l, '', u)).join('') + '</div></section>' +
+      '<div class="hp-copy"><span class="hint">Copia i valori da:</span>' + MEAL_LIST.filter(([k]) => k !== m && HP.meals[k]).map(([k, l]) => '<button class="btn small" data-hpcopy="' + k + '">' + l + '</button>').join('') + (MEAL_LIST.some(([k]) => k !== m && HP.meals[k]) ? '' : '<span class="hint">—</span>') + '</div>' +
+      '<section class="section"><h2>Opzioni</h2><div class="hp-card">' +
+        '<div class="hp-row"><div class="hp-l"><b>Pasto predefinito</b><small>Con cosa confrontare le ricette (puoi cambiarlo anche da ogni ricetta)</small></div><select class="inp" id="hp_def" style="width:auto">' + MEAL_LIST.map(([k, l]) => '<option value="' + k + '"' + (k === HP.defaultMeal ? ' selected' : '') + '>' + l + '</option>').join('') + '</select></div>' +
+        '<div class="hp-row"><div class="hp-l"><b>Tolleranza</b><small>Entro questo margine il valore è giallo invece che rosso</small></div><select class="inp" id="hp_tol" style="width:auto">' + [0, 5, 10, 15, 20].map(v => '<option value="' + v + '"' + (Number(HP.tolerance) === v ? ' selected' : '') + '>' + v + '%</option>').join('') + '</select></div>' +
+      '</div></section>' +
+      '<p class="hint">I valori delle ricette sono stime fatte dall\'AI sugli ingredienti: usali come indicazione. Il riferimento resta il tuo piano e chi te l\'ha dato.</p>' +
+    '</div>' +
+    '<div class="save-bar"><div class="save-bar-inner"><button class="btn" data-hp="close">Annulla</button><button class="btn primary" data-hp="save">Salva il piano</button></div></div>';
+}
+function hpSet(kind, k, patch){
+  const meal = HP.meals[HP.tab] = HP.meals[HP.tab] || {};
+  const bag = meal[kind] = meal[kind] || {};
+  const cur = bag[k] || {v: null, mode: DEFAULT_MODE[k] || 'max'};
+  Object.assign(cur, patch); bag[k] = cur;
+}
+function hpClean(h){
+  const out = {enabled: !!h.enabled, tolerance: Number(h.tolerance) || 0, defaultMeal: h.defaultMeal || 'pranzo', meals: {}};
+  Object.entries(h.meals || {}).forEach(([m, val]) => {
+    const mm = {};
+    ['groups', 'macros'].forEach(kind => {
+      const bag = {};
+      Object.entries((val || {})[kind] || {}).forEach(([k, t]) => { const v = Number(t && t.v); if(v > 0) bag[k] = {v, mode: t.mode === 'min' ? 'min' : 'max'}; });
+      if(Object.keys(bag).length) mm[kind] = bag;
+    });
+    if(Object.keys(mm).length) out.meals[m] = mm;
+  });
+  return out;
+}
+async function healthPlanAction(t){
+  const d = t.dataset;
+  if(d.hp === 'close') return closeHealthPlan();
+  if(d.hptab){ HP.tab = d.hptab; renderHealthPlan(); return; }
+  if(d.hpmode){ const [kind, k] = d.hpmode.split(':'); const cur = hpVal(kind, k); hpSet(kind, k, {mode: ((cur && cur.mode) || DEFAULT_MODE[k] || 'max') === 'min' ? 'max' : 'min'}); renderHealthPlan(); return; }
+  if(d.hpcopy){ HP.meals[HP.tab] = JSON.parse(JSON.stringify(HP.meals[d.hpcopy] || {})); renderHealthPlan(); toast('Valori copiati: puoi modificarli'); return; }
+  if(d.hp === 'save'){
+    const clean = hpClean(HP);
+    t.disabled = true;
+    try{ await store.saveHealth(clean); S.health = clean; closeHealthPlan(); toast(clean.enabled ? 'Piano salvato: Healthy è attivo' : 'Piano salvato'); renderList(); if(S.openId) renderDetail(); if(!$('#sheetSettings').classList.contains('hidden')) renderSettings(); }
+    catch(e){ t.disabled = false; toast('Non sono riuscito a salvare il piano.' + (e && e.message ? ' (' + e.message + ')' : '')); }
+  }
+}
+function planInstruction(r){
+  const meal = mealFor(r), mealName = (MEAL_LIST.find(x => x[0] === meal) || ['', meal])[1].toLowerCase();
+  const plan = (H().meals || {})[meal] || {}, parts = [];
+  FOOD_GROUPS.forEach(([k, l]) => { const t = plan.groups && plan.groups[k]; if(t) parts.push(l.toLowerCase() + ' ' + (t.mode === 'min' ? 'almeno ' : 'massimo ') + t.v + ' g'); });
+  MACROS.forEach(([k, l, u]) => { const t = plan.macros && plan.macros[k]; if(t) parts.push(l.toLowerCase() + ' ' + (t.mode === 'min' ? 'almeno ' : 'massimo ') + t.v + ' ' + u); });
+  const hc = healthCheck(r, meal);
+  return 'Adatta la ricetta al mio piano alimentare per una porzione a ' + mealName + ': ' + parts.join(', ') + '.' +
+    (hc && hc.issues.length ? ' Adesso sforo così: ' + hc.issues.map(x => x.txt).join(', ') + '.' : '') +
+    ' Mantieni il piatto riconoscibile e gustoso: regola prima le quantità per ' + (r.servings || 1) + ' porzioni, sostituisci ingredienti solo se serve, e aggiorna i passaggi di conseguenza.';
+}
+
+/* --- varianti: creazione, modifica, eliminazione --- */
+function openNewVariant(r0, r, preset){
+  if(preset === 'plan'){ return askVariantAI(r0, r, 'In dieta', planInstruction(r)); }
+  modal('<h3>Nuova variante</h3><p>Una versione diversa di «' + esc(r0.title) + '», nella stessa ricetta: la scegli con le schede in alto.</p>' +
+    '<div class="field"><label for="nv_name">Nome della variante</label><input class="inp" id="nv_name" placeholder="Es. Light, Vegetariana, Senza glutine" maxlength="40"></div>' +
+    '<div class="nv-opts"><button class="nv-opt" data-nv="ai"><b>' + IC.spark + ' Con l\'AI</b><small>Dici cosa cambiare, a voce o scrivendo</small></button>' +
+    '<button class="nv-opt" data-nv="manual"><b>' + IC.edit + ' A mano</b><small>Parti da una copia e modifichi tu</small></button>' +
+    (healthOn() ? '<button class="nv-opt" data-nv="plan"><b>' + IC.leaf + ' Adatta al mio piano</b><small>L\'AI regola dosi e ingredienti</small></button>' : '') + '</div>' +
+    '<div class="modal-actions"><button class="btn" data-a="no">Annulla</button></div>',
+    (m, close) => {
+      setTimeout(() => m.querySelector('#nv_name').focus(), 50);
+      m.querySelector('[data-a=no]').onclick = close;
+      m.querySelectorAll('[data-nv]').forEach(b => b.onclick = () => {
+        const how = b.dataset.nv;
+        let name = m.querySelector('#nv_name').value.trim();
+        if(!name) name = how === 'plan' ? 'In dieta' : 'Variante ' + ((r0.variants || []).length + 1);
+        close();
+        if(how === 'manual'){ const c = JSON.parse(JSON.stringify(r)); c.variantName = name; openEditor(c, true, null, {of: r0.id, id: null}); }
+        else askVariantAI(r0, r, name, how === 'plan' ? planInstruction(r) : '');
+      });
+    });
+}
+function askVariantAI(r0, r, name, prefill){
+  openAI('edit', {title: r0.title + '» → variante «' + name, form: r, prefill, apply: (res, txt) => {
+    const meta = {source: 'modifica', transcript: txt, doubts: res._doubts, changes: res._changes, variant: true};
+    const base = Object.assign({}, r, {ingredients: (r.ingredients || []).map(ingToText), steps: (r.steps || []).map(s => typeof s === 'string' ? {text: s} : s), tagsText: (r.tags || []).join(', ')});
+    meta.old = snapshotForm(base);
+    const keep = new Map((r.steps || []).map(s => typeof s === 'string' ? [s, null] : [s.text, s.timerMin]));
+    const v = Object.assign(JSON.parse(JSON.stringify(r)), {variantName: name, servings: res.servings, servingsUnit: res.servingsUnit, prepMin: res.prepMin, cookMin: res.cookMin, restMin: res.restMin, difficulty: res.difficulty, notes: res.notes,
+      ingredients: res.ingredients, steps: res.steps.map(s => ({text: s.text, timerMin: keep.get(s.text) ?? ''}))});
+    openEditor(v, true, meta, {of: r0.id, id: null});
+  }});
+}
+async function saveVariant(){
+  const E = S.edit, name = String(E.r.variantName || '').trim();
+  if(!name){ toast('Dai un nome alla variante'); const f = $('#e_title'); f && f.focus(); return; }
+  const parent = getR(E.variant.of); if(!parent){ toast('La ricetta originale non esiste più.'); return; }
+  E.saving = true; renderEditor();
+  try{
+    const c = cleanRecipe(Object.assign({}, E.r, {title: parent.title}));
+    const v = {id: E.variant.id || uid(), name};
+    ['servings', 'servingsUnit', 'prepMin', 'cookMin', 'restMin', 'difficulty', 'ingredients', 'steps', 'notes'].forEach(k => { v[k] = c[k]; });
+    const variants = JSON.parse(JSON.stringify(parent.variants || []));
+    const i = variants.findIndex(x => x.id === v.id), prev = i >= 0 ? variants[i] : null;
+    if(prev && prev.nutrition && prev.nutrition.hash === ingHash(v)) v.nutrition = prev.nutrition;
+    if(i >= 0) variants[i] = v; else variants.push(v);
+    await S.db.collection('recipes').doc(parent.id).update({variants, updatedAt: new Date().toISOString()});
+    closeEditor(); toast('Variante salvata');
+    openDetail(parent.id, v.id);
+    if(healthOn() && !v.nutrition) analyzeNutrition(parent.id, v.id, {silent: true});
+  }catch(e){ E.saving = false; renderEditor(); toast('Non sono riuscito a salvare la variante.'); }
+}
+async function deleteVariant(r0, vid){
+  const v = (r0.variants || []).find(x => x.id === vid); if(!v) return;
+  if(!(await confirmBox('Eliminare la variante «' + v.name + '»?', 'La ricetta originale e le altre varianti restano. Non si può annullare.', 'Elimina'))) return;
+  try{
+    await S.db.collection('recipes').doc(r0.id).update({variants: (r0.variants || []).filter(x => x.id !== vid), updatedAt: new Date().toISOString()});
+    S.variantId = null; renderDetail(); toast('Variante eliminata');
+  }catch(e){ toast('Non sono riuscito a eliminarla.'); }
 }
 
 /* ---------- Timer integrato ---------- */
@@ -1002,14 +1386,14 @@ async function openCook(){
 }
 function closeCook(){ $('#cook').classList.add('hidden'); tPos(); try{ S.wakeLock && S.wakeLock.release(); }catch(e){} S.wakeLock = null; }
 function renderCook(){
-  const r = getR(S.openId); if(!r){ closeCook(); return; }
+  const r = curR(); if(!r){ closeCook(); return; }
   const steps = (r.steps || []).map(s => typeof s === 'string' ? {text:s} : s);
   const i = Math.min(S.cookIdx, steps.length - 1), s = steps[i];
   const m = s.timerMin != null && s.timerMin !== '' ? Number(s.timerMin) : detectMinutes(s.text);
   const base = Number(r.servings) || null; const factor = base && S.servings ? S.servings/base : 1;
   const ingTxt = (r.ingredients||[]).map(x => ingLine(typeof x === 'string' ? {text:x} : x, factor)).filter(Boolean).map(l => l.group ? '<div class="ing-group" style="padding:8px 0 2px">' + esc(l.group) + '</div>' : '<div><b>' + esc(l.q) + '</b> ' + esc(l.txt) + '</div>').join('');
   $('#cook').innerHTML =
-    '<div class="cook-top"><button class="btn icon-btn ghost" data-cook="close" aria-label="Esci dalla modalità cucina">' + IC.x + '</button><div class="t">' + esc(r.title) + '</div><button class="btn small" data-cook="timers" aria-label="Timer">' + IC.timer + '</button><button class="btn small" data-cook="ings">Ingredienti</button></div>' +
+    '<div class="cook-top"><button class="btn icon-btn ghost" data-cook="close" aria-label="Esci dalla modalità cucina">' + IC.x + '</button><div class="t">' + esc(titleWithVariant(r)) + '</div><button class="btn small" data-cook="timers" aria-label="Timer">' + IC.timer + '</button><button class="btn small" data-cook="ings">Ingredienti</button></div>' +
     '<div class="cook-progress"><div style="width:' + ((i+1)/steps.length*100) + '%"></div></div>' +
     '<div class="cook-body"><div class="cook-num">PASSAGGIO ' + (i+1) + ' DI ' + steps.length + '</div><div class="cook-text">' + esc(s.text) + '</div>' +
     (m ? '<div><button class="btn primary" data-cook="timer" data-min="' + m + '">' + IC.timer + ' Avvia timer ' + fmtMin(m) + '</button></div>' : '') +
@@ -1020,16 +1404,16 @@ function renderCook(){
 
 /* ---------- Editor ---------- */
 function blankRecipe(){ return {title:'', category:'', tags:[], servings:4, servingsUnit:'porzioni', prepMin:'', cookMin:'', restMin:'', difficulty:'facile', ingredients:[''], steps:[{text:'', timerMin:''}], notes:'', source:'', favorite:false, photoId:null}; }
-function openEditor(recipe, isNew, meta){
+function openEditor(recipe, isNew, meta, variant){
   const r = JSON.parse(JSON.stringify(recipe || blankRecipe()));
   r.ingredients = (r.ingredients || []).map(ingToText); if(!r.ingredients.length) r.ingredients = [''];
   r.steps = (r.steps || []).map(s => typeof s === 'string' ? {text:s, timerMin:''} : {text:s.text || '', timerMin: s.timerMin ?? ''}); if(!r.steps.length) r.steps = [{text:'', timerMin:''}];
   r.tagsText = (r.tags || []).join(', ');
   delete r._doubts;
-  S.edit = {r, isNew: !!isNew, newPhoto:null, newPhotoUrl:null, removePhoto:false, saving:false, meta: meta || null};
+  S.edit = {r, isNew: !!isNew, newPhoto:null, newPhotoUrl:null, removePhoto:false, saving:false, meta: meta || null, variant: variant || null};
   renderEditor();
   $('#sheetEdit').classList.remove('hidden'); $('#sheetEdit').scrollTop = 0; document.body.style.overflow = 'hidden'; tPos();
-  setTimeout(() => { const t = $('#e_title'); if(t && isNew && !r.title) t.focus(); }, 50);
+  setTimeout(() => { const t = $('#e_title'); if(t && isNew && !(variant ? r.variantName : r.title)) t.focus(); }, 50);
 }
 function closeEditor(){
   if(S.edit && S.edit.newPhotoUrl) URL.revokeObjectURL(S.edit.newPhotoUrl);
@@ -1053,8 +1437,9 @@ function renderEditor(){
   const chg = k => old && old.fields[k] !== String(r[k] ?? '') ? ' chg' : '';
   const photo = E.newPhotoUrl || (!E.removePhoto && r.photoId ? photoUrl(r.photoId) : '');
   const catOpts = CATEGORIES.map(c => '<option value="' + esc(c) + '">').join('');
+  const V = E.variant, parentTitle = V ? ((getR(V.of) || {}).title || r.title) : '';
   $('#sheetEdit').innerHTML =
-    '<div class="sheet-bar"><div class="sheet-bar-inner"><button class="btn icon-btn ghost" data-e="cancel" aria-label="Annulla">' + IC.x + '</button><strong style="font-size:17px">' + (E.isNew ? 'Nuova ricetta' : 'Modifica ricetta') + '</strong><div class="spacer"></div>' + (S.sample ? '<button class="btn small glass" data-e="voice">' + micIcon + ' A voce</button>' : '') + '</div></div>' +
+    '<div class="sheet-bar"><div class="sheet-bar-inner"><button class="btn icon-btn ghost" data-e="cancel" aria-label="Annulla">' + IC.x + '</button><strong style="font-size:17px">' + (V ? (E.isNew ? 'Nuova variante' : 'Modifica variante') : E.isNew ? 'Nuova ricetta' : 'Modifica ricetta') + '</strong><div class="spacer"></div>' + (S.sample ? '<button class="btn small glass" data-e="voice">' + micIcon + ' A voce</button>' : '') + '</div></div>' +
     '<div class="sheet-content">' +
       (E.meta ? '<div class="draft-banner">' +
         (E.meta.source === 'modifica'
@@ -1063,11 +1448,12 @@ function renderEditor(){
         (E.meta.changes && E.meta.changes.length ? '<div><b>Modifiche:</b><ul>' + E.meta.changes.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' : '') +
         (E.meta.doubts && E.meta.doubts.length ? '<div><b>Da controllare:</b><ul>' + E.meta.doubts.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' : '') +
         (E.meta.transcript ? '<details><summary>' + (E.meta.source === 'dictate' || E.meta.source === 'modifica' ? 'Cosa hai chiesto' : 'Testo originale') + '</summary><div>' + esc(E.meta.transcript) + '</div></details>' : '') + '</div>' : '') +
-      '<div class="field"><label for="e_title">Nome della ricetta</label><input class="inp' + chg('title') + '" id="e_title" data-f="title" value="' + esc(r.title) + '" placeholder="Es. Lasagne della nonna" style="font-size:19px;font-weight:600"></div>' +
-      '<div class="field"><span class="lbl">Foto</span><div class="photo-pick"><div class="photo-prev">' + (photo ? '<img src="' + esc(photo) + '" alt="Anteprima">' : 'Nessuna foto') + '</div>' +
-        (S.assets ? '<span class="btn small file-btn">Scegli foto<input type="file" id="e_photo" accept="image/*" aria-label="Scegli foto"></span>' + (photo ? '<button class="btn small ghost danger" data-e="rmphoto">Rimuovi</button>' : '') : '<span class="hint">Le foto sono disponibili aprendo il ricettario dal tuo account.</span>') + '</div></div>' +
-      '<div class="row"><div class="field"><label for="e_cat">Categoria</label><input class="inp' + chg('category') + '" id="e_cat" data-f="category" list="catlist" value="' + esc(r.category) + '" placeholder="Es. Primi"><datalist id="catlist">' + catOpts + '</datalist></div>' +
-        '<div class="field"><label for="e_tags">Tag</label><input class="inp' + chg('tagsText') + '" id="e_tags" data-f="tagsText" value="' + esc(r.tagsText) + '" placeholder="veloce, vegetariano"></div></div>' +
+      (V ? '<div class="field"><label for="e_title">Nome della variante di «' + esc(parentTitle) + '»</label><input class="inp" id="e_title" data-f="variantName" value="' + esc(r.variantName || '') + '" placeholder="Es. Light, Vegetariana, Senza glutine" maxlength="40" style="font-size:19px;font-weight:600"><span class="hint">Foto, categoria e tag restano quelli della ricetta originale.</span></div>'
+        : '<div class="field"><label for="e_title">Nome della ricetta</label><input class="inp' + chg('title') + '" id="e_title" data-f="title" value="' + esc(r.title) + '" placeholder="Es. Lasagne della nonna" style="font-size:19px;font-weight:600"></div>') +
+      (V ? '' : '<div class="field"><span class="lbl">Foto</span><div class="photo-pick"><div class="photo-prev">' + (photo ? '<img src="' + esc(photo) + '" alt="Anteprima">' : 'Nessuna foto') + '</div>' +
+        (S.assets ? '<span class="btn small file-btn">Scegli foto<input type="file" id="e_photo" accept="image/*" aria-label="Scegli foto"></span>' + (photo ? '<button class="btn small ghost danger" data-e="rmphoto">Rimuovi</button>' : '') : '<span class="hint">Le foto sono disponibili aprendo il ricettario dal tuo account.</span>') + '</div></div>') +
+      (V ? '' : '<div class="row"><div class="field"><label for="e_cat">Categoria</label><input class="inp' + chg('category') + '" id="e_cat" data-f="category" list="catlist" value="' + esc(r.category) + '" placeholder="Es. Primi"><datalist id="catlist">' + catOpts + '</datalist></div>' +
+        '<div class="field"><label for="e_tags">Tag</label><input class="inp' + chg('tagsText') + '" id="e_tags" data-f="tagsText" value="' + esc(r.tagsText) + '" placeholder="veloce, vegetariano"></div></div>') +
       '<div class="row"><div class="field"><label for="e_serv">Quantità prodotta</label><input class="inp' + chg('servings') + '" id="e_serv" data-f="servings" type="number" inputmode="numeric" min="1" value="' + esc(r.servings) + '"></div>' +
         '<div class="field"><label for="e_su">Unità</label><input class="inp' + chg('servingsUnit') + '" id="e_su" data-f="servingsUnit" list="sulist" value="' + esc(r.servingsUnit) + '"><datalist id="sulist"><option value="porzioni"><option value="persone"><option value="pezzi"><option value="biscotti"><option value="vasetti"><option value="teglia"></datalist></div></div>' +
       '<div class="field"><span class="lbl">Tempi (minuti)</span><div class="row3">' +
@@ -1082,9 +1468,9 @@ function renderEditor(){
         '<div class="lines" id="e_steps">' + r.steps.map((s, i) => { const d = detectMinutes(s.text); return '<div class="step-line"><textarea class="inp' + (old && s.text.trim() && !old.steps.has(s.text) ? ' chg' : '') + '" data-step="' + i + '" rows="2" placeholder="Passaggio ' + (i+1) + '" aria-label="Passaggio ' + (i+1) + '">' + esc(s.text) + '</textarea><div class="line-tools"><button data-mv="step:' + i + ':-1" aria-label="Sposta su">' + IC.up + '</button><button data-mv="step:' + i + ':1" aria-label="Sposta giù">' + IC.down + '</button><button data-rm="step:' + i + '" aria-label="Elimina passaggio">' + IC.x + '</button></div><label class="timer-in">' + IC.timer + ' Timer <input class="inp" type="number" inputmode="decimal" min="0" step="any" data-steptimer="' + i + '" value="' + esc(s.timerMin) + '" placeholder="' + (d != null ? d : '—') + '"> min</label></div>'; }).join('') + '</div>' +
         '<div><button class="btn small" data-e="addStep">+ Passaggio</button></div></div>' +
       '<div class="field"><label for="e_notes">Note e consigli</label><textarea class="inp' + chg('notes') + '" id="e_notes" data-f="notes" rows="3" placeholder="Varianti, conservazione, trucchi…">' + esc(r.notes) + '</textarea></div>' +
-      '<div class="field"><label for="e_src">Fonte</label><input class="inp' + chg('source') + '" id="e_src" data-f="source" value="' + esc(r.source) + '" placeholder="Es. Nonna Lina, libro, sito…"></div>' +
+      (V ? '' : '<div class="field"><label for="e_src">Fonte</label><input class="inp' + chg('source') + '" id="e_src" data-f="source" value="' + esc(r.source) + '" placeholder="Es. Nonna Lina, libro, sito…"></div>') +
     '</div>' +
-    '<div class="save-bar"><div class="save-bar-inner"><button class="btn" data-e="cancel">Annulla</button><button class="btn primary" data-e="save"' + (S.readOnly || S.noDb ? ' disabled' : '') + '>' + (E.saving ? '<span class="spin"></span> Salvo…' : 'Salva ricetta') + '</button></div></div>';
+    '<div class="save-bar"><div class="save-bar-inner"><button class="btn" data-e="cancel">Annulla</button><button class="btn primary" data-e="save"' + (S.readOnly || S.noDb ? ' disabled' : '') + '>' + (E.saving ? '<span class="spin"></span> Salvo…' : V ? 'Salva variante' : 'Salva ricetta') + '</button></div></div>';
 }
 function syncEditorFields(){
   // i campi scrivono già in S.edit.r ad ogni input; qui nulla da fare
@@ -1116,6 +1502,7 @@ function cleanRecipe(r){
 }
 async function saveEditor(){
   const E = S.edit; if(!E || E.saving || !S.db) return;
+  if(E.variant) return saveVariant();
   if(!String(E.r.title || '').trim()){ toast('Dai un nome alla ricetta'); $('#e_title') && $('#e_title').focus(); return; }
   E.saving = true; renderEditor();
   try{
@@ -1128,10 +1515,17 @@ async function saveEditor(){
     const id = E.isNew ? uid() : E.r.id;
     const now = new Date().toISOString();
     data.createdAt = E.r.createdAt || now; data.updatedAt = now;
+    const existing = E.isNew ? null : getR(id);
+    if(existing){
+      if(existing.variants) data.variants = existing.variants;
+      if(existing.baseName) data.baseName = existing.baseName;
+      if(existing.nutrition && existing.nutrition.hash === ingHash(data)) data.nutrition = existing.nutrition;
+    }
     await S.db.collection('recipes').doc(id).set(data);
+    if(healthOn() && !data.nutrition) setTimeout(() => analyzeNutrition(id, null, {silent: true}), 300);
     if(oldPhoto && oldPhoto !== data.photoId && S.assets){ try{ await S.assets.delete(oldPhoto); }catch(e){} }
     closeEditor(); toast('Ricetta salvata');
-    openDetail(id);
+    openDetail(id, null);
   }catch(e){
     E.saving = false; renderEditor();
     toast(e && e.code === 'quota_exceeded' ? 'Spazio esaurito: elimina qualche ricetta o foto.' : 'Non sono riuscito a salvare. Riprova tra poco.');
@@ -1246,7 +1640,8 @@ function openAI(mode, ctx){
   const isEdit = mode === 'edit', voice = mode === 'dictate' || isEdit;
   if(!S.sample){ modal('<h3>L\'assistente AI non è disponibile</h3><p>Accedi al ricettario per usare l\'assistente AI. Puoi sempre scrivere o modificare la ricetta a mano.</p><div class="modal-actions"><button class="btn primary" data-x>Ok</button></div>', (m, c) => m.querySelector('[data-x]').onclick = c); return; }
   // la dettatura deve partire direttamente dal tocco, prima di qualsiasi attesa
-  if(voice && S.dict) startDictation();
+  const prefill = ctx && ctx.prefill ? String(ctx.prefill) : '';
+  if(voice && S.dict && !prefill) startDictation();
   const atts = [];
   const maxImgs = S.sampleMaxImages || 3;
   const T = {
@@ -1259,7 +1654,7 @@ function openAI(mode, ctx){
     '<h3>' + T.title + '</h3>' +
     (isEdit ? '' : '<div class="seg ai-tabs" role="tablist">' + AI_TABS.map(([k, l]) => '<button role="tab" data-aitab="' + k + '" aria-pressed="' + (k === mode) + '">' + l + '</button>').join('') + '</div>') +
     '<p>' + T.intro + '</p>' +
-    (voice ? micRowHtml(!!S.dict) : '') +
+    (voice ? micRowHtml(!!S.dict && !prefill) : '') +
     (mode === 'link' ? '<div class="field"><label for="ai_url">Link della ricetta</label><input class="inp" id="ai_url" type="url" inputmode="url" placeholder="https://…" autocomplete="off"></div>' : '') +
     '<textarea class="inp" id="ai_txt" rows="' + (voice ? 8 : 7) + '" placeholder="' + esc(T.ph) + '"></textarea>' +
     (voice ? '<div class="partial" id="dict_partial" aria-live="polite"></div>' : '') +
@@ -1276,6 +1671,7 @@ function openAI(mode, ctx){
         ctrl.aborted = true; stopDictation(); closeFn(); openAI(b.dataset.aitab);
         const ta = document.getElementById('ai_txt'); if(ta && keep) ta.value = keep;
       });
+      if(prefill){ const ta = m.querySelector('#ai_txt'); ta.value = prefill; }
       const db = m.querySelector('#dict_btn');
       if(db) db.onclick = () => { if(S.dict.active()) stopDictation(); else startDictation(); };
       if(!S.dict || !voice) setTimeout(() => { const f = m.querySelector(mode === 'link' ? '#ai_url' : '#ai_txt'); f && f.focus({preventScroll:true}); }, 60);
@@ -1374,8 +1770,8 @@ async function aiEdit(form, instruction, onJob){
 }
 function voiceEdit(fromEditor){
   let form, title;
-  if(fromEditor && S.edit){ form = S.edit.r; title = S.edit.r.title; }
-  else { const r = getR(S.openId); if(!r) return; form = r; title = r.title; }
+  if(fromEditor && S.edit){ form = S.edit.r; title = S.edit.variant ? ((getR(S.edit.variant.of) || {}).title || '') + ' (' + (S.edit.r.variantName || 'variante') + ')' : S.edit.r.title; }
+  else { const r = curR(); if(!r) return; form = r; title = titleWithVariant(r); }
   openAI('edit', {title, form, apply: (res, txt) => {
     const meta = {source:'modifica', transcript: txt, doubts: res._doubts, changes: res._changes};
     if(fromEditor && S.edit){
@@ -1384,14 +1780,16 @@ function voiceEdit(fromEditor){
       const keepTimers = new Map((old.steps || []).map(s => [s.text, s.timerMin]));
       Object.assign(old, {title: res.title || old.title, category: res.category, tagsText: res.tags.join(', '), servings: res.servings, servingsUnit: res.servingsUnit, prepMin: res.prepMin, cookMin: res.cookMin, restMin: res.restMin, difficulty: res.difficulty, notes: res.notes, source: res.source,
         ingredients: res.ingredients.length ? res.ingredients : [''], steps: res.steps.length ? res.steps.map(s => ({text:s.text, timerMin: keepTimers.get(s.text) ?? ''})) : [{text:'', timerMin:''}]});
+      if(E.variant) old.title = (getR(E.variant.of) || {}).title || old.title;
       E.meta = meta; renderEditor(); $('#sheetEdit').scrollTop = 0;
     } else {
-      const r = getR(S.openId); if(!r) return;
+      const r = curR(); if(!r) return;
       const keepTimers = new Map((r.steps || []).map(s => typeof s === 'string' ? [s, null] : [s.text, s.timerMin]));
       const merged = Object.assign(JSON.parse(JSON.stringify(r)), {title: res.title || r.title, category: res.category, tags: res.tags, servings: res.servings, servingsUnit: res.servingsUnit, prepMin: res.prepMin, cookMin: res.cookMin, restMin: res.restMin, difficulty: res.difficulty, notes: res.notes, source: res.source,
         ingredients: res.ingredients, steps: res.steps.map(s => ({text:s.text, timerMin: keepTimers.get(s.text) ?? ''}))});
       meta.old = snapshotForm(Object.assign({}, r, {ingredients:(r.ingredients||[]).map(ingToText), steps:(r.steps||[]).map(s => typeof s === 'string' ? {text:s} : s), tagsText:(r.tags||[]).join(', ')}));
-      openEditor(merged, false, meta);
+      if(S.variantId){ merged.title = r.title; openEditor(merged, false, meta, {of: S.openId, id: S.variantId}); }
+      else { delete merged.variantId; delete merged.variantName; openEditor(merged, false, meta); }
     }
   }});
 }
@@ -1449,6 +1847,9 @@ async function importFile(file){
       const id = isUuid(r.id) ? r.id : uid();
       const data = cleanRecipe(r); data.createdAt = r.createdAt || new Date().toISOString(); data.updatedAt = new Date().toISOString();
       data.photoId = null;
+      if(Array.isArray(r.variants)) data.variants = r.variants;
+      if(r.nutrition && Array.isArray(r.nutrition.items)) data.nutrition = r.nutrition;
+      if(r.baseName) data.baseName = r.baseName;
       if(typeof r.photoData === 'string' && r.photoData.startsWith('data:image/')){
         try{ const blob = await (await fetch(r.photoData)).blob(); const up = await S.assets.upload(await downscale(new File([blob], 'foto.jpg', {type: blob.type}), 1600)); data.photoId = up.id; }catch(e){}
       } else if(isUuid(r.id) && r.photoId && String(r.photoId).includes('/')) data.photoId = r.photoId;
@@ -1536,6 +1937,7 @@ function fmtShopQty(it){
   return fmtQty(q, u) + (lab ? ' ' + lab : '');
 }
 function recipeItems(r, servings){
+  if(r && r.variantName) r = Object.assign({}, r, {title: titleWithVariant(r)});
   const base = Number(r.servings) || null; const factor = base && servings ? servings / base : 1;
   return (r.ingredients || []).map(i => typeof i === 'string' ? parseIngredient(i) : (i.group || i.name != null ? i : parseIngredient(i.text))).filter(p => p && !p.group && p.name).map(p => toShopItem(p, factor, r.title));
 }
@@ -1628,8 +2030,8 @@ function renderPlan(){
     MEALS.forEach(([mk, ml]) => {
       const key = di + '-' + mk, entries = (S.plan.slots || {})[key] || [];
       h += '<div class="slot"><div class="slot-lbl">' + ml + '</div><div class="entries">' + entries.map((e, ei) => {
-        if(e.rid){ const r = getR(e.rid);
-          return '<span class="entry' + (r ? '' : ' gone') + '"><button data-popen="' + esc(e.rid) + '">' + esc(r ? r.title : 'Ricetta eliminata') + (r && e.servings ? ' <small>· ' + esc(e.servings) + '</small>' : '') + '</button><button class="rm" data-prm="' + key + ':' + ei + '" aria-label="Togli">✕</button></span>'; }
+        if(e.rid){ const r = getR(e.rid) && effR(getR(e.rid), e.vid);
+          return '<span class="entry' + (r ? '' : ' gone') + '"><button data-popen="' + esc(e.rid) + '" data-pvid="' + esc(e.vid || '') + '">' + esc(r ? titleWithVariant(r) : 'Ricetta eliminata') + (r && e.servings ? ' <small>· ' + esc(e.servings) + '</small>' : '') + '</button><button class="rm" data-prm="' + key + ':' + ei + '" aria-label="Togli">✕</button></span>'; }
         return '<span class="entry free"><button tabindex="-1">' + esc(e.text) + '</button><button class="rm" data-prm="' + key + ':' + ei + '" aria-label="Togli">✕</button></span>';
       }).join('') + '<button class="add-slot" data-padd="' + key + '" aria-label="Aggiungi a ' + dn + ' ' + ml + '">+</button></div></div>';
     });
@@ -1685,7 +2087,7 @@ function openAddToPlan(r){
         const b = e.target.closest('button'); if(!b) return; const d = b.dataset;
         if(d.w) week = Number(d.w); else if(d.d) day = Number(d.d); else if(d.m) meal = d.m; else if(d.sv) serv = Math.max(1, serv + Number(d.sv));
         else if(d.a === 'no') return close();
-        else if(d.a === 'ok'){ try{ await addToPlan(isoDate(addDays(thisMon, week*7)), day + '-' + meal, {id: uuid(), rid: r.id, servings: serv, text: r.title}); close(); toast('Aggiunta a ' + DAYS[day].toLowerCase() + ', ' + meal); }catch(x){} return; }
+        else if(d.a === 'ok'){ try{ await addToPlan(isoDate(addDays(thisMon, week*7)), day + '-' + meal, {id: uuid(), rid: r.id, vid: r.variantId || null, servings: serv, text: titleWithVariant(r)}); close(); toast('Aggiunta a ' + DAYS[day].toLowerCase() + ', ' + meal); }catch(x){} return; }
         draw();
       });
     });
@@ -1735,14 +2137,14 @@ document.addEventListener('click', async e => {
   if(d.act === 'ai' || t.closest('#btnAI')){ openAI(); return; }
   if(d.act === 'dictate' || t.id === 'btnDictate'){ openAI('dictate'); return; }
   if(d.tab){ setTab(d.tab); return; }
-  if(d.popen){ openDetail(d.popen); return; }
+  if(d.popen){ openDetail(d.popen, d.pvid || null); return; }
   if(d.padd){ openPlanPicker(d.padd); return; }
   if(d.prm){ const [slot, i] = d.prm.split(':'); const arr = S.plan.slots[slot] || []; arr.splice(Number(i), 1); if(!arr.length) delete S.plan.slots[slot]; savePlan(); return; }
   if(d.plan){
     if(d.plan === 'prev' || d.plan === 'next' || d.plan === 'today'){ S.planMonday = d.plan === 'today' ? mondayOf(new Date()) : addDays(S.planMonday, d.plan === 'prev' ? -7 : 7); subscribePlan(); }
     else if(d.plan === 'clear'){ if(await confirmBox('Svuotare il menù di questa settimana?', 'Togli tutti i piatti dal ' + weekLabel(S.planMonday) + '. Le ricette restano nel ricettario.', 'Svuota')){ S.plan.slots = {}; savePlan(); } }
     else if(d.plan === 'toshop'){
-      const items = []; Object.values(S.plan.slots).flat().forEach(e => { const r = e.rid && getR(e.rid); if(r) items.push(...recipeItems(r, e.servings)); });
+      const items = []; Object.values(S.plan.slots).flat().forEach(e => { const r = e.rid && getR(e.rid) && effR(getR(e.rid), e.vid); if(r) items.push(...recipeItems(r, e.servings)); });
       openAddToShop(items, 'Ingredienti di tutti i piatti del ' + weekLabel(S.planMonday));
     }
     return;
@@ -1756,21 +2158,30 @@ document.addEventListener('click', async e => {
   }
   if(t.closest('#btnMenu') || t.closest('#bookBtn')){ openSettings(); return; }
   if(d.st){ settingsAction(t); return; }
+  if(t.closest('#sheetHealth')){ healthPlanAction(t); return; }
   // dettaglio
   if(t.closest('#sheetDetail')){
-    const r = getR(S.openId); if(!r) return;
+    const r0 = getR(S.openId); if(!r0) return;
+    const r = effR(r0, S.variantId);
+    if(d.vtab !== undefined){ S.variantId = d.vtab || null; S.servings = Number(effR(r0, S.variantId).servings) || null; S.checked = new Set(); renderDetail(); return; }
+    if(d.hmeal){ S.healthMeal = d.hmeal; renderDetail(); return; }
     if(d.act === 'close') closeDetail();
-    else if(d.act === 'edit') openEditor(r, false);
+    else if(d.act === 'edit'){ if(S.variantId){ const c = JSON.parse(JSON.stringify(r)); c.variantName = r.variantName; openEditor(c, false, null, {of: r0.id, id: S.variantId}); } else openEditor(r0, false); }
     else if(d.act === 'voiceedit') voiceEdit(false);
+    else if(d.act === 'addvariant') openNewVariant(r0, r);
+    else if(d.act === 'fitplan') openNewVariant(r0, r, 'plan');
+    else if(d.act === 'delvariant') deleteVariant(r0, S.variantId);
+    else if(d.act === 'analyze') analyzeNutrition(r0.id, S.variantId);
+    else if(d.act === 'healthplan') openHealthPlan();
     else if(d.act === 'cook') openCook();
-    else if(d.act === 'toshop'){ if(S.noDb) return toast('Apri il ricettario dal tuo account Claude.'); openAddToShop(recipeItems(r, S.servings || Number(r.servings) || null), r.title + (S.servings ? ', per ' + S.servings + ' ' + (r.servingsUnit || 'porzioni') : '')); }
+    else if(d.act === 'toshop'){ if(S.noDb) return toast('Apri il ricettario dal tuo account Claude.'); openAddToShop(recipeItems(r, S.servings || Number(r.servings) || null), titleWithVariant(r) + (S.servings ? ', per ' + S.servings + ' ' + (r.servingsUnit || 'porzioni') : '')); }
     else if(d.act === 'toplan'){ if(S.noDb) return toast('Apri il ricettario dal tuo account Claude.'); openAddToPlan(r); }
-    else if(d.act === 'fav'){ try{ await S.db.collection('recipes').doc(r.id).update({favorite:!r.favorite, updatedAt:new Date().toISOString()}); }catch(err){ toast('Non sono riuscito a salvare'); } }
+    else if(d.act === 'fav'){ try{ await S.db.collection('recipes').doc(r0.id).update({favorite:!r0.favorite, updatedAt:new Date().toISOString()}); }catch(err){ toast('Non sono riuscito a salvare'); } }
     else if(d.act === 'copy'){ try{ await navigator.clipboard.writeText(recipeAsText(r)); toast('Ricetta copiata: incollala dove vuoi'); }catch(err){ toast('Copia non riuscita'); } }
-    else if(d.act === 'dup'){ const c = JSON.parse(JSON.stringify(r)); delete c.id; c.title = r.title + ' (copia)'; c.photoId = null; c.favorite = false; openEditor(c, true); }
+    else if(d.act === 'dup'){ const c = JSON.parse(JSON.stringify(r)); delete c.id; delete c.variants; delete c.nutrition; c.title = titleWithVariant(r) + ' (copia)'; c.photoId = null; c.favorite = false; openEditor(c, true); }
     else if(d.act === 'del'){
-      if(await confirmBox('Eliminare «' + (r.title || 'questa ricetta') + '»?', 'La ricetta e la sua foto vengono cancellate da tutti i tuoi dispositivi. Non si può annullare.', 'Elimina')){
-        try{ await S.db.collection('recipes').doc(r.id).delete(); if(r.photoId && S.assets){ try{ await S.assets.delete(r.photoId); }catch(x){} } closeDetail(); toast('Ricetta eliminata'); }catch(err){ toast('Non sono riuscito a eliminarla'); }
+      if(await confirmBox('Eliminare «' + (r0.title || 'questa ricetta') + '»?', 'La ricetta' + ((r0.variants || []).length ? ', tutte le sue varianti' : '') + ' e la sua foto vengono cancellate da tutti i tuoi dispositivi. Non si può annullare.', 'Elimina')){
+        try{ await S.db.collection('recipes').doc(r0.id).delete(); if(r0.photoId && S.assets){ try{ await S.assets.delete(r0.photoId); }catch(x){} } closeDetail(); toast('Ricetta eliminata'); }catch(err){ toast('Non sono riuscito a eliminarla'); }
       }
     }
     else if(d.serv){
@@ -1781,13 +2192,13 @@ document.addEventListener('click', async e => {
     else if(d.timer !== undefined){
       const s = (r.steps || [])[Number(d.timer)]; const st = typeof s === 'string' ? {text:s} : s;
       const m = st.timerMin != null && st.timerMin !== '' ? Number(st.timerMin) : detectMinutes(st.text);
-      if(m) startTimer(r.title + ' · passo ' + (Number(d.timer)+1), m);
+      if(m) startTimer(titleWithVariant(r) + ' · passo ' + (Number(d.timer)+1), m);
     }
     return;
   }
   // cucina
   if(d.cook){
-    const r = getR(S.openId);
+    const r = curR();
     if(d.cook === 'close') closeCook();
     else if(d.cook === 'next'){ S.cookIdx++; renderCook(); }
     else if(d.cook === 'prev'){ S.cookIdx = Math.max(0, S.cookIdx - 1); renderCook(); }
@@ -1821,6 +2232,7 @@ document.addEventListener('click', async e => {
 });
 document.addEventListener('input', e => {
   const t = e.target;
+  if(HP && t.dataset && t.dataset.hpv){ const [kind, k] = t.dataset.hpv.split(':'); hpSet(kind, k, {v: t.value === '' ? null : Number(t.value)}); return; }
   if(t.id === 'q'){ S.q = t.value; renderList(); return; }
   if(!S.edit) return;
   const r = S.edit.r, d = t.dataset;
@@ -1845,11 +2257,13 @@ document.addEventListener('keydown', e => {
     const el = document.querySelector('[data-ing="' + (i+1) + '"]'); el && el.focus();
   }
   if(e.key === 'Escape' && T.state === 'open'){ setDock('compact'); return; }
+  if(e.key === 'Escape' && !$('#sheetHealth').classList.contains('hidden') && !$('#modalRoot').lastElementChild){ closeHealthPlan(); return; }
   if(e.key === 'Escape'){
     if($('#modalRoot').lastElementChild){ stopDictation(); $('#modalRoot').lastElementChild.remove(); }
     else if(!$('#cook').classList.contains('hidden')) closeCook();
     else if(S.edit) closeEditor();
     else if(S.openId) closeDetail();
+    else if(!$('#sheetHealth').classList.contains('hidden')) closeHealthPlan();
     else if(!$('#sheetSettings').classList.contains('hidden')) closeSettings();
   }
   if(!$('#cook').classList.contains('hidden')){
@@ -1859,6 +2273,9 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('change', async e => {
   const t = e.target;
+  if(HP && t.id === 'hp_on'){ HP.enabled = t.checked; return; }
+  if(HP && t.id === 'hp_def'){ HP.defaultMeal = t.value; return; }
+  if(HP && t.id === 'hp_tol'){ HP.tolerance = Number(t.value); return; }
   if(t.dataset && t.dataset.sck !== undefined){ const it = S.shop.find(i => i.id === t.dataset.sck); if(it){ it.checked = t.checked; saveShop(); } return; }
   if(t.dataset && t.dataset.chk !== undefined){ const i = Number(t.dataset.chk); t.checked ? S.checked.add(i) : S.checked.delete(i); t.closest('li').classList.toggle('done', t.checked); return; }
   if(t.id === 'e_photo' && S.edit){
@@ -2044,6 +2461,7 @@ async function afterLogin(){
     for(let i = 0; i < 4; i++){ BOOT.books = await store.books.list(); if(BOOT.books.length) break; await new Promise(r => setTimeout(r, 700)); }
     if(!BOOT.books.length){ await store.books.create('Il mio ricettario'); BOOT.books = await store.books.list(); }
     BOOT.profile = await store.profile();
+    try{ const st = await store.getSettings(); S.health = Object.assign(defaultHealth(), (st && st.health) || {}); }catch(x){ S.health = defaultHealth(); }
   }catch(e){ BOOT.started = false; toast('Non riesco a raggiungere il server: controlla la connessione.'); setTimeout(afterLogin, 5000); return; }
   const joined = await handlePendingInvite();
   if(joined) BOOT.books = await store.books.list();
@@ -2092,7 +2510,12 @@ async function checkReadyJobs(){
     const jobs = await store.pendingJobs();
     for(const j of jobs){
       if(S.waitingJobs.has(j.id) || j.status === 'pending') continue;
-      if(j.status === 'error' || j.action === 'edit'){ store.markJobSeen(j.id).catch(() => {}); continue; }
+      if(j.action === 'nutrition' && j.status === 'done' && j.meta && j.meta.recipeId){
+        store.markJobSeen(j.id).catch(() => {});
+        applyNutrition(j.meta.recipeId, j.meta.variantId || null, {items: (j.result && j.result.items) || [], notes: (j.result && j.result.notes) || '', hash: j.meta.hash, at: new Date().toISOString()}).catch(() => {});
+        continue;
+      }
+      if(j.status === 'error' || j.action === 'edit' || j.action === 'nutrition'){ store.markJobSeen(j.id).catch(() => {}); continue; }
       const d = normDraft(j.result); if(j.photo_path) d.photoId = j.photo_path;
       const meta = j.meta || {}; if(meta.url && !d.source) d.source = meta.url;
       const ok = await askBox('Ricetta pronta', '«' + (d.title || 'Nuova ricetta') + '» è stata preparata mentre eri via. Vuoi aprirla per controllarla e salvarla?', 'Apri');
@@ -2133,6 +2556,7 @@ function renderSettings(){
         (owner ? (BOOT.books.filter(x => x.role === 'owner').length > 1 ? '<button class="btn ghost danger" data-st="delbook">Elimina ricettario</button>' : '') : '<button class="btn ghost danger" data-st="leave">Esci da questo ricettario</button>') + '</div>' +
         '<p class="hint">Chi inviti vede e modifica ricette, menù e lista della spesa di questo ricettario. Il link vale 14 giorni.</p>' +
       '</div></section>' +
+      '<section class="section"><h2>Healthy</h2><div class="set-card"><div class="set-line"><span class="grow"><b>Il mio piano alimentare</b><small>' + (healthOn() ? 'Attivo: le ricette mostrano se sono in linea con il piano' : 'Spento') + '</small></span><button class="btn small' + (healthOn() ? '' : ' primary') + '" data-st="health">' + (healthOn() ? 'Modifica' : 'Imposta') + '</button></div><p class="hint">Il piano è solo tuo: anche nei ricettari condivisi gli altri non lo vedono.</p></div></section>' +
       '<section class="section"><h2>Il tuo account</h2><div class="set-card">' +
         '<div class="set-line"><span class="grow"><b>' + esc((BOOT.profile && BOOT.profile.display_name) || '') + '</b><small>' + esc((BOOT.profile && BOOT.profile.email) || '') + '</small></span><button class="btn small" data-st="name">Cambia nome</button></div>' +
         (BOOT.usage != null ? '<div class="set-line"><span class="grow"><b>Assistente AI questo mese</b><small>' + BOOT.usage + (BOOT.usage === 1 ? ' richiesta' : ' richieste') + ' usate</small></span></div>' : '') +
@@ -2168,6 +2592,7 @@ async function settingsAction(btn){
   if(a === 'pw'){ closeSettings(); showAuth('newpw'); return; }
   if(a === 'logout'){ if(!(await confirmBox('Uscire dall\'account?', 'Su questo dispositivo dovrai accedere di nuovo. Le ricette restano salvate.', 'Esci'))) return; try{ Object.keys(localStorage).filter(k => k.startsWith('cache.') || k === 'book').forEach(k => localStorage.removeItem(k)); }catch(e){} await store.auth.signOut(); location.reload(); return; }
   if(a === 'backup'){ openMenu(); return; }
+  if(a === 'health'){ openHealthPlan(); return; }
   if(a === 'install' && BOOT.installEvt){ BOOT.installEvt.prompt(); try{ await BOOT.installEvt.userChoice; }catch(e){} BOOT.installEvt = null; renderSettings(); return; }
 }
 

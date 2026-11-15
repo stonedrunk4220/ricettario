@@ -33,7 +33,7 @@ export function makeStore(cfg) {
     const slots = {};
     rows.slice().sort((a, b) => a.position - b.position).forEach(r => {
       const di = dayIndex(monday, r.day); if (di < 0 || di > 6) return;
-      const k = di + '-' + r.meal; (slots[k] = slots[k] || []).push(r.recipe_id ? { id: r.id, rid: r.recipe_id, servings: r.servings == null ? null : Number(r.servings), text: r.text || '' } : { id: r.id, text: r.text || '' });
+      const k = di + '-' + r.meal; (slots[k] = slots[k] || []).push(r.recipe_id ? { id: r.id, rid: r.recipe_id, vid: r.variant_id || null, servings: r.servings == null ? null : Number(r.servings), text: r.text || '' } : { id: r.id, text: r.text || '' });
     });
     return slots;
   };
@@ -43,7 +43,7 @@ export function makeStore(cfg) {
       const [di, meal] = k.split('-'); if (!MEALS.includes(meal)) return;
       (arr || []).forEach((e, i) => {
         if (!isUuid(e.id)) e.id = uuid();
-        rows.push({ id: e.id, book_id: book, day: addDays(monday, Number(di)), meal, recipe_id: isUuid(e.rid) ? e.rid : null, servings: e.servings == null ? null : Number(e.servings), text: e.rid ? (e.text || null) : String(e.text || ''), position: i });
+        rows.push({ id: e.id, book_id: book, day: addDays(monday, Number(di)), meal, recipe_id: isUuid(e.rid) ? e.rid : null, variant_id: e.rid && e.vid ? String(e.vid) : null, servings: e.servings == null ? null : Number(e.servings), text: e.rid ? (e.text || null) : String(e.text || ''), position: i });
       });
     });
     return rows;
@@ -295,6 +295,19 @@ export function makeStore(cfg) {
     async preview(code) { const { data, error } = await sb.rpc('invite_preview', { p_code: code }); if (error) throw error; return data && data[0]; },
     async accept(code) { const { data, error } = await sb.rpc('accept_invite', { p_code: code }); if (error) throw error; return data; },
   };
+  // ---------- impostazioni personali (piano alimentare) ----------
+  async function getSettings() {
+    const { data, error } = await sb.from('user_settings').select('health').eq('user_id', userId).maybeSingle();
+    if (error) { const c = lsGet('cache.settings.' + userId); return c || {}; }
+    const out = { health: (data && data.health) || null };
+    lsSet('cache.settings.' + userId, out);
+    return out;
+  }
+  async function saveHealth(health) {
+    const { error } = await sb.from('user_settings').upsert({ user_id: userId, health, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+    if (error) throw error;
+    lsSet('cache.settings.' + userId, { health });
+  }
   async function profile() { const { data } = await sb.from('profiles').select('display_name, email').eq('id', userId).single(); return data; }
   async function setName(name) { await sb.from('profiles').update({ display_name: name }).eq('id', userId); }
 
@@ -305,7 +318,7 @@ export function makeStore(cfg) {
   }
 
   return {
-    sb, db, assets, photoUrl, ai, aiUsage, markJobSeen, pendingJobs, jobResult, auth, books, profile, setName, setBook,
+    sb, db, assets, photoUrl, ai, aiUsage, markJobSeen, pendingJobs, jobResult, getSettings, saveHealth, auth, books, profile, setName, setBook,
     get book() { return book; }, get userId() { return userId; },
     onPhotosLoaded(cb) { onPhotos = cb; },
     refreshAll,
