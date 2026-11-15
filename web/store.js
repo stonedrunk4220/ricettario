@@ -210,19 +210,52 @@ export function makeStore(cfg) {
 
   // ---------- Claude (tramite la funzione server) ----------
   async function blobToB64(b) { const s = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); }); return { media_type: b.type || 'image/jpeg', data: String(s).split(',')[1] }; }
-  async function ai(body) {
+  // Il server risponde subito con un "lavoro" e lo completa per conto suo:
+  // se il telefono va in standby, al risveglio l'app ritrova il risultato.
+  async function ai(body, opts = {}) {
     if (body.images) body.images = await Promise.all(body.images.map(blobToB64));
+    body.book_id = book;
     const { data, error } = await sb.functions.invoke('claude', { body });
     if (error) {
       let info = null;
       try { info = error.context && typeof error.context.json === 'function' ? await error.context.json() : null; } catch (e) { /* risposta non json */ }
-      throw { code: (info && info.error) || (error.name === 'FunctionsFetchError' ? 'offline' : 'server'), limit: info && info.limit, detail: info && info.detail };
+      throw { code: (info && info.error) || (error.name === 'FunctionsFetchError' ? 'offline' : 'server'), limit: info && info.limit, detail: (info && info.detail) || String(error.message || '') };
     }
-    if (data && data.image) {
-      const bin = atob(data.image.data); const u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
-      data.imageBlob = new Blob([u8], { type: data.image.media_type });
-    }
-    return data;
+    if (data && data.result) return data;            // risposta immediata (versioni vecchie della funzione)
+    if (!data || !data.job_id) throw { code: 'server', detail: 'risposta senza job_id' };
+    if (opts.onJob) opts.onJob(data.job_id);
+    return waitJob(data.job_id, opts.signal);
+  }
+  function jobResult(row) {
+    return { result: row.result, photoPath: row.photo_path || null, provider: row.provider, jobId: row.id, meta: row.meta };
+  }
+  function waitJob(id, signal) {
+    return new Promise((resolve, reject) => {
+      let over = false, ch = null;
+      const finish = () => { over = true; clearInterval(iv); clearTimeout(to); document.removeEventListener('visibilitychange', onVis); if (ch) sb.removeChannel(ch); };
+      const check = async () => {
+        if (over) return;
+        if (signal && signal.aborted) { finish(); reject({ code: 'cancelled' }); return; }
+        const { data } = await sb.from('ai_jobs').select('id,status,result,photo_path,provider,error,detail,meta').eq('id', id).maybeSingle();
+        if (over || !data) return;
+        if (data.status === 'done') { finish(); resolve(jobResult(data)); }
+        else if (data.status === 'error') { finish(); reject({ code: data.error || 'server', detail: data.detail || '' }); }
+      };
+      const onVis = () => { if (!document.hidden) check(); };
+      document.addEventListener('visibilitychange', onVis);
+      ch = sb.channel('job-' + id).on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'ai_jobs', filter: 'id=eq.' + id }, check).subscribe();
+      const iv = setInterval(check, 1500);
+      const to = setTimeout(() => { finish(); reject({ code: 'timeout' }); }, 240000);
+      if (signal) signal.addEventListener('abort', () => { finish(); reject({ code: 'cancelled' }); });
+      check();
+    });
+  }
+  async function markJobSeen(id) { if (id) await sb.from('ai_jobs').update({ seen: true }).eq('id', id); }
+  // ricette pronte mentre l'app era chiusa o in standby
+  async function pendingJobs() {
+    const since = new Date(Date.now() - 2 * 864e5).toISOString();
+    const { data } = await sb.from('ai_jobs').select('id,action,status,result,photo_path,provider,error,meta,created_at').eq('user_id', userId).eq('seen', false).gte('created_at', since).order('created_at', { ascending: false }).limit(5);
+    return data || [];
   }
   async function aiUsage() {
     const m = new Date(); m.setDate(1); m.setHours(0, 0, 0, 0);
@@ -272,7 +305,7 @@ export function makeStore(cfg) {
   }
 
   return {
-    sb, db, assets, photoUrl, ai, aiUsage, auth, books, profile, setName, setBook,
+    sb, db, assets, photoUrl, ai, aiUsage, markJobSeen, pendingJobs, jobResult, auth, books, profile, setName, setBook,
     get book() { return book; }, get userId() { return userId; },
     onPhotosLoaded(cb) { onPhotos = cb; },
     refreshAll,

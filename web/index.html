@@ -1268,8 +1268,8 @@ function openAI(mode, ctx){
     '<div class="modal-actions"><button class="btn" data-a="no">Annulla</button><button class="btn primary" data-a="go">' + T.go + '</button></div>',
     (m, closeFn) => {
       const ctrl = {aborted:false};
-      m.closest('.modal-back').addEventListener('click', e => { if(e.target === e.currentTarget){ ctrl.aborted = true; stopDictation(); } });
-      m.querySelector('[data-a=no]').onclick = () => { ctrl.aborted = true; stopDictation(); closeFn(); };
+      m.closest('.modal-back').addEventListener('click', e => { if(e.target === e.currentTarget){ ctrl.aborted = true; stopDictation(); if(ctrl.jobId){ S.waitingJobs.delete(ctrl.jobId); store.markJobSeen(ctrl.jobId).catch(() => {}); } } });
+      m.querySelector('[data-a=no]').onclick = () => { ctrl.aborted = true; stopDictation(); if(ctrl.jobId){ S.waitingJobs.delete(ctrl.jobId); store.markJobSeen(ctrl.jobId).catch(() => {}); } closeFn(); };
       m.querySelectorAll('[data-aitab]').forEach(b => b.onclick = () => {
         if(b.dataset.aitab === mode) return;
         const keep = m.querySelector('#ai_txt').value;
@@ -1310,19 +1310,25 @@ function openAI(mode, ctx){
           return;
         }
         btn.disabled = true; btn.innerHTML = '<span class="spin"></span> ' + (isEdit ? 'Applico…' : 'Compilo…');
-        st.textContent = 'L\'assistente ci sta lavorando: di solito servono pochi secondi.';
+        st.textContent = 'Invio all\'assistente…';
+        const onJob = id => {
+          ctrl.jobId = id; S.waitingJobs.add(id);
+          st.innerHTML = 'L\'assistente ci sta lavorando. <b>Puoi anche bloccare il telefono o chiudere l\'app</b>: ' + (isEdit ? 'le modifiche vengono preparate' : 'la ricetta viene preparata') + ' lo stesso e la ritrovi qui.';
+        };
+        const done = () => { if(ctrl.jobId){ S.waitingJobs.delete(ctrl.jobId); store.markJobSeen(ctrl.jobId).catch(() => {}); } };
         try{
           if(isEdit){
-            const res = await aiEdit(ctx.form, txt);
-            if(ctrl.aborted) return;
+            const res = await aiEdit(ctx.form, txt, onJob);
+            done(); if(ctrl.aborted) return;
             closeFn(); ctx.apply(res, txt);
           } else {
-            const draft = await aiDraft([txt, fileText].filter(Boolean).join('\n\n').slice(0, 120000), imgs, mode, url);
-            if(ctrl.aborted) return;
+            const draft = await aiDraft([txt, fileText].filter(Boolean).join('\n\n').slice(0, 120000), imgs, mode, url, {source: mode, transcript: (txt || url).slice(0, 4000), url: url || null}, onJob);
+            done(); if(ctrl.aborted) return;
             closeFn(); openEditor(draft, true, {source: mode, transcript: txt || url, doubts: draft._doubts || []});
             if(draft._imageBlob && S.edit){ S.edit.newPhoto = draft._imageBlob; S.edit.newPhotoUrl = URL.createObjectURL(draft._imageBlob); renderEditor(); }
           }
         }catch(e){
+          done();
           btn.disabled = false; btn.textContent = T.go;
           st.textContent = e && e.code && !['images_unavailable','image_rejected','not_granted'].includes(e.code) ? aiErrorText(e) : e && e.code === 'images_unavailable' ? 'In questa app non posso ricevere immagini: incolla il testo della pagina, oppure apri il ricettario da Chrome (claude.ai) o mandami gli screenshot nella chat di Claude.' : e && e.code === 'image_rejected' ? 'Questa immagine non va bene (troppo grande o troppe immagini): provane un\'altra.' : e && e.code === 'rate_limited' ? 'Troppe richieste ravvicinate: aspetta un minuto e riprova.' : e && e.code === 'not_granted' ? 'Permesso non concesso: puoi comunque fare tutto a mano.' : 'Non ci sono riuscito. Riprova, magari con parole diverse.';
         }
@@ -1343,13 +1349,15 @@ function normDraft(d){
     _changes: Array.isArray(d.changes) ? d.changes.map(String).slice(0,10) : []
   };
 }
-async function aiDraft(text, images, kind, url){
+async function aiDraft(text, images, kind, url, meta, onJob){
   const res = kind === 'link'
-    ? await store.ai({action:'link', url, text, images: images || []})
-    : await store.ai({action:'draft', kind: kind === 'dictate' ? 'dictate' : 'create', text, images: images || []});
+    ? await store.ai({action:'link', url, text, images: images || [], meta}, {onJob})
+    : await store.ai({action:'draft', kind: kind === 'dictate' ? 'dictate' : 'create', text, images: images || [], meta}, {onJob});
   const d = normDraft(res.result);
   if(url && !d.source) d.source = url;
+  if(res.photoPath) d.photoId = res.photoPath;
   if(res.imageBlob) d._imageBlob = res.imageBlob;
+  d._jobId = res.jobId || null;
   return d;
 }
 function formToPlain(r){
@@ -1359,9 +1367,10 @@ function formToPlain(r){
     difficulty: r.difficulty || 'facile', ingredients: (r.ingredients || []).map(ingToText).filter(t => t.trim()),
     steps: (r.steps || []).map(s => typeof s === 'string' ? s : s.text).filter(t => String(t).trim()), notes: r.notes || '', source: r.source || ''};
 }
-async function aiEdit(form, instruction){
-  const res = await store.ai({action:'edit', form: formToPlain(form), instruction});
-  return normDraft(res.result);
+async function aiEdit(form, instruction, onJob){
+  const res = await store.ai({action:'edit', form: formToPlain(form), instruction, meta: {source: 'modifica'}}, {onJob});
+  const d = normDraft(res.result); d._jobId = res.jobId || null;
+  return d;
 }
 function voiceEdit(fromEditor){
   let form, title;
@@ -1926,7 +1935,10 @@ function aiErrorText(e){
   if(c === 'offline') return 'Sembra che tu sia offline: controlla la connessione e riprova.';
   if(c === 'not_signed_in') return 'La sessione è scaduta: esci e rientra.';
   if(c === 'invalid_json') return 'L\'assistente ha risposto in modo inatteso: riprova.';
-  return 'Non ci sono riuscito. Riprova tra poco.';
+  if(c === 'timeout') return 'L\'assistente ci sta mettendo troppo: riprova tra poco.';
+  if(c === 'too_many_jobs') return 'Hai già alcune richieste in preparazione: aspetta che finiscano.';
+  if(c === 'cancelled') return '';
+  return 'Non ci sono riuscito. Riprova tra poco.' + (e && e.detail ? ' (Dettaglio: ' + String(e.detail).slice(0, 160) + ')' : '');
 }
 
 /* --- inviti --- */
@@ -2011,7 +2023,9 @@ function showAuth(mode){
       afterLogin();
     }catch(err){
       const m = String(err && err.message || '');
-      msg.textContent = /invalid login/i.test(m) ? 'Email o password non corrette.' : /not confirmed/i.test(m) ? 'Devi prima confermare l\'indirizzo: cerca la mail di conferma (anche nello spam).' : /already registered|already exists/i.test(m) ? 'Esiste già un account con questa email: prova ad accedere.' : /rate limit|too many/i.test(m) ? 'Troppi tentativi: aspetta qualche minuto e riprova.' : /password/i.test(m) ? 'Password non valida: usane una più lunga o più varia.' : 'Qualcosa non ha funzionato: controlla la connessione e riprova.';
+      const generic = 'Qualcosa non ha funzionato: controlla la connessione e riprova.';
+      msg.textContent = /invalid login/i.test(m) ? 'Email o password non corrette.' : /not confirmed/i.test(m) ? 'Devi prima confermare l\'indirizzo: cerca la mail di conferma (anche nello spam).' : /already registered|already exists/i.test(m) ? 'Esiste già un account con questa email: prova ad accedere.' : /rate limit|too many/i.test(m) ? 'Troppi tentativi: aspetta qualche minuto e riprova.' : /password/i.test(m) ? 'Password non valida: usane una più lunga o più varia.' : generic;
+      if(msg.textContent === generic && m) msg.textContent += ' Dettaglio: ' + m.slice(0, 160);
       btn.disabled = false; btn.textContent = lbl;
     }
   };
@@ -2045,7 +2059,7 @@ function selectBook(id){
   if(S.openId) closeDetail();
   S.recipes = []; S.loaded = false; S.shop = []; S.shopLoaded = false; S.plan = {slots:{}}; S.planLoaded = false; S.lastSig = null;
   store.setBook(id);
-  if(!BOOT.dataStarted){ BOOT.dataStarted = true; startData(); }
+  if(!BOOT.dataStarted){ BOOT.dataStarted = true; startData(); scheduleRecovery(1500); }
   renderList(); renderShop(); renderPlan(); updateBadge();
 }
 function startData(){
@@ -2067,6 +2081,29 @@ function startData(){
     if(!$('#cook').classList.contains('hidden')) renderCook();
   }, () => { clearTimeout(timer); S.loaded = true; S.unreachable = true; renderList(); });
 }
+
+/* --- ricette preparate mentre l'app era chiusa o in standby --- */
+let recovering = false, recoverT = null;
+function scheduleRecovery(ms){ clearTimeout(recoverT); recoverT = setTimeout(checkReadyJobs, ms || 600); }
+async function checkReadyJobs(){
+  if(!store || !BOOT.started || !BOOT.book || recovering || S.edit || document.hidden) return;
+  recovering = true;
+  try{
+    const jobs = await store.pendingJobs();
+    for(const j of jobs){
+      if(S.waitingJobs.has(j.id) || j.status === 'pending') continue;
+      if(j.status === 'error' || j.action === 'edit'){ store.markJobSeen(j.id).catch(() => {}); continue; }
+      const d = normDraft(j.result); if(j.photo_path) d.photoId = j.photo_path;
+      const meta = j.meta || {}; if(meta.url && !d.source) d.source = meta.url;
+      const ok = await askBox('Ricetta pronta', '«' + (d.title || 'Nuova ricetta') + '» è stata preparata mentre eri via. Vuoi aprirla per controllarla e salvarla?', 'Apri');
+      await store.markJobSeen(j.id).catch(() => {});
+      if(ok) openEditor(d, true, {source: meta.source || 'create', transcript: meta.transcript || '', doubts: d._doubts || []});
+      break;
+    }
+  }catch(e){ /* nessun problema: riprova alla prossima apertura */ }
+  recovering = false;
+}
+document.addEventListener('visibilitychange', () => { if(!document.hidden) scheduleRecovery(900); });
 
 /* --- impostazioni --- */
 async function openSettings(){
@@ -2144,8 +2181,10 @@ async function boot(){
   captureInvite();
   if('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
   if(!cfgOk()){ showSetupNeeded(); return; }
+  try{ CFG.supabaseUrl = new URL(String(CFG.supabaseUrl).trim()).origin; }catch(e){}
   store = makeStore(CFG);
   store.onPhotosLoaded(() => { renderList(); if(S.openId) renderDetail(); if(S.edit) renderEditor(); });
+  S.waitingJobs = new Set();
   S.db = store.db; S.assets = store.assets; S.sample = {server: true}; S.sampleImages = true; S.sampleMaxImages = 4; S.downloads = localDownloads;
   const d = makeDictation(); if(d) setupDictation(d);
   store.auth.onChange(ev => {
