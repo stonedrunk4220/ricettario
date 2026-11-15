@@ -558,6 +558,17 @@ header.top{padding-top:env(safe-area-inset-top)}
 .hp-in{display:flex;align-items:center;gap:4px;flex:none}
 .hp-in .inp{width:76px;text-align:right;padding:8px 10px;font-variant-numeric:tabular-nums}
 .hp-in span{font-size:12.5px;color:var(--muted);min-width:28px}
+.hp-import{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:var(--r);border:1px dashed color-mix(in srgb,var(--accent) 55%,transparent);background:color-mix(in srgb,var(--accent) 7%,var(--glass));margin-bottom:14px}
+.hp-import .btn{align-self:flex-start}
+.hp-imp-t{display:flex;gap:10px;align-items:flex-start}
+.hp-imp-t>.i{color:var(--accent);flex:none;margin-top:2px}
+.hp-imp-t small{display:block;color:var(--muted);font-size:13px;margin-top:2px;line-height:1.4}
+.hp-imp-t small .i{width:14px;height:14px;color:var(--accent);vertical-align:-2px}
+.hp-import.done{border-style:solid}
+.hp-doubts{margin:0;padding-left:22px;font-size:13px;color:var(--muted)}
+.hp-imp-a{display:flex;gap:6px;flex-wrap:wrap}
+.hp-ai .ai-dot .i{width:14px;height:14px;color:var(--accent);vertical-align:-2px}
+.hp-ai .hp-in .inp{border-color:color-mix(in srgb,var(--accent) 50%,transparent);background:color-mix(in srgb,var(--accent) 6%,transparent)}
 .hp-copy{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 #sheetHealth .sheet-content{padding-bottom:28px}
 /* ===== Colore d'accento a scelta ===== */
@@ -1302,13 +1313,19 @@ function renderHealthPlan(){
   const m = HP.tab;
   const row = (kind, k, label, hint, unit) => {
     const t = hpVal(kind, k), mode = (t && t.mode) || DEFAULT_MODE[k] || 'max';
-    return '<div class="hp-row"><div class="hp-l"><b>' + label + '</b>' + (hint ? '<small>' + hint + '</small>' : '') + '</div>' +
+    const ai = HP.ai && HP.ai.has(m + ':' + kind + ':' + k);
+    return '<div class="hp-row' + (ai ? ' hp-ai' : '') + '"><div class="hp-l"><b>' + label + (ai ? ' <span class="ai-dot" title="Compilato dall\'AI">' + IC.spark + '</span>' : '') + '</b>' + (hint ? '<small>' + hint + '</small>' : '') + '</div>' +
       '<button class="hp-mode" data-hpmode="' + kind + ':' + k + '" aria-label="' + (mode === 'min' ? 'Almeno' : 'Al massimo') + ', tocca per cambiare">' + (mode === 'min' ? '≥ almeno' : '≤ max') + '</button>' +
       '<label class="hp-in"><input class="inp" type="number" inputmode="decimal" min="0" step="any" data-hpv="' + kind + ':' + k + '" value="' + (t && t.v != null ? esc(t.v) : '') + '" placeholder="—" aria-label="' + label + ' (' + unit + ')"><span>' + unit + '</span></label></div>';
   };
   $('#sheetHealth').innerHTML =
     '<div class="sheet-bar"><div class="sheet-bar-inner"><button class="btn icon-btn ghost" data-hp="close" aria-label="Chiudi">' + IC.back + '</button><strong style="font-size:17px">Il mio piano alimentare</strong><div class="spacer"></div></div></div>' +
     '<div class="sheet-content">' +
+      (HP.importInfo
+        ? '<div class="hp-import done"><div class="hp-imp-t">' + IC.spark + '<div><b>Piano compilato dall\'AI</b><small>' + esc(HP.importInfo.summary || 'Ho riempito i valori dei pasti che ho trovato.') + ' Controlla i valori segnati con ' + IC.spark + ' in ogni pasto, poi premi «Salva il piano».</small></div></div>' +
+          (HP.importInfo.doubts && HP.importInfo.doubts.length ? '<ul class="hp-doubts">' + HP.importInfo.doubts.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '') +
+          '<div class="hp-imp-a"><button class="btn small" data-hp="import">Importa di nuovo</button><button class="btn small ghost" data-hp="dismissai">Ok, chiudi</button></div></div>'
+        : '<div class="hp-import"><div class="hp-imp-t">' + IC.spark + '<div><b>Compila dal tuo piano</b><small>Carica il PDF o la foto della dieta, incolla il testo o dettala: l\'AI riempie i valori di ogni pasto e tu li controlli.</small></div></div><button class="btn small primary" data-hp="import">Importa il piano</button></div>') +
       '<label class="switch-row"><span><b>Attiva Healthy</b><small>Le ricette mostrano se sono in linea con il tuo piano, con i valori verdi, gialli o rossi accanto agli ingredienti.</small></span><input type="checkbox" class="switch" id="hp_on"' + (HP.enabled ? ' checked' : '') + '></label>' +
       '<div class="field"><span class="lbl">Quantità per una porzione al pasto</span><div class="seg" role="tablist">' + MEAL_LIST.map(([k, l]) => '<button role="tab" data-hptab="' + k + '" aria-pressed="' + (k === m) + '">' + l + '</button>').join('') + '</div>' +
         '<span class="hint">Scrivi solo i valori che ti servono; i campi vuoti non vengono controllati. «≤ max» segnala quando sfori, «≥ almeno» quando ne manca.</span></div>' +
@@ -1345,6 +1362,8 @@ function hpClean(h){
 async function healthPlanAction(t){
   const d = t.dataset;
   if(d.hp === 'close') return closeHealthPlan();
+  if(d.hp === 'import') return openPlanImport();
+  if(d.hp === 'dismissai'){ HP.importInfo = null; renderHealthPlan(); return; }
   if(d.hptab){ HP.tab = d.hptab; renderHealthPlan(); return; }
   if(d.hpmode){ const [kind, k] = d.hpmode.split(':'); const cur = hpVal(kind, k); hpSet(kind, k, {mode: ((cur && cur.mode) || DEFAULT_MODE[k] || 'max') === 'min' ? 'max' : 'min'}); renderHealthPlan(); return; }
   if(d.hpcopy){ HP.meals[HP.tab] = JSON.parse(JSON.stringify(HP.meals[d.hpcopy] || {})); renderHealthPlan(); toast('Valori copiati: puoi modificarli'); return; }
@@ -1354,6 +1373,102 @@ async function healthPlanAction(t){
     try{ await store.saveHealth(clean); S.health = clean; closeHealthPlan(); toast(clean.enabled ? 'Piano salvato: Healthy è attivo' : 'Piano salvato'); renderList(); if(S.openId) renderDetail(); if(!$('#sheetSettings').classList.contains('hidden')) renderSettings(); }
     catch(e){ t.disabled = false; toast('Non sono riuscito a salvare il piano.' + (e && e.message ? ' (' + e.message + ')' : '')); }
   }
+}
+/* --- importazione del piano dall'AI (PDF, foto, testo, dettatura) --- */
+function applyPlanImport(res){
+  if(!HP) openHealthPlan();
+  res = res && typeof res === 'object' ? res : {};
+  const meals = res.meals && typeof res.meals === 'object' ? res.meals : {};
+  const ai = new Set(), filled = [];
+  const validK = {groups: FOOD_GROUPS.map(g => g[0]), macros: MACROS.map(x => x[0])};
+  MEAL_LIST.forEach(([m]) => {
+    const src = meals[m]; if(!src || typeof src !== 'object') return;
+    const out = {};
+    ['groups', 'macros'].forEach(kind => {
+      const bag = {};
+      Object.entries(src[kind] || {}).forEach(([k, t]) => {
+        if(!validK[kind].includes(k)) return;
+        const v = Math.round(Number(t && typeof t === 'object' ? t.v : t));
+        if(!(v > 0) || v > 20000) return;
+        bag[k] = {v, mode: t && (t.mode === 'min' || t.mode === 'max') ? t.mode : (DEFAULT_MODE[k] || 'max')};
+        ai.add(m + ':' + kind + ':' + k);
+      });
+      if(Object.keys(bag).length) out[kind] = bag;
+    });
+    if(Object.keys(out).length){ HP.meals[m] = out; filled.push(m); }
+  });
+  if(!filled.length){ toast('Non ho trovato valori utili nel piano: prova con una foto più nitida o scrivi i pasti.'); return false; }
+  HP.ai = ai; HP.enabled = true;
+  if(!filled.includes(HP.tab)) HP.tab = filled.includes(HP.defaultMeal) ? HP.defaultMeal : filled[0];
+  const names = filled.map(m => (MEAL_LIST.find(x => x[0] === m) || ['', m])[1].toLowerCase());
+  HP.importInfo = {summary: (String(res.summary || '').slice(0, 300) || '') + (res.summary ? ' ' : '') + 'Pasti compilati: ' + names.join(', ') + '.', doubts: Array.isArray(res.doubts) ? res.doubts.map(String).slice(0, 5) : []};
+  renderHealthPlan(); $('#sheetHealth').scrollTop = 0;
+  return true;
+}
+function openPlanImport(){
+  if(!S.sample){ toast('Accedi al ricettario per usare l\'assistente AI.'); return; }
+  const atts = [];
+  modal(
+    '<h3>Importa il piano alimentare</h3>' +
+    '<p>Allega il PDF o le foto della dieta (anche scritta a mano), incolla il testo, oppure dettala: «a pranzo 80 grammi di pasta, 150 di pollo, verdure a volontà, un cucchiaio d\'olio…». L\'AI compila i valori di ogni pasto e tu li controlli prima di salvare.</p>' +
+    micRowHtml(false) +
+    '<textarea class="inp" id="ai_txt" rows="7" placeholder="Es. Colazione: 200 ml latte parzialmente scremato, 30 g fette biscottate, 10 g marmellata. Pranzo: 80 g pasta o riso, 150 g carne bianca, verdure a volontà, 10 g olio…"></textarea>' +
+    '<div class="partial" id="dict_partial" aria-live="polite"></div>' +
+    '<div class="attach-row"><span class="btn small file-btn">' + IC.clip + ' PDF, foto o file<input type="file" id="ai_img" accept="' + FILE_ACCEPT + '" multiple aria-label="Aggiungi il PDF o le foto del piano"></span><span class="hint">PDF, foto, Word, testo</span></div><div class="atts" id="ai_atts"></div>' +
+    '<div id="ai_status" class="hint" aria-live="polite"></div>' +
+    '<div class="modal-actions"><button class="btn" data-a="no">Annulla</button><button class="btn primary" data-a="go">Compila il piano</button></div>',
+    (m, closeFn) => {
+      const ctrl = {aborted: false};
+      const cancel = () => { ctrl.aborted = true; stopDictation(); if(ctrl.jobId){ S.waitingJobs.delete(ctrl.jobId); store.markJobSeen(ctrl.jobId).catch(() => {}); } };
+      m.closest('.modal-back').addEventListener('click', e => { if(e.target === e.currentTarget) cancel(); });
+      m.querySelector('[data-a=no]').onclick = () => { cancel(); closeFn(); };
+      const db = m.querySelector('#dict_btn');
+      if(db) db.onclick = () => { if(S.dict.active()) stopDictation(); else startDictation(); };
+      const drawAtts = () => {
+        const box = m.querySelector('#ai_atts');
+        box.innerHTML = atts.map((a, i) => '<span class="att' + (a.error ? ' err' : '') + '">' +
+          (a.loading ? '<span class="spin"></span>' : a.thumb ? '<img src="' + a.thumb + '" alt="">' : '<span class="att-ic">' + esc((a.ext || '?').slice(0, 4).toUpperCase()) + '</span>') +
+          '<span class="att-t"><b>' + esc(a.name) + '</b><small>' + esc(a.loading ? 'Leggo il file…' : a.error || a.label) + '</small></span><button data-rmatt="' + i + '" aria-label="Togli ' + esc(a.name) + '">✕</button></span>').join('');
+      };
+      m.addEventListener('click', e => { const b = e.target.closest('[data-rmatt]'); if(b){ const a = atts.splice(Number(b.dataset.rmatt), 1)[0]; if(a && a.thumb) URL.revokeObjectURL(a.thumb); drawAtts(); } });
+      const fi = m.querySelector('#ai_img');
+      fi.onchange = async () => {
+        const files = [...fi.files]; fi.value = ''; if(!files.length) return;
+        for(const f of files.slice(0, 6)){
+          const a = {name: f.name || 'file', ext: (f.name || '').split('.').pop(), loading: true}; atts.push(a); drawAtts();
+          try{ Object.assign(a, await readAttachment(f)); if(a.images && a.images[0]) a.thumb = URL.createObjectURL(a.images[0]); }
+          catch(err){ a.error = err && err.message && err.message.length < 200 ? err.message : 'Non sono riuscito a leggere questo file.'; }
+          a.loading = false; drawAtts();
+        }
+      };
+      m.querySelector('[data-a=go]').onclick = async ev => {
+        const btn = ev.currentTarget, st = m.querySelector('#ai_status');
+        await stopDictation();
+        const txt = m.querySelector('#ai_txt').value.trim();
+        if(atts.some(a => a.loading)){ st.textContent = 'Aspetta un attimo: sto ancora leggendo i file.'; return; }
+        const ok = atts.filter(a => !a.error);
+        const imgs = ok.flatMap(a => a.images || []).slice(0, Math.max(4, S.sampleMaxImages || 0));
+        const fileText = ok.filter(a => a.text).map(a => '--- Contenuto del file «' + a.name + '» ---\n' + a.text).join('\n\n');
+        if(!txt && !imgs.length && !fileText){ st.textContent = 'Allega il piano, incollalo o dettalo.'; return; }
+        btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Compilo…';
+        st.textContent = 'Invio all\'assistente…';
+        try{
+          const res = await store.ai({action: 'plan', text: [txt, fileText].filter(Boolean).join('\n\n').slice(0, 120000), images: imgs, meta: {source: 'piano'}}, {onJob: id => {
+            ctrl.jobId = id; S.waitingJobs.add(id);
+            st.innerHTML = 'L\'assistente sta leggendo il piano. <b>Puoi anche bloccare il telefono</b>: lo ritrovi pronto quando torni.';
+          }});
+          if(ctrl.jobId){ S.waitingJobs.delete(ctrl.jobId); store.markJobSeen(ctrl.jobId).catch(() => {}); }
+          if(ctrl.aborted) return;
+          if(applyPlanImport(res.result)){ closeFn(); toast('Piano compilato: controlla e salva'); }
+          else { btn.disabled = false; btn.textContent = 'Compila il piano'; st.textContent = 'Non ho trovato valori utili: prova con una foto più nitida o scrivi i pasti.'; }
+        }catch(e){
+          if(ctrl.jobId){ S.waitingJobs.delete(ctrl.jobId); store.markJobSeen(ctrl.jobId).catch(() => {}); }
+          btn.disabled = false; btn.textContent = 'Compila il piano';
+          st.textContent = e && e.code ? aiErrorText(e) : 'Non ci sono riuscito. Riprova, magari con una foto più nitida.';
+        }
+      };
+      setTimeout(() => { if(!S.dict) m.querySelector('#ai_txt').focus({preventScroll: true}); }, 60);
+    });
 }
 function planInstruction(r){
   const meal = mealFor(r), mealName = (MEAL_LIST.find(x => x[0] === meal) || ['', meal])[1].toLowerCase();
@@ -2584,7 +2699,7 @@ document.addEventListener('click', async e => {
 });
 document.addEventListener('input', e => {
   const t = e.target;
-  if(HP && t.dataset && t.dataset.hpv){ const [kind, k] = t.dataset.hpv.split(':'); hpSet(kind, k, {v: t.value === '' ? null : Number(t.value)}); return; }
+  if(HP && t.dataset && t.dataset.hpv){ const [kind, k] = t.dataset.hpv.split(':'); if(HP.ai){ HP.ai.delete(HP.tab + ':' + kind + ':' + k); const row = t.closest('.hp-ai'); if(row){ row.classList.remove('hp-ai'); const dot = row.querySelector('.ai-dot'); dot && dot.remove(); } } hpSet(kind, k, {v: t.value === '' ? null : Number(t.value)}); return; }
   if(t.id === 'q'){ S.q = t.value; renderList(); return; }
   if(t.id === 'pt_in'){ P.q = t.value; P.acIdx = 0; drawAc(); return; }
   if(!S.edit) return;
@@ -2877,7 +2992,13 @@ async function checkReadyJobs(){
         applyNutrition(j.meta.recipeId, j.meta.variantId || null, {items: (j.result && j.result.items) || [], notes: (j.result && j.result.notes) || '', hash: j.meta.hash, at: new Date().toISOString()}).catch(() => {});
         continue;
       }
-      if(j.status === 'error' || j.action === 'edit' || j.action === 'nutrition'){ store.markJobSeen(j.id).catch(() => {}); continue; }
+      if(j.action === 'plan' && j.status === 'done'){
+        const ok = await askBox('Piano alimentare pronto', 'Il tuo piano è stato letto mentre eri via. Vuoi aprirlo per controllare i valori e salvarlo?', 'Apri');
+        await store.markJobSeen(j.id).catch(() => {});
+        if(ok){ openHealthPlan(); applyPlanImport(j.result); }
+        break;
+      }
+      if(j.status === 'error' || j.action === 'edit' || j.action === 'nutrition' || j.action === 'plan'){ store.markJobSeen(j.id).catch(() => {}); continue; }
       const d = normDraft(j.result); if(j.photo_path) d.photoId = j.photo_path;
       const meta = j.meta || {}; if(meta.url && !d.source) d.source = meta.url;
       const ok = await askBox('Ricetta pronta', '«' + (d.title || 'Nuova ricetta') + '» è stata preparata mentre eri via. Vuoi aprirla per controllarla e salvarla?', 'Apri');
