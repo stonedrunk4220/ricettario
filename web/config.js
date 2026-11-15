@@ -5,7 +5,7 @@
 // =====================================================================
 window.RICETTARIO_CONFIG = {
   // Supabase → Project Settings → Data API → Project URL  (es. https://abcdefgh.supabase.co)
-  supabaseUrl: 'https://usawqpipdrtogzkvkfdw.supabase.co/rest/v1/',
+  supabaseUrl: 'https://usawqpipdrtogzkvkfdw.supabase.co',
   // Supabase → Project Settings → API Keys → Publishable key  (inizia con sb_publishable_)
   supabaseAnonKey: 'sb_publishable_EXl8Z7vKisVQlarLTnWZMQ_cyEIkG9g'
 };
