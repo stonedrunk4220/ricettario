@@ -33,7 +33,7 @@ export function makeStore(cfg) {
     const slots = {};
     rows.slice().sort((a, b) => a.position - b.position).forEach(r => {
       const di = dayIndex(monday, r.day); if (di < 0 || di > 6) return;
-      const k = di + '-' + r.meal; (slots[k] = slots[k] || []).push(r.recipe_id ? { id: r.id, rid: r.recipe_id, vid: r.variant_id || null, servings: r.servings == null ? null : Number(r.servings), text: r.text || '' } : { id: r.id, text: r.text || '' });
+      const k = di + '-' + r.meal; (slots[k] = slots[k] || []).push(r.recipe_id || r.base_id ? { id: r.id, rid: r.recipe_id || r.base_id, vid: r.variant_id || null, servings: r.servings == null ? null : Number(r.servings), text: r.text || '' } : { id: r.id, text: r.text || '' });
     });
     return slots;
   };
@@ -43,7 +43,7 @@ export function makeStore(cfg) {
       const [di, meal] = k.split('-'); if (!MEALS.includes(meal)) return;
       (arr || []).forEach((e, i) => {
         if (!isUuid(e.id)) e.id = uuid();
-        rows.push({ id: e.id, book_id: book, day: addDays(monday, Number(di)), meal, recipe_id: isUuid(e.rid) ? e.rid : null, variant_id: e.rid && e.vid ? String(e.vid) : null, servings: e.servings == null ? null : Number(e.servings), text: e.rid ? (e.text || null) : String(e.text || ''), position: i });
+        rows.push({ id: e.id, book_id: book, day: addDays(monday, Number(di)), meal, recipe_id: isUuid(e.rid) ? e.rid : null, base_id: typeof e.rid === 'string' && e.rid.startsWith('base-') ? e.rid : null, variant_id: e.rid && e.vid ? String(e.vid) : null, servings: e.servings == null ? null : Number(e.servings), text: e.rid ? (e.text || null) : String(e.text || ''), position: i });
       });
     });
     return rows;

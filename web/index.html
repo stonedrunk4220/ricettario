@@ -16,6 +16,7 @@
 <meta name="apple-mobile-web-app-title" content="Ricettario">
 <script src="config.js"></script>
 <script src="ingredienti.js"></script>
+<script src="ricette-base.js"></script>
 <script>try{var a=localStorage.getItem("accent");if(a&&a!=="pomodoro")document.documentElement.setAttribute("data-accent",a)}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -634,6 +635,19 @@ svg.i{filter:url(#sketch);stroke-width:1.9}
 .pc.miss{color:var(--bad, #C2412F);background:color-mix(in srgb,var(--bad, #C2412F) 12%,transparent)}
 .pc.miss::before{content:"✗"}
 .pt-ai{display:flex;justify-content:center;margin-top:18px}
+
+/* ===== Ricette base ===== */
+.base-tag{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.base-tag svg.i{width:14px;height:14px}
+.pm-title .base-tag{font-family:var(--body);margin-left:4px;vertical-align:2px}
+.card.is-base{border-style:dashed}
+.grid-h{grid-column:1/-1;font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-family:var(--body);font-weight:700;margin:10px 0 -2px 2px}
+.grid-note{grid-column:1/-1;color:var(--muted);font-size:14px;background:color-mix(in srgb,var(--accent) 8%,transparent);border-radius:12px;padding:10px 12px}
+.base-banner{display:flex;gap:10px;align-items:flex-start;background:color-mix(in srgb,var(--accent) 9%,var(--glass));border:1px dashed color-mix(in srgb,var(--accent) 45%,transparent);border-radius:var(--r);padding:12px 14px;font-size:14.5px}
+.base-banner svg.i{color:var(--accent);margin-top:1px}
+.pick-h{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:8px 0 2px 2px}
+.pt-base{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer}
+.pt-base input{accent-color:var(--accent);width:16px;height:16px}
 @media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
 </style>
 </head>
@@ -740,7 +754,8 @@ const S = {
   openId:null, servings:null, checked:new Set(),
   edit:null, timers:[], cookIdx:0, wakeLock:null,
   tab:'ricette', shop:[], shopLoaded:false, plan:{slots:{}}, planKey:null, planLoaded:false, planMonday:mondayOf(new Date()), dict:null, dictState:'idle',
-  health:null, healthMeal:null, variantId:null, analyzing:new Set(), waitingJobs:new Set()
+  health:null, healthMeal:null, variantId:null, analyzing:new Set(), waitingJobs:new Set(),
+  showBase: (() => { try{ return localStorage.getItem('showBase') !== '0'; }catch(e){ return true; } })()
 };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -905,6 +920,7 @@ function confirmBox(title, msg, okLabel){
 /* ---------- Lista ---------- */
 function filtered(){
   const q = S.q.trim().toLowerCase();
+  if(S.filter === 'base') return [];
   let list = S.recipes.slice();
   if(S.filter === 'fav') list = list.filter(r => r.favorite);
   else if(S.filter.startsWith('cat:')) list = list.filter(r => (r.category || 'Senza categoria') === S.filter.slice(4));
@@ -927,6 +943,7 @@ function renderChips(){
   const items = [['all','Tutte (' + S.recipes.length + ')']];
   if(favN) items.push(['fav','★ Preferite (' + favN + ')']);
   cats.forEach(c => items.push(['cat:' + c, c + ' (' + S.recipes.filter(r => (r.category||'Senza categoria') === c).length + ')']));
+  if(baseOn()) items.push(['base', 'Ricette base (' + visibleBase().length + ')']);
   if(!items.some(i => i[0] === S.filter)) S.filter = 'all';
   $('#chips').innerHTML = items.map(([k,l]) => '<button class="chip" data-f="' + esc(k) + '" aria-pressed="' + (S.filter === k) + '">' + esc(l) + '</button>').join('');
 }
@@ -943,28 +960,89 @@ function renderList(){
   const grid = $('#grid');
   if(!S.loaded){ grid.innerHTML = '<div class="empty"><div class="spin"></div><p>Carico le tue ricette…</p></div>'; return; }
   const list = filtered();
-  if(!S.recipes.length){
-    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">' + doodle('pot') + '<h2>Il ricettario è vuoto</h2><p>Scrivi la tua prima ricetta, dettala a voce, oppure incolla un testo o fotografa un foglio scritto a mano: l\'assistente AI la trasforma in una ricetta ordinata.</p><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button class="btn primary" data-act="new">Nuova ricetta</button><button class="btn" data-act="dictate">Detta una ricetta</button><button class="btn" data-act="ai">Crea con l\'AI</button></div></div>';
+  const q = S.q.trim();
+  const bases = S.filter === 'base' ? filterBase(q) : (q && (S.filter === 'all') ? filterBase(q) : []);
+  if(!S.recipes.length && S.filter !== 'base' && !q){
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">' + doodle('pot') + '<h2>Il ricettario è vuoto</h2><p>Scrivi la tua prima ricetta, dettala a voce, oppure incolla un testo o fotografa un foglio scritto a mano: l\'assistente AI la trasforma in una ricetta ordinata.' + (baseOn() ? ' Intanto puoi usare le ' + visibleBase().length + ' ricette base incluse.' : '') + '</p><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button class="btn primary" data-act="new">Nuova ricetta</button><button class="btn" data-act="dictate">Detta una ricetta</button>' + (baseOn() ? '<button class="btn" data-f="base">Sfoglia le ricette base</button>' : '<button class="btn" data-act="ai">Crea con l\'AI</button>') + '</div></div>';
     return;
   }
-  if(!list.length){ grid.innerHTML = '<div class="empty" style="grid-column:1/-1">' + doodle('search') + '<p>Nessuna ricetta corrisponde alla ricerca.</p></div>'; return; }
+  if(!list.length && !bases.length){ grid.innerHTML = '<div class="empty" style="grid-column:1/-1">' + doodle('search') + '<p>Nessuna ricetta corrisponde alla ricerca.</p></div>'; return; }
   const TINTS = ['#4E8F6C','#C98A12','#C3613F','#6A7FB0','#8C6BB0','#3F8A8C','#A0703F'];
   const tint = t => { let h = 0; for(const c of String(t || '')) h = (h * 31 + c.charCodeAt(0)) >>> 0; return TINTS[h % TINTS.length]; };
-  const sig = list.map(r => r.id).join(',') + '|' + S.filter + '|' + S.q;
+  const sig = list.map(r => r.id).join(',') + '|' + bases.length + '|' + S.filter + '|' + S.q;
   if(sig !== S.lastSig){ S.lastSig = sig; grid.classList.add('stagger'); clearTimeout(S.stT); S.stT = setTimeout(() => grid.classList.remove('stagger'), 900); }
   let ci = 0;
-  grid.innerHTML = list.map(r => {
+  const card = r => {
     const t = totalMin(r);
     const th = r.photoId ? '<img src="' + esc(photoUrl(r.photoId)) + '" alt="" loading="lazy">' : esc((r.title || '?').trim().charAt(0).toUpperCase());
-    return '<button class="card" style="--i:' + Math.min(ci++, 12) + '" data-open="' + esc(r.id) + '"><div class="thumb" style="--tint:' + tint(r.title) + '">' + th + '</div><div class="card-body">' +
+    return '<button class="card' + (r.isBase ? ' is-base' : '') + '" style="--i:' + Math.min(ci++, 12) + '" data-open="' + esc(r.id) + '"><div class="thumb" style="--tint:' + tint(r.title) + '">' + th + '</div><div class="card-body">' +
       '<div class="card-title">' + (r.favorite ? '<span class="fav">★</span> ' : '') + esc(r.title || 'Senza titolo') + '</div>' +
-      '<div class="card-meta">' + (r.category ? '<span>' + esc(r.category) + '</span>' : '') + (t ? '<span>⏱ ' + fmtMin(t) + '</span>' : '') +
-      (r.servings ? '<span>' + esc(r.servings) + ' ' + esc(r.servingsUnit || 'porzioni') + '</span>' : '') + (r.difficulty ? '<span>' + esc(r.difficulty) + '</span>' : '') + ((r.variants || []).length ? '<span>' + (r.variants.length + 1) + ' versioni</span>' : '') + listDot(r) + '</div></div></button>';
-  }).join('');
+      '<div class="card-meta">' + (r.isBase ? '<span class="base-tag">' + IC.book + 'base</span>' : '') + (r.category ? '<span>' + esc(r.category) + '</span>' : '') + (t ? '<span>⏱ ' + fmtMin(t) + '</span>' : '') +
+      (r.servings ? '<span>' + esc(r.servings) + ' ' + esc(r.servingsUnit || 'porzioni') + '</span>' : '') + (r.difficulty && !r.isBase ? '<span>' + esc(r.difficulty) + '</span>' : '') + ((r.variants || []).length ? '<span>' + (r.variants.length + 1) + ' versioni</span>' : '') + listDot(r) + '</div></div></button>';
+  };
+  let h = list.map(card).join('');
+  if(bases.length){
+    if(S.filter === 'base' && !q){
+      h += '<div class="grid-note">Ricette classiche incluse nell\'app. Usale così come sono, mettile nel menù o salvane una copia da modificare: la tua versione prende il loro posto.</div>';
+      let last = '';
+      bases.forEach(r => { if(r.category !== last){ last = r.category; h += '<h3 class="grid-h">' + esc(last) + '</h3>'; } h += card(r); });
+    } else {
+      h += '<h3 class="grid-h">' + (S.filter === 'base' ? 'Ricette base' : 'Dalle ricette base') + '</h3>' + bases.map(card).join('');
+    }
+  }
+  grid.innerHTML = h;
+}
+
+/* ---------- Ricette base (catalogo incluso, sola lettura) ---------- */
+let BASE_CACHE = null;
+function baseList(){
+  if(!BASE_CACHE) BASE_CACHE = (window.RICETTE_BASE || []).map(r => Object.assign({}, r, {isBase: true,
+    ingredients: (r.ingredients || []).map(t => parseIngredient(t)).filter(Boolean),
+    steps: (r.steps || []).map(t => ({text: t, timerMin: null}))}));
+  return BASE_CACHE;
+}
+function baseOn(){ return S.showBase !== false; }
+function shadowSets(){
+  const ids = new Set(), titles = new Set();
+  S.recipes.forEach(r => { if(r.baseId) ids.add(r.baseId); titles.add(normTxt(r.title)); });
+  return {ids, titles};
+}
+/* le ricette base non sostituite da una tua ricetta (stesso collegamento o stesso nome) */
+function visibleBase(){
+  if(!baseOn()) return [];
+  const sh = shadowSets();
+  return baseList().filter(b => !sh.ids.has(b.id) && !sh.titles.has(normTxt(b.title)));
+}
+function filterBase(q){
+  let list = visibleBase();
+  if(q){
+    const words = normTxt(q).split(' ');
+    list = list.filter(r => { const hay = normTxt([r.title, r.category, (r.tags || []).join(' '), (r.ingredients || []).map(ingToText).join(' ')].join(' ')); return words.every(w => hay.includes(w)); });
+  }
+  return list.slice().sort((a, b) => (CATEGORIES.indexOf(a.category) - CATEGORIES.indexOf(b.category)) || a.title.localeCompare(b.title, 'it'));
+}
+async function saveBaseCopy(b, open){
+  if(!S.db) return null;
+  const data = cleanRecipe(Object.assign({}, b, {tagsText: (b.tags || []).join(', ')}));
+  data.baseId = b.id; data.createdAt = data.updatedAt = new Date().toISOString();
+  const id = uid();
+  try{
+    await S.db.collection('recipes').doc(id).set(data);
+    toast('Salvata nel tuo ricettario: ora puoi modificarla');
+    if(open) openDetail(id, null);
+    if(healthOn()) setTimeout(() => analyzeNutrition(id, null, {silent: true}), 300);
+    return id;
+  }catch(e){ toast('Non sono riuscito a salvarla.'); return null; }
 }
 
 /* ---------- Dettaglio ---------- */
-function getR(id){ return S.recipes.find(r => r.id === id); }
+function getR(id){
+  if(typeof id === 'string' && id.startsWith('base-')){
+    const mine = S.recipes.find(r => r.baseId === id);
+    return mine || baseList().find(b => b.id === id);
+  }
+  return S.recipes.find(r => r.id === id);
+}
 function openDetail(id, vid){
   const r0 = getR(id); if(!r0) return;
   if(S.openId !== id || vid !== undefined){
@@ -980,7 +1058,8 @@ function renderDetail(){
   if(!r0){ if(S.openId) closeDetail(); return; }
   if(S.variantId && !(r0.variants || []).some(v => v.id === S.variantId)) S.variantId = null;
   const r = effR(r0, S.variantId);
-  const hc = healthOn() && r.nutrition ? healthCheck(r, mealFor(r)) : null;
+  const isBase = !!r0.isBase;
+  const hc = !isBase && healthOn() && r.nutrition ? healthCheck(r, mealFor(r)) : null;
   const base = Number(r.servings) || null;
   const factor = base && S.servings ? S.servings / base : 1;
   const ings = (r.ingredients || []).map(i => ingLine(typeof i === 'string' ? {text:i} : i, factor));
@@ -1008,24 +1087,27 @@ function renderDetail(){
   el.innerHTML =
     '<div class="sheet-bar"><div class="sheet-bar-inner">' +
       '<button class="btn icon-btn ghost" data-act="close" aria-label="Indietro">' + IC.back + '</button><div class="spacer"></div>' +
+      (isBase ? '<button class="btn icon-btn ghost" data-act="copy" aria-label="Copia la ricetta come testo">' + IC.copy + '</button>' +
+        '<button class="btn small" data-act="edit">' + IC.edit + ' Modifica</button><button class="btn small primary" data-act="savebase">' + IC.plus + ' Salva</button>' :
       '<button class="btn icon-btn ghost" data-act="fav" aria-label="' + (r.favorite ? 'Togli dalle preferite' : 'Aggiungi alle preferite') + '" style="color:var(--spice)">' + (r.favorite ? IC.starF : IC.star) + '</button>' +
       '<button class="btn icon-btn ghost" data-act="copy" aria-label="Copia la ricetta come testo">' + IC.copy + '</button>' +
       '<button class="btn icon-btn ghost" data-act="dup" aria-label="Duplica">' + IC.dup + '</button>' +
       '<button class="btn icon-btn ghost danger" data-act="del" aria-label="Elimina">' + IC.trash + '</button>' +
       (S.sample ? '<button class="btn icon-btn ghost" data-act="voiceedit" aria-label="Modifica a voce" title="Modifica a voce">' + micIcon + '</button>' : '') +
-      '<button class="btn small" data-act="edit">' + IC.edit + ' Modifica</button>' +
+      '<button class="btn small" data-act="edit">' + IC.edit + ' Modifica</button>') +
     '</div></div>' +
     '<div class="sheet-content">' +
       (r.photoId
         ? '<div class="hero"><img src="' + esc(photoUrl(r.photoId)) + '" alt="Foto di ' + esc(r.title) + '"><div class="hero-cap"><h2 class="d-title">' + esc(r.title || 'Senza titolo') + '</h2>' + (r.category ? '<div class="d-sub">' + esc(r.category) + '</div>' : '') + '</div></div>'
         : '<div><h2 class="d-title">' + esc(r.title || 'Senza titolo') + '</h2>' + (r.category ? '<div class="d-sub">' + esc(r.category) + '</div>' : '') + '</div>') +
+      (isBase ? '<div class="base-banner">' + IC.book + '<span><b>Ricetta base</b> inclusa nell\'app. Puoi cucinarla, metterla nel menù e nella spesa così com\'è. Se la salvi o la modifichi diventa tua, e la tua versione prende il suo posto.</span></div>' : '') +
       ((r0.variants || []).length ? '<div class="vtabs" role="tablist" aria-label="Varianti">' + [{id: '', name: r0.baseName || 'Originale'}].concat(r0.variants).map(v => '<button role="tab" data-vtab="' + esc(v.id) + '" aria-selected="' + ((S.variantId || '') === v.id) + '">' + esc(v.name) + '</button>').join('') + '<button class="vtab-add" data-act="addvariant" aria-label="Nuova variante">+</button></div>' +
         (S.variantId ? '<div class="vbar"><span>Stai vedendo la variante <b>' + esc(r.variantName) + '</b>.</span><button class="btn small ghost danger" data-act="delvariant">Elimina variante</button></div>' : '') : '') +
       (pills.length ? '<div class="meta-row">' + pills.join('') + '</div>' : '') +
       '<div class="detail-actions">' + (steps.length ? '<button class="btn primary" data-act="cook">' + IC.pot + ' Inizia a cucinare</button>' : '') +
         (ings.some(l => l && !l.group) ? '<button class="btn" data-act="toshop">Aggiungi alla spesa</button>' : '') + '<button class="btn" data-act="toplan">Aggiungi al menù</button>' +
-        ((r0.variants || []).length ? '' : '<button class="btn" data-act="addvariant">+ Variante</button>') + '</div>' +
-      healthCardHtml(r) +
+        ((r0.variants || []).length || isBase ? '' : '<button class="btn" data-act="addvariant">+ Variante</button>') + '</div>' +
+      (isBase ? (healthOn() ? '<section class="hcard"><div class="hc-head"><span class="hc-title">' + IC.leaf + ' Healthy</span></div><p class="hc-msg">Salva la ricetta nel tuo ricettario per calcolare i valori e confrontarla con il tuo piano.</p><div class="detail-actions"><button class="btn primary" data-act="savebase">' + IC.plus + ' Salva nel mio ricettario</button></div></section>' : '') : healthCardHtml(r)) +
       '<section class="section"><h2><span class="grow">Ingredienti</span>' + servHtml + '</h2>' + (ings.length ? ingHtml : '<p class="hint">Nessun ingrediente.</p>') + '</section>' +
       '<section class="section"><h2>Procedimento</h2>' + (steps.length ? stepsHtml : '<p class="hint">Nessun passaggio.</p>') + '</section>' +
       (r.notes ? '<section class="section"><h2>Note</h2><div class="notes">' + esc(r.notes) + '</div></section>' : '') +
@@ -1364,8 +1446,9 @@ function canon(name){
   const raw = normTxt(name); if(!raw) return null;
   if(canonCache.has(raw)) return canonCache.get(raw);
   let e = ING.byName.get(raw) || null;
-  if(!e){ const t = raw.replace(DESCR, ' ').replace(/\s+/g, ' ').trim(); e = ING.byName.get(t) || null;
-    if(!e){ const pad = ' ' + t + ' '; for(const nm of ING.names){ if(pad.includes(' ' + nm + ' ')){ e = ING.byName.get(nm); break; } } }
+  const within = str => { const pad = ' ' + str + ' '; for(const nm of ING.names){ if(pad.includes(' ' + nm + ' ')) return ING.byName.get(nm); } return null; };
+  if(!e) e = within(raw);
+  if(!e){ const t = raw.replace(DESCR, ' ').replace(/\s+/g, ' ').trim(); e = ING.byName.get(t) || within(t);
     if(!e){ const st = t.split(' ').map(stemW).join(' '); e = ING.stems.get(st) || ING.stems.get(st.split(' ')[0]) || null; }
   }
   canonCache.set(raw, e); return e;
@@ -1384,8 +1467,8 @@ function searchIng(q, limit){
 const PK = {have: 'composer.have', staples: 'composer.staples', tol: 'composer.tol'};
 const lsJ = (k, d) => { try{ const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; }catch(e){ return d; } };
 const lsW = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
-const P = {have: lsJ(PK.have, []), staples: lsJ(PK.staples, ['sale', 'pepe', 'olio', 'acqua']), tol: lsJ(PK.tol, 1), q: '', showStaples: false, acIdx: 0};
-function pSave(){ lsW(PK.have, P.have); lsW(PK.staples, P.staples); lsW(PK.tol, P.tol); }
+const P = {have: lsJ(PK.have, []), staples: lsJ(PK.staples, ['sale', 'pepe', 'olio', 'acqua']), tol: lsJ(PK.tol, 1), base: lsJ('composer.base', true), q: '', showStaples: false, acIdx: 0};
+function pSave(){ lsW(PK.have, P.have); lsW(PK.staples, P.staples); lsW(PK.tol, P.tol); lsW('composer.base', P.base); }
 function addHave(name){
   const e = canon(name), n = e ? e.n : String(name).trim().toLowerCase();
   if(!n || P.have.includes(n)) return false;
@@ -1423,7 +1506,7 @@ function matchRecipe(r){
 function composerResults(){
   if(!P.have.length) return [];
   const cands = [];
-  S.recipes.forEach(r0 => {
+  S.recipes.concat(P.base !== false ? visibleBase() : []).forEach(r0 => {
     [null].concat((r0.variants || []).map(v => v.id)).forEach(vid => {
       const r = effR(r0, vid), m = matchRecipe(r);
       if(!m.req || !m.used) return;
@@ -1431,7 +1514,7 @@ function composerResults(){
       cands.push({r, r0, vid, m});
     });
   });
-  cands.sort((a, b) => a.m.miss.length - b.m.miss.length || b.m.score - a.m.score || b.m.used - a.m.used);
+  cands.sort((a, b) => a.m.miss.length - b.m.miss.length || b.m.used - a.m.used || b.m.score - a.m.score || (a.r0.isBase ? 1 : 0) - (b.r0.isBase ? 1 : 0));
   return cands.slice(0, 40);
 }
 /* --- interfaccia --- */
@@ -1445,6 +1528,7 @@ function renderComposer(){
     (P.have.length ? '<div class="pchips">' + chips + '</div>' : '') +
     '<div class="pt-tools">' + (bought ? '<button class="btn small" data-pt="fromshop">' + IC.basket + ' Dalla spesa fatta (' + bought + ')</button>' : '') + (P.have.length ? '<button class="btn small ghost" data-pt="clear">Svuota</button>' : '') + '</div>' +
     '<div class="pt-opts"><div class="pt-tol"><span>Possono mancare</span><div class="seg" role="group" aria-label="Ingredienti che possono mancare">' + [0, 1, 2, 3].map(v => '<button data-ptol="' + v + '" aria-pressed="' + (P.tol === v) + '">' + v + '</button>').join('') + '</div></div>' +
+    (baseOn() ? '<label class="pt-base"><input type="checkbox" id="pt_base"' + (P.base !== false ? ' checked' : '') + '> Anche le ricette base</label>' : '') +
     '<button class="pt-staples-btn" data-pt="staples">Sempre in casa: <b>' + esc(P.staples.join(', ') || 'nessuno') + '</b> ' + IC.down + '</button></div>' +
     (P.showStaples ? '<div class="pt-staples">' + ING.list.filter(e => e.b || P.staples.includes(e.n)).map(e => '<button class="pchip-t" data-pstaple="' + esc(e.n) + '" aria-pressed="' + P.staples.includes(e.n) + '">' + esc(e.n) + '</button>').join('') + '<span class="hint">Questi ingredienti non contano: si dà per scontato che li hai.</span></div>' : '') +
     '</div>';
@@ -1459,7 +1543,7 @@ function renderComposer(){
       if(m.miss.length !== lastMiss){ lastMiss = m.miss.length; h += '<h3 class="pm-h">' + (lastMiss === 0 ? 'Puoi farla subito' : lastMiss === 1 ? 'Ti manca 1 ingrediente' : 'Ti mancano ' + lastMiss + ' ingredienti') + '</h3>'; }
       const pct = Math.round(m.score * 100), t = totalMin(r);
       h += '<div class="pm-card" style="--i:' + Math.min(idx, 10) + '"><div class="pm-ring' + (m.miss.length ? '' : ' full') + '" style="--p:' + pct + '"><span>' + pct + '%</span></div>' +
-        '<div class="pm-body"><button class="pm-title" data-pmopen="' + esc(r0.id) + '" data-pmvid="' + esc(vid || '') + '">' + esc(titleWithVariant(r)) + '</button>' +
+        '<div class="pm-body"><button class="pm-title" data-pmopen="' + esc(r0.id) + '" data-pmvid="' + esc(vid || '') + '">' + esc(titleWithVariant(r)) + (r0.isBase ? ' <span class="base-tag">' + IC.book + 'base</span>' : '') + '</button>' +
         '<small>' + [r.category, t ? fmtMin(t) : '', r.servings ? r.servings + ' ' + (r.servingsUnit || 'porzioni') : ''].filter(Boolean).map(esc).join(' · ') + '</small>' +
         '<div class="pm-chips">' + m.ok.map(x => '<span class="pc ok">' + esc(x) + '</span>').join('') + m.sub.map(x => '<span class="pc sub" title="Usa ' + esc(x.use) + ' al posto di ' + esc(x.need) + '">' + esc(x.use) + ' → ' + esc(x.need) + '</span>').join('') + m.miss.map(x => '<span class="pc miss">' + esc(x) + '</span>').join('') + '</div>' +
         (m.miss.length ? '<button class="btn small ghost" data-pmshop="' + idx + '">' + IC.basket + ' Metti in spesa ' + (m.miss.length === 1 ? 'quello che manca' : 'i ' + m.miss.length + ' mancanti') + '</button>' : '') +
@@ -1774,7 +1858,9 @@ async function saveEditor(){
     const now = new Date().toISOString();
     data.createdAt = E.r.createdAt || now; data.updatedAt = now;
     const existing = E.isNew ? null : getR(id);
+    if(E.r.baseId) data.baseId = E.r.baseId;
     if(existing){
+      if(existing.baseId) data.baseId = existing.baseId;
       if(existing.variants) data.variants = existing.variants;
       if(existing.baseName) data.baseName = existing.baseName;
       if(existing.nutrition && existing.nutrition.hash === ingHash(data)) data.nutrition = existing.nutrition;
@@ -2303,7 +2389,7 @@ function openPlanPicker(slot){
   const [di, mk] = slot.split('-'); const ml = MEALS.find(m => m[0] === mk)[1];
   let sel = null, serv = 4;
   modal('<h3>' + DAYS[di] + ' · ' + ml + '</h3>' +
-    (S.recipes.length ? '<input class="inp" id="pp_q" placeholder="Cerca tra le tue ricette" autocomplete="off"><div class="pick-list" id="pp_list"></div>' +
+    (S.recipes.length || visibleBase().length ? '<input class="inp" id="pp_q" placeholder="Cerca tra le ricette" autocomplete="off"><div class="pick-list" id="pp_list"></div>' +
     '<div id="pp_sel" class="hidden" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="lbl">Per</span><div class="stepper"><button data-pp="-1" aria-label="Meno">−</button><span id="pp_sv"></span><button data-pp="1" aria-label="Più">+</button></div><button class="btn primary" data-a="add" style="margin-left:auto">Aggiungi al menù</button></div>' : '<p>Non hai ancora ricette salvate: puoi scrivere un piatto qui sotto.</p>') +
     '<div class="field"><label for="pp_txt">Oppure scrivi un piatto</label><div style="display:flex;gap:8px"><input class="inp" id="pp_txt" placeholder="Es. Pizza fuori, avanzi, insalata…"><button class="btn" data-a="txt">Aggiungi</button></div></div>' +
     '<div class="modal-actions"><button class="btn ghost" data-a="x">Chiudi</button></div>',
@@ -2313,7 +2399,9 @@ function openPlanPicker(slot){
         if(!list) return;
         const q = (m.querySelector('#pp_q').value || '').toLowerCase().trim();
         const rs = S.recipes.filter(r => !q || (r.title + ' ' + (r.category||'') + ' ' + (r.tags||[]).join(' ')).toLowerCase().includes(q)).sort((a,b) => (b.favorite?1:0)-(a.favorite?1:0) || String(a.title).localeCompare(String(b.title),'it'));
-        list.innerHTML = rs.map(r => '<button class="pick" data-pick="' + esc(r.id) + '" aria-pressed="' + (sel === r.id) + '"><span>' + (r.favorite ? '★ ' : '') + esc(r.title) + '</span><small>' + esc(r.category || '') + '</small></button>').join('') || '<p class="hint">Nessuna ricetta trovata.</p>';
+        const bs = filterBase(q).slice(0, q ? 30 : 60);
+        list.innerHTML = rs.map(r => '<button class="pick" data-pick="' + esc(r.id) + '" aria-pressed="' + (sel === r.id) + '"><span>' + (r.favorite ? '★ ' : '') + esc(r.title) + '</span><small>' + esc(r.category || '') + '</small></button>').join('') +
+          (bs.length ? '<div class="pick-h">Ricette base</div>' + bs.map(r => '<button class="pick" data-pick="' + esc(r.id) + '" aria-pressed="' + (sel === r.id) + '"><span>' + esc(r.title) + '</span><small>' + esc(r.category || '') + '</small></button>').join('') : '') || '<p class="hint">Nessuna ricetta trovata.</p>';
       };
       const drawSel = () => { const r = getR(sel); const box = m.querySelector('#pp_sel'); box.classList.toggle('hidden', !r); if(r) m.querySelector('#pp_sv').textContent = serv + ' ' + (r.servingsUnit || 'porzioni'); };
       draw();
@@ -2391,7 +2479,7 @@ function stopDictation(){ try{ if(S.dict && S.dict.active()) return S.dict.stop(
 document.addEventListener('click', async e => {
   const t = e.target.closest('button, [data-open]'); if(!t) return;
   const d = t.dataset;
-  if(d.f !== undefined && t.classList.contains('chip')){ S.filter = d.f; renderList(); return; }
+  if(d.f !== undefined && t.tagName === 'BUTTON' && !t.closest('#sheetEdit')){ S.filter = d.f; if(!t.classList.contains('chip')) window.scrollTo(0, 0); renderList(); return; }
   if(d.open){ openDetail(d.open); return; }
   if(d.act === 'new' || t.id === 'btnNew'){ if(S.noDb){ toast('Apri il ricettario dal tuo account Claude per salvare.'); } openEditor(null, true); return; }
   if(d.act === 'ai' || t.closest('#btnAI')){ openAI(); return; }
@@ -2426,7 +2514,10 @@ document.addEventListener('click', async e => {
     const r = effR(r0, S.variantId);
     if(d.vtab !== undefined){ S.variantId = d.vtab || null; S.servings = Number(effR(r0, S.variantId).servings) || null; S.checked = new Set(); renderDetail(); return; }
     if(d.hmeal){ S.healthMeal = d.hmeal; renderDetail(); return; }
+    if(r0.isBase && ['fav','del','voiceedit','addvariant','fitplan','delvariant','analyze'].includes(d.act)) return;
     if(d.act === 'close') closeDetail();
+    else if(d.act === 'savebase'){ if(r0.isBase){ t.disabled = true; await saveBaseCopy(r0, true); } }
+    else if(d.act === 'edit' && r0.isBase){ const c = JSON.parse(JSON.stringify(r0)); delete c.id; delete c.isBase; c.baseId = r0.id; openEditor(c, true); }
     else if(d.act === 'edit'){ if(S.variantId){ const c = JSON.parse(JSON.stringify(r)); c.variantName = r.variantName; openEditor(c, false, null, {of: r0.id, id: S.variantId}); } else openEditor(r0, false); }
     else if(d.act === 'voiceedit') voiceEdit(false);
     else if(d.act === 'addvariant') openNewVariant(r0, r);
@@ -2542,6 +2633,8 @@ document.addEventListener('keydown', e => {
 document.addEventListener('change', async e => {
   const t = e.target;
   if(HP && t.id === 'hp_on'){ HP.enabled = t.checked; return; }
+  if(t.id === 'pt_base'){ P.base = t.checked; pSave(); renderComposer(); return; }
+  if(t.id === 'set_base'){ S.showBase = t.checked; try{ localStorage.setItem('showBase', t.checked ? '1' : '0'); }catch(x){} if(!t.checked && S.filter === 'base') S.filter = 'all'; renderList(); return; }
   if(HP && t.id === 'hp_def'){ HP.defaultMeal = t.value; return; }
   if(HP && t.id === 'hp_tol'){ HP.tolerance = Number(t.value); return; }
   if(t.dataset && t.dataset.sck !== undefined){ const it = S.shop.find(i => i.id === t.dataset.sck); if(it){ it.checked = t.checked; saveShop(); } return; }
@@ -2836,6 +2929,7 @@ function renderSettings(){
         '<p class="hint">Chi inviti vede e modifica ricette, menù e lista della spesa di questo ricettario. Il link vale 14 giorni.</p>' +
       '</div></section>' +
       '<section class="section"><h2>Aspetto</h2><div class="set-card"><div class="set-sub">Colore</div><div class="swatches">' + ACCENTS.map(([k, l, c]) => '<button class="swatch" data-st="accent" data-v="' + k + '" aria-pressed="' + (curAccent() === k) + '" style="--sw:' + c + '"><span></span>' + l + '</button>').join('') + '</div></div></section>' +
+      '<section class="section"><h2>Ricette base</h2><div class="set-card"><label class="set-line" style="cursor:pointer"><span class="grow"><b>Mostra le ricette base</b><small>' + baseList().length + ' ricette classiche incluse nell\'app: le trovi nell\'elenco, in «Cosa cucino?» e nel menù. Quelle che salvi o che hai già con lo stesso nome prendono il loro posto.</small></span><input type="checkbox" class="switch" id="set_base"' + (baseOn() ? ' checked' : '') + '></label></div></section>' +
       '<section class="section"><h2>Healthy</h2><div class="set-card"><div class="set-line"><span class="grow"><b>Il mio piano alimentare</b><small>' + (healthOn() ? 'Attivo: le ricette mostrano se sono in linea con il piano' : 'Spento') + '</small></span><button class="btn small' + (healthOn() ? '' : ' primary') + '" data-st="health">' + (healthOn() ? 'Modifica' : 'Imposta') + '</button></div><p class="hint">Il piano è solo tuo: anche nei ricettari condivisi gli altri non lo vedono.</p></div></section>' +
       '<section class="section"><h2>Il tuo account</h2><div class="set-card">' +
         '<div class="set-line"><span class="grow"><b>' + esc((BOOT.profile && BOOT.profile.display_name) || '') + '</b><small>' + esc((BOOT.profile && BOOT.profile.email) || '') + '</small></span><button class="btn small" data-st="name">Cambia nome</button></div>' +
