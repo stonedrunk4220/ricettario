@@ -1,0 +1,2164 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Il mio ricettario</title>
+<meta name="theme-color" content="#2E6A4E" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111613" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Il tuo ricettario personale: ricette, menù della settimana e lista della spesa, anche in famiglia.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ricettario">
+<script src="config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: una colonna su telefono, griglia su desktop; dettaglio ed editor come fogli a tutto schermo. */
+:root{
+  --bg:#F3F4EF; --surface:#FFFFFF; --ink:#1B231F; --muted:#5C6961; --line:#DCE1D8;
+  --accent:#2E6A4E; --accent-ink:#FFFFFF; --accent-soft:#E1EDE5; --spice:#B87A0C; --danger:#B3261E;
+  --display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --body:'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --r:14px; color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111613; --surface:#19201C; --ink:#E6ECE8; --muted:#98A69E; --line:#2B3530;
+    --accent:#72C097; --accent-ink:#0C1A12; --accent-soft:#1E3227; --spice:#E4B24A; --danger:#F08079; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111613; --surface:#19201C; --ink:#E6ECE8; --muted:#98A69E; --line:#2B3530;
+  --accent:#72C097; --accent-ink:#0C1A12; --accent-soft:#1E3227; --spice:#E4B24A; --danger:#F08079; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+button,input,textarea,select{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
+img{max-width:100%;display:block}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hidden{display:none !important}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 16px;cursor:pointer;font-weight:600;font-size:15px;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.danger{color:var(--danger)}
+.btn.small{padding:6px 12px;font-size:14px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.icon-btn{width:40px;height:40px;padding:0;border-radius:50%}
+svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* Header */
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-inner{max-width:1100px;margin:0 auto;padding:14px 16px 12px;display:grid;gap:12px}
+.brand-row{display:flex;align-items:center;gap:10px}
+.brand-row h1{font-size:26px;flex:1}
+.brand-row h1 small{display:block;font-family:var(--body);font-size:13px;font-weight:500;color:var(--muted)}
+.search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:0 14px}
+.search input{border:0;background:transparent;outline:none;padding:10px 0;flex:1;min-width:0}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:14px;cursor:pointer;white-space:nowrap;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+main{max-width:1100px;margin:0 auto;padding:16px 16px 170px}
+.banner{background:var(--accent-soft);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:15px}
+.banner.warn{background:color-mix(in srgb,var(--spice) 18%,var(--surface))}
+.grid{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:700px){.grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}}
+
+.card{display:grid;grid-template-columns:92px 1fr;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;text-align:left;padding:0;min-height:92px}
+.card:hover{border-color:var(--muted)}
+@media (min-width:700px){.card{grid-template-columns:1fr;grid-template-rows:160px auto}}
+.thumb{background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:34px;font-weight:700;color:var(--accent);overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.card-body{padding:12px 14px;display:grid;gap:4px;align-content:start}
+.card-title{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.2}
+.card-meta{display:flex;flex-wrap:wrap;gap:4px 12px;color:var(--muted);font-size:13.5px;font-variant-numeric:tabular-nums}
+.fav{color:var(--spice)}
+
+.empty{text-align:center;padding:48px 16px;display:grid;gap:14px;justify-items:center}
+.empty p{color:var(--muted);max-width:42ch;margin:0}
+
+.fab{box-shadow:0 6px 20px rgba(0,0,0,.18);padding:14px 20px;font-size:16px}
+
+/* Sheets */
+.sheet{position:fixed;inset:0;z-index:20;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.sheet-bar{position:sticky;top:0;z-index:2;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.sheet-bar-inner{max-width:780px;margin:0 auto;padding:10px 12px;display:flex;align-items:center;gap:6px}
+.sheet-bar-inner .spacer{flex:1}
+.sheet-content{max-width:780px;margin:0 auto;padding:16px 16px 140px;display:grid;gap:22px}
+
+.hero{border-radius:var(--r);overflow:hidden;aspect-ratio:16/9;background:var(--accent-soft)}
+.hero img{width:100%;height:100%;object-fit:cover}
+.d-title{font-size:32px}
+.d-sub{color:var(--muted);margin-top:4px}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:14px;font-variant-numeric:tabular-nums}
+.pill b{font-weight:700}
+.pill.diff-facile{border-color:var(--accent);color:var(--accent)}
+.pill.diff-media{border-color:var(--spice);color:var(--spice)}
+.pill.diff-difficile{border-color:var(--danger);color:var(--danger)}
+.section h2{font-size:21px;margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.section h2 .grow{flex:1}
+
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-family:var(--body);font-size:15px;font-weight:600}
+.stepper button{border:0;background:transparent;width:36px;height:36px;cursor:pointer;font-size:20px;line-height:1}
+.stepper span{min-width:92px;text-align:center;font-variant-numeric:tabular-nums}
+
+.ing-list{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.ing-list li{border-top:1px solid var(--line)}
+.ing-list li:first-child{border-top:0}
+.ing-list label{display:flex;gap:12px;align-items:baseline;padding:11px 14px;cursor:pointer}
+.ing-list input{accent-color:var(--accent);width:18px;height:18px;flex:none;transform:translateY(3px)}
+.ing-q{font-weight:700;font-variant-numeric:tabular-nums;min-width:74px;flex:none}
+.ing-list li.done .ing-txt,.ing-list li.done .ing-q{text-decoration:line-through;color:var(--muted)}
+.ing-group{padding:12px 14px 6px;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ing-note{color:var(--muted)}
+
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:s}
+.steps li{display:grid;grid-template-columns:34px 1fr;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.steps li::before{counter-increment:s;content:counter(s);font-family:var(--display);font-weight:700;font-size:18px;width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center}
+.step-text{white-space:pre-wrap}
+.step-actions{margin-top:8px}
+.notes{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--spice);border-radius:var(--r);padding:14px;white-space:pre-wrap}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:13px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+
+/* Editor */
+.field{display:grid;gap:6px}
+.field > label,.lbl{font-weight:600;font-size:14px}
+.hint{color:var(--muted);font-size:13px}
+.inp{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;outline:none}
+.inp:focus{border-color:var(--accent)}
+textarea.inp{resize:vertical;min-height:70px}
+.row{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+.row3{display:grid;gap:12px;grid-template-columns:repeat(3,1fr)}
+@media (max-width:420px){.row3{grid-template-columns:1fr 1fr}}
+.seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.seg button{flex:1;border:0;background:transparent;padding:9px 6px;cursor:pointer;font-weight:600;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.photo-pick{display:flex;gap:12px;align-items:center}
+.photo-prev{width:96px;height:72px;border-radius:10px;background:var(--accent-soft);overflow:hidden;flex:none;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+.photo-prev img{width:100%;height:100%;object-fit:cover}
+.lines{display:grid;gap:8px}
+.line{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:start}
+.line .parsed{grid-column:1/-1;font-size:12.5px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;padding-left:4px;margin-top:-2px}
+.parsed span{background:var(--accent-soft);color:var(--accent);border-radius:5px;padding:0 6px;font-weight:600}
+.parsed span.grp{background:color-mix(in srgb,var(--spice) 20%,transparent);color:var(--spice)}
+.line-tools{display:flex;gap:2px}
+.line-tools button{width:34px;height:40px;border:0;background:transparent;cursor:pointer;color:var(--muted);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.line-tools button:hover{background:var(--surface);color:var(--ink)}
+.step-line{display:grid;grid-template-columns:1fr auto;gap:6px}
+.step-line .timer-in{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);grid-column:1/-1}
+.step-line .timer-in input{width:80px;padding:6px 8px}
+.save-bar{position:sticky;bottom:0;z-index:3;background:var(--surface);border-top:1px solid var(--line)}
+.save-bar-inner{max-width:780px;margin:0 auto;padding:12px 16px;display:flex;gap:10px;justify-content:flex-end}
+
+/* Modals */
+.modal-back{position:fixed;inset:0;z-index:40;background:rgba(10,14,12,.45);display:flex;align-items:flex-end;justify-content:center}
+@media (min-width:640px){.modal-back{align-items:center}}
+.modal{background:var(--surface);width:100%;max-width:560px;border-radius:20px 20px 0 0;padding:20px;display:grid;gap:14px;max-height:92%;overflow-y:auto}
+@media (min-width:640px){.modal{border-radius:20px}}
+.modal h3{font-size:22px}
+.modal p{margin:0;color:var(--muted)}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.spin{width:18px;height:18px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Timers + toast */
+.timers{position:fixed;left:12px;bottom:12px;z-index:30;display:grid;gap:8px;max-width:calc(100% - 24px)}
+.timer{display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--bg);border-radius:999px;padding:8px 8px 8px 16px;box-shadow:0 6px 20px rgba(0,0,0,.25);font-variant-numeric:tabular-nums}
+.timer b{font-size:18px;min-width:58px}
+.timer .t-lbl{font-size:13px;opacity:.8;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.timer button{border:0;background:rgba(255,255,255,.15);color:inherit;border-radius:999px;padding:6px 10px;cursor:pointer;font-size:13px;font-weight:600}
+.timer.done{background:var(--spice);color:#1B1300;animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.04)}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:90px;z-index:50;background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:calc(100% - 32px)}
+
+/* Cooking mode */
+.cook{position:fixed;inset:0;z-index:35;background:var(--bg);display:flex;flex-direction:column}
+.cook-top{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.cook-top .t{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cook-progress{height:4px;background:var(--line)}
+.cook-progress div{height:100%;background:var(--accent);transition:width .25s}
+.cook-body{flex:1;overflow-y:auto;padding:24px 20px;max-width:780px;width:100%;margin:0 auto;display:grid;align-content:start;gap:18px}
+.cook-num{font-family:var(--display);color:var(--accent);font-weight:700;font-size:16px;letter-spacing:.04em}
+.cook-text{font-size:clamp(22px,4.6vw,30px);line-height:1.4;white-space:pre-wrap}
+.cook-nav{display:flex;gap:10px;padding:12px 16px 18px;max-width:780px;width:100%;margin:0 auto}
+.cook-nav .btn{flex:1;padding:14px}
+/* Tab bar */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:8;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center}
+.tabbar-inner{display:flex;width:100%;max-width:560px}
+.tabbar button{flex:1;border:0;background:transparent;padding:8px 4px 10px;display:grid;justify-items:center;gap:2px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;position:relative}
+.tabbar button[aria-current="page"]{color:var(--accent)}
+.tabbar button[aria-current="page"]::before{content:"";position:absolute;top:0;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--accent)}
+.tabbar .badge{position:absolute;top:4px;left:calc(50% + 8px);background:var(--spice);color:#1B1300;font-size:11px;border-radius:999px;padding:0 6px;line-height:17px;font-variant-numeric:tabular-nums}
+.fabs{position:fixed;right:16px;bottom:78px;z-index:6;display:flex;gap:10px;align-items:center}
+.fabs .fab{position:static}
+.fab-mic{width:52px;height:52px;padding:0;border-radius:50%;box-shadow:0 6px 20px rgba(0,0,0,.14)}
+.timers{bottom:78px}
+
+/* Menu */
+.view-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.view-head .ttl{flex:1;min-width:0}
+.view-head h2{font-size:24px}
+.view-head .sub{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.days{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:760px){.days{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:grid;gap:8px}
+.day.today{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+.day-name{font-family:var(--display);font-weight:700;font-size:17px;display:flex;align-items:baseline;gap:8px}
+.day-name small{font-family:var(--body);font-weight:500;color:var(--muted);font-size:13px}
+.day-name .now{font-family:var(--body);font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--accent);text-transform:uppercase}
+.slot{display:grid;grid-template-columns:62px 1fr;gap:8px;align-items:start}
+.slot-lbl{font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding-top:7px}
+.entries{display:flex;flex-wrap:wrap;gap:6px}
+.entry{display:inline-flex;align-items:center;background:var(--accent-soft);border-radius:10px;overflow:hidden;max-width:100%}
+.entry button{border:0;background:transparent;cursor:pointer;padding:6px 4px 6px 10px;font-size:14px;font-weight:600;color:var(--ink);text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:230px}
+.entry button small{font-weight:500;color:var(--muted)}
+.entry button.rm{padding:6px 8px;color:var(--muted);font-weight:400}
+.entry.free{background:transparent;border:1px dashed var(--line)}
+.entry.gone button:first-child{color:var(--muted);text-decoration:line-through}
+.add-slot{border:1px dashed var(--line);background:transparent;border-radius:10px;padding:5px 12px;cursor:pointer;color:var(--muted);font-size:14px;font-weight:600}
+.add-slot:hover{border-color:var(--accent);color:var(--accent)}
+.pick-list{display:grid;gap:6px;max-height:260px;overflow-y:auto}
+.pick{display:flex;justify-content:space-between;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 12px;cursor:pointer}
+.pick[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.pick small{color:var(--muted)}
+.days-pick{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.days-pick button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 0;cursor:pointer;font-size:13px;font-weight:600;display:grid;line-height:1.2}
+.days-pick button small{font-weight:500;color:var(--muted)}
+.days-pick button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.days-pick button[aria-pressed="true"] small{color:inherit}
+
+/* Spesa */
+.add-row{display:flex;gap:8px;margin-bottom:16px}
+.add-row .inp{flex:1;min-width:0}
+.aisle{margin-bottom:16px}
+.aisle h3{font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-family:var(--body);font-weight:700;margin:0 0 6px 2px}
+.shop-list{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.shop-list li{display:flex;align-items:center;border-top:1px solid var(--line)}
+.shop-list li:first-child{border-top:0}
+.shop-list label{flex:1;display:flex;gap:12px;align-items:baseline;padding:11px 4px 11px 14px;cursor:pointer;min-width:0}
+.shop-list input{accent-color:var(--accent);width:20px;height:20px;flex:none;transform:translateY(4px)}
+.shop-list .sq{font-weight:700;font-variant-numeric:tabular-nums;min-width:66px;flex:none}
+.shop-list .sn{min-width:0}
+.shop-list .sn small{display:block;color:var(--muted);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shop-list li.done .sq,.shop-list li.done .sn > span{text-decoration:line-through;color:var(--muted)}
+.shop-list .rm{border:0;background:transparent;color:var(--muted);width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none}
+.cand{list-style:none;margin:0;padding:0;display:grid;gap:2px;max-height:46vh;overflow-y:auto}
+.cand label{display:flex;gap:10px;align-items:baseline;padding:7px 4px;cursor:pointer}
+.cand input{accent-color:var(--accent);width:18px;height:18px;flex:none;transform:translateY(3px)}
+.cand b{font-variant-numeric:tabular-nums;min-width:62px;display:inline-block}
+
+/* Dettatura e bozza */
+.mic-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mic-btn.on{background:var(--danger);border-color:var(--danger);color:#fff}
+.mic-btn.on .dot{width:8px;height:8px;border-radius:50%;background:#fff;animation:pulse 1s infinite}
+.partial{color:var(--muted);font-style:italic;min-height:1.5em}
+.draft-banner{background:color-mix(in srgb,var(--spice) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--spice) 45%,var(--line));border-radius:var(--r);padding:12px 14px;display:grid;gap:8px;font-size:15px}
+.draft-banner ul{margin:0;padding-left:20px}
+.draft-banner details summary{cursor:pointer;font-weight:600;font-size:14px}
+.draft-banner details div{white-space:pre-wrap;color:var(--muted);font-size:14px;margin-top:6px}
+.detail-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ===== Look v2: vetro, profondità, movimento ===== */
+:root{
+  --glass: rgba(255,255,255,.58); --glass-strong: rgba(255,255,255,.78); --glass-line: rgba(255,255,255,.75);
+  --edge: rgba(27,35,31,.08); --shadow: 0 1px 2px rgba(20,30,25,.05), 0 10px 30px -12px rgba(20,40,30,.22);
+  --blob1: rgba(46,106,78,.28); --blob2: rgba(224,165,38,.26); --blob3: rgba(201,92,60,.16);
+  --ease: cubic-bezier(.2,.8,.2,1);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --glass: rgba(28,36,32,.55); --glass-strong: rgba(26,33,29,.82); --glass-line: rgba(255,255,255,.07);
+    --edge: rgba(255,255,255,.06); --shadow: 0 1px 2px rgba(0,0,0,.3), 0 14px 34px -14px rgba(0,0,0,.6);
+    --blob1: rgba(114,192,151,.20); --blob2: rgba(228,178,74,.14); --blob3: rgba(240,128,121,.10);
+  }
+}
+:root[data-theme="dark"]{
+  --glass: rgba(28,36,32,.55); --glass-strong: rgba(26,33,29,.82); --glass-line: rgba(255,255,255,.07);
+  --edge: rgba(255,255,255,.06); --shadow: 0 1px 2px rgba(0,0,0,.3), 0 14px 34px -14px rgba(0,0,0,.6);
+  --blob1: rgba(114,192,151,.20); --blob2: rgba(228,178,74,.14); --blob3: rgba(240,128,121,.10);
+}
+body::before{content:"";position:fixed;inset:-10%;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(38% 32% at 12% 8%, var(--blob1), transparent 70%),
+    radial-gradient(34% 30% at 92% 18%, var(--blob2), transparent 70%),
+    radial-gradient(40% 36% at 70% 96%, var(--blob3), transparent 70%),
+    radial-gradient(30% 28% at 4% 78%, var(--blob2), transparent 70%);
+  animation: drift 28s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate3d(-2%,2%,0) scale(1.06)}}
+header.top, .tabbar, .sheet-bar, .save-bar, .modal, .fab-mic{
+  -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5)}
+header.top{background:color-mix(in srgb,var(--bg) 55%,transparent);border-bottom-color:var(--edge)}
+.tabbar{background:var(--glass-strong);border-top:1px solid var(--edge);box-shadow:0 -8px 30px -18px rgba(0,0,0,.25)}
+.sheet,.cook{background:radial-gradient(60% 40% at 0% 0%, var(--blob1), transparent 70%), radial-gradient(50% 35% at 100% 10%, var(--blob2), transparent 70%), var(--bg)}
+#sheetEdit .sheet-content{padding-bottom:28px}
+.sheet-bar{background:color-mix(in srgb,var(--bg) 50%,transparent);border-bottom-color:var(--edge)}
+.save-bar{background:var(--glass-strong);border-top-color:var(--edge)}
+.card,.ing-list,.steps li,.day,.shop-list,.notes,.pick{background:var(--glass);border:1px solid var(--glass-line);box-shadow:var(--shadow)}
+.search,.chip,.pill,.stepper,.seg,.inp,.days-pick button,.btn:not(.primary):not(.ghost){background:var(--glass);border-color:var(--glass-line);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.inp:focus{background:var(--glass-strong);border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent)}
+.search:focus-within{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 14%,transparent);border-color:color-mix(in srgb,var(--accent) 50%,transparent)}
+.modal{background:var(--glass-strong);border:1px solid var(--glass-line);box-shadow:0 30px 80px -20px rgba(0,0,0,.45)}
+.modal-back{background:rgba(10,16,13,.32);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:fadeIn .2s ease}
+.modal{animation:pop .32s var(--ease)}
+@media (max-width:639px){.modal{animation:slideUp .34s var(--ease)}}
+.btn.primary{background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 88%,#fff) 0%,var(--accent) 100%);box-shadow:0 6px 18px -6px color-mix(in srgb,var(--accent) 70%,transparent), inset 0 1px 0 rgba(255,255,255,.25)}
+.btn{transition:transform .15s var(--ease), box-shadow .2s, background-color .2s, border-color .2s}
+.btn:active:not(:disabled){transform:scale(.96)}
+.chip{transition:background-color .2s,color .2s,transform .15s}
+.chip:active{transform:scale(.95)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);box-shadow:0 6px 16px -8px rgba(0,0,0,.5)}
+.fab{border-radius:999px}
+.fab-mic{background:var(--glass-strong) !important}
+
+/* Card */
+.card{transition:transform .25s var(--ease), box-shadow .25s var(--ease), border-color .2s;position:relative}
+.card:hover{transform:translateY(-3px);box-shadow:0 2px 4px rgba(0,0,0,.05),0 20px 40px -16px rgba(20,40,30,.35)}
+.card:active{transform:scale(.985)}
+.thumb{background:linear-gradient(135deg,var(--tint,var(--accent-soft)),color-mix(in srgb,var(--tint,var(--accent-soft)) 40%,transparent));color:rgba(255,255,255,.95);text-shadow:0 2px 10px rgba(0,0,0,.18)}
+.thumb img{transition:transform .5s var(--ease)}
+.card:hover .thumb img{transform:scale(1.06)}
+.stagger > *{animation:rise .45s var(--ease) both;animation-delay:calc(var(--i,0) * 40ms)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes fadeIn{from{opacity:0}}
+@keyframes pop{from{opacity:0;transform:scale(.95) translateY(8px)}}
+@keyframes slideUp{from{transform:translateY(100%)}}
+@keyframes sheetIn{from{opacity:0;transform:translateY(28px)}}
+
+/* Viste e fogli */
+main > section:not(.hidden){animation:fadeRise .3s var(--ease)}
+@keyframes fadeRise{from{opacity:0;transform:translateY(6px)}}
+.sheet:not(.hidden),.cook:not(.hidden){animation:sheetIn .36s var(--ease)}
+.hero{position:relative;aspect-ratio:4/3;max-height:420px;width:100%;box-shadow:var(--shadow)}
+@media (min-width:700px){.hero{aspect-ratio:16/9}}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.62))}
+.hero-cap{position:absolute;left:18px;right:18px;bottom:16px;z-index:1;color:#fff}
+.hero-cap .d-title{color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.35)}
+.hero-cap .d-sub{color:rgba(255,255,255,.85)}
+.steps li{transition:transform .2s var(--ease)}
+.ing-list label,.shop-list label{transition:background-color .2s}
+.ing-list label:hover,.shop-list label:hover{background:color-mix(in srgb,var(--accent) 6%,transparent)}
+.ing-txt,.ing-q,.shop-list .sq,.shop-list .sn > span{transition:color .25s}
+input[type=checkbox]{transition:transform .15s var(--ease)}
+input[type=checkbox]:active{transform:scale(.85)}
+
+/* Tab bar con indicatore che scorre */
+.tabbar-inner{position:relative}
+.tab-ind{position:absolute;top:6px;bottom:6px;left:0;width:calc(100% / 3);padding:0 14px;pointer-events:none;transform:translateX(calc(var(--ti,0) * 100%));transition:transform .4s var(--ease)}
+.tab-ind::before{content:"";display:block;height:100%;border-radius:16px;background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.tabbar button{z-index:1;transition:color .25s}
+.tabbar button[aria-current="page"]::before{display:none}
+.tabbar button svg{transition:transform .3s var(--ease)}
+.tabbar button[aria-current="page"] svg{transform:translateY(-1px) scale(1.08)}
+
+/* Toast e timer */
+.toast{animation:toastIn .35s var(--ease);background:color-mix(in srgb,var(--ink) 88%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,12px)}}
+.timer{animation:pop .3s var(--ease);background:color-mix(in srgb,var(--ink) 88%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+
+/* Editor: campi cambiati da Claude */
+.inp.chg{border-color:var(--spice);box-shadow:0 0 0 3px color-mix(in srgb,var(--spice) 22%,transparent);animation:glow 1.6s ease-out}
+@keyframes glow{0%{box-shadow:0 0 0 8px color-mix(in srgb,var(--spice) 35%,transparent)}}
+.draft-banner{animation:rise .4s var(--ease);background:color-mix(in srgb,var(--spice) 14%,var(--glass))}
+.ai-tabs button{font-size:13.5px}
+.kb-hint{display:flex;gap:8px;align-items:flex-start;color:var(--ink) !important;background:color-mix(in srgb,var(--accent) 9%,transparent);border-radius:12px;padding:10px 12px}
+.photo-prev{position:relative}
+.photo-prev .count{position:absolute;right:4px;bottom:4px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;border-radius:6px;padding:0 6px}
+.mic-btn.on{box-shadow:0 0 0 0 color-mix(in srgb,var(--danger) 50%,transparent);animation:ring 1.6s infinite}
+@keyframes ring{70%{box-shadow:0 0 0 12px transparent}}
+.day{transition:transform .2s var(--ease)}
+.entry{animation:pop .25s var(--ease)}
+.lines > *{animation:fadeIn .2s ease}
+.empty h2{font-size:24px}
+
+.file-btn{position:relative;overflow:hidden}
+.file-btn input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
+.attach-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.atts{display:grid;gap:6px}
+.atts:empty{display:none}
+.att{display:flex;align-items:center;gap:10px;background:var(--glass);border:1px solid var(--glass-line);border-radius:12px;padding:6px 6px 6px 8px;animation:pop .25s var(--ease)}
+.att img,.att .att-ic{width:40px;height:40px;border-radius:8px;object-fit:cover;flex:none}
+.att .att-ic{display:flex;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700}
+.att .spin{margin:11px}
+.att-t{flex:1;min-width:0;display:grid;line-height:1.3}
+.att-t b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.att-t small{color:var(--muted);font-size:12.5px}
+.att.err .att-t small{color:var(--danger)}
+.att button{border:0;background:transparent;color:var(--muted);width:36px;height:36px;cursor:pointer;flex:none}
+/* ===== Timer integrato (dock a scomparsa) ===== */
+.tdock{position:fixed;left:0;right:0;bottom:var(--dock-b,76px);z-index:32;display:flex;justify-content:center;pointer-events:none;padding:0 12px;transition:bottom .3s var(--ease)}
+.tdock[data-state="hidden"]{display:none}
+.tdock-compact{pointer-events:auto;width:100%;max-width:520px;display:flex;align-items:center;gap:12px;border:1px solid var(--glass-line);background:var(--glass-strong);-webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5);border-radius:20px;padding:8px 14px 8px 8px;box-shadow:0 14px 40px -14px rgba(0,0,0,.45);cursor:pointer;color:var(--ink);text-align:left;touch-action:none;animation:dockIn .4s var(--ease)}
+@keyframes dockIn{from{opacity:0;transform:translateY(24px) scale(.97)}}
+.tdock[data-state="open"] .tdock-compact{display:none}
+.tring{width:40px;height:40px;flex:none;position:relative}
+.tring svg{width:40px;height:40px;transform:rotate(-90deg)}
+.tring circle{fill:none;stroke-width:4}
+.tring .bg{stroke:color-mix(in srgb,var(--accent) 18%,transparent)}
+.tring .fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .4s linear}
+.tring .ic{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--accent)}
+.tring .ic svg{width:18px;height:18px;transform:none}
+.tc-main{flex:1;min-width:0;display:grid;line-height:1.2}
+.tc-time{font-family:var(--display);font-weight:700;font-size:21px;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.tc-lbl{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tc-more{font-size:12px;font-weight:700;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:2px 8px}
+.tc-up{color:var(--muted);display:flex}
+.tdock.has-done .tdock-compact{background:color-mix(in srgb,var(--spice) 30%,var(--glass-strong));animation:dockIn .4s var(--ease), nudge 1.2s ease-in-out infinite}
+@keyframes nudge{50%{transform:translateY(-3px)}}
+.tdock.has-done .tring .fg{stroke:var(--spice)}
+.tdock-panel{pointer-events:auto;position:fixed;left:0;right:0;bottom:0;z-index:2;margin:0 auto;max-width:560px;max-height:78%;display:flex;flex-direction:column;background:var(--glass-strong);-webkit-backdrop-filter:blur(24px) saturate(1.5);backdrop-filter:blur(24px) saturate(1.5);border:1px solid var(--glass-line);border-bottom:0;border-radius:24px 24px 0 0;box-shadow:0 -20px 60px -20px rgba(0,0,0,.5);transform:translateY(105%);transition:transform .38s var(--ease);visibility:hidden}
+.tdock[data-state="open"] .tdock-panel{transform:translateY(0);visibility:visible}
+.tdock-panel.dragging{transition:none}
+.tdock-scrim{pointer-events:auto;position:fixed;inset:0;background:rgba(8,12,10,.28);opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.tdock[data-state="open"] .tdock-scrim{opacity:1;visibility:visible}
+.tgrab{padding:10px 0 4px;display:flex;justify-content:center;cursor:grab;touch-action:none}
+.tgrab span{width:42px;height:5px;border-radius:999px;background:color-mix(in srgb,var(--ink) 25%,transparent)}
+.tp-head{display:flex;align-items:center;gap:8px;padding:2px 18px 10px;touch-action:none}
+.tp-head h3{flex:1;font-size:21px}
+.tp-body{overflow-y:auto;padding:0 14px 18px;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;overscroll-behavior:contain}
+.tlist,.tnew{min-width:0}
+.tlist{display:grid;gap:10px}
+.trow{background:var(--glass);border:1px solid var(--glass-line);border-radius:18px;padding:12px 12px 12px 14px;display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;animation:pop .3s var(--ease)}
+.trow .t-time{font-family:var(--display);font-weight:700;font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.trow .t-lbl{font-size:13.5px;color:var(--muted);grid-column:1/-1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trow .t-bar{grid-column:1/-1;height:5px;border-radius:999px;background:color-mix(in srgb,var(--accent) 15%,transparent);overflow:hidden}
+.trow .t-bar i{display:block;height:100%;background:var(--accent);border-radius:inherit;transition:width .4s linear;transform-origin:left}
+.trow .t-act{display:flex;gap:6px}
+.trow .t-act button{border:1px solid var(--glass-line);background:var(--glass);border-radius:999px;height:40px;min-width:40px;padding:0 12px;cursor:pointer;font-weight:700;font-size:14px;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:4px}
+.trow .t-act button:active{transform:scale(.94)}
+.trow.paused .t-time{opacity:.55}
+.trow.done{background:color-mix(in srgb,var(--spice) 22%,var(--glass));border-color:color-mix(in srgb,var(--spice) 50%,transparent)}
+.trow.done .t-time{color:var(--spice)}
+.trow.done .t-bar i{background:var(--spice)}
+.tnew{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding-top:4px}
+.tnew .lbl{font-size:13px;color:var(--muted);font-weight:600}
+.tpresets{display:flex;gap:6px;flex-wrap:wrap}
+.tpresets button{border:1px solid var(--glass-line);background:var(--glass);border-radius:999px;padding:8px 14px;font-weight:700;cursor:pointer;font-variant-numeric:tabular-nums;color:var(--ink)}
+.tcustom{display:flex;gap:8px}
+.tcustom .inp{width:auto;flex:1;min-width:0;size:1}
+.tempty{color:var(--muted);font-size:14px;text-align:center;padding:6px}
+@media (prefers-reduced-motion: reduce){.tdock-panel,.tdock{transition:none}}
+/* ===== App pubblicata: accesso, ricettari, impostazioni ===== */
+body.locked{overflow:hidden}
+header.top{padding-top:env(safe-area-inset-top)}
+.tabbar{padding-bottom:env(safe-area-inset-bottom)}
+.book-btn{border:0;background:transparent;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:4px;text-align:left;max-width:100%}
+.book-btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.book-btn svg{width:18px;height:18px;color:var(--muted);flex:none;transition:transform .2s var(--ease)}
+.book-btn:hover svg{transform:translateY(2px)}
+.auth{position:fixed;inset:0;z-index:60;overflow-y:auto;display:flex;align-items:center;justify-content:center;padding:24px 16px calc(24px + env(safe-area-inset-bottom));background:radial-gradient(50% 40% at 10% 10%, var(--blob1), transparent 70%), radial-gradient(45% 40% at 95% 25%, var(--blob2), transparent 70%), radial-gradient(50% 40% at 60% 100%, var(--blob3), transparent 70%), var(--bg)}
+.auth-card{width:100%;max-width:400px;background:var(--glass-strong);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--glass-line);border-radius:26px;padding:28px 22px;box-shadow:0 30px 80px -30px rgba(0,0,0,.45);display:grid;gap:14px;animation:pop .45s var(--ease)}
+.auth-card h1{font-size:30px;text-align:center}
+.auth-logo{width:64px;height:64px;border-radius:20px;margin:0 auto;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 55%,var(--spice)));color:#fff;box-shadow:0 12px 30px -10px color-mix(in srgb,var(--accent) 70%,transparent)}
+.auth-logo svg{width:32px;height:32px}
+.auth-sub{color:var(--muted);text-align:center;margin:0}
+.auth-form{display:grid;gap:12px}
+.auth .inp{background:var(--surface);border-color:var(--line)}
+.auth-go{padding:13px;font-size:16px}
+.auth-msg{font-size:14px;color:var(--danger);min-height:0}
+.auth-msg:empty{display:none}
+.auth-msg.ok{color:var(--accent)}
+.set-list,.set-card{display:grid;gap:8px}
+.set-card{background:var(--glass);border:1px solid var(--glass-line);border-radius:var(--r);padding:14px;box-shadow:var(--shadow)}
+.set-row{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid var(--glass-line);background:var(--glass);border-radius:14px;padding:12px 14px;cursor:pointer;color:var(--ink);box-shadow:var(--shadow);transition:transform .15s var(--ease),border-color .2s}
+.set-row:active{transform:scale(.985)}
+.set-row.on{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 16%,transparent)}
+.set-row .radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none;position:relative}
+.set-row.on .radio{border-color:var(--accent)}
+.set-row.on .radio::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--accent)}
+.set-row.add{border-style:dashed;box-shadow:none;background:transparent;color:var(--accent)}
+.set-row .grow,.set-line .grow,.members .grow{flex:1;min-width:0;display:grid;line-height:1.3}
+.set-row small,.set-line small,.members small{color:var(--muted);font-size:13px}
+.set-sub{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.members{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.members li{display:flex;align-items:center;gap:10px}
+.avatar{width:36px;height:36px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--accent),var(--spice))}
+.set-line{display:flex;align-items:center;gap:10px}
+.set-actions{display:flex;gap:8px;flex-wrap:wrap}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="brand-row">
+      <h1><button class="book-btn" id="bookBtn" aria-label="Cambia ricettario e impostazioni"><span id="bookName">Il mio ricettario</span><svg class="i" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><small id="count">Caricamento…</small></h1>
+      <button class="btn small" id="btnAI" title="Crea una ricetta da testo, foto, voce o link con l'AI">
+        <svg class="i" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5 13.8 11.3 12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
+        <span>Crea con l'AI</span>
+      </button>
+      <button class="btn icon-btn ghost" id="btnMenu" aria-label="Impostazioni">
+        <svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+      </button>
+    </div>
+    <div id="recipeTools" style="display:grid;gap:12px">
+    <div class="search">
+      <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Cerca per nome, ingrediente o tag" autocomplete="off">
+    </div>
+    <div class="chips" id="chips" role="toolbar" aria-label="Filtri"></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div id="banner"></div>
+  <section id="viewRecipes"><div class="grid" id="grid"></div></section>
+  <section id="viewPlan" class="hidden"></section>
+  <section id="viewShop" class="hidden"></section>
+</main>
+
+<div class="fabs" id="fabs">
+  <button class="btn fab-mic" id="btnDictate" aria-label="Detta una ricetta" title="Detta una ricetta">
+    <svg class="i" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>
+  </button>
+  <button class="btn primary fab" id="btnNew">
+    <svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Nuova ricetta
+  </button>
+</div>
+
+<nav class="tabbar" aria-label="Sezioni"><div class="tabbar-inner"><span class="tab-ind" id="tabInd" aria-hidden="true"></span>
+  <button data-tab="ricette" aria-current="page"><svg class="i" viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h11M9 8h6"/></svg>Ricette</button>
+  <button data-tab="menu"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Menù</button>
+  <button data-tab="spesa"><svg class="i" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 002 1.8h7.7a2 2 0 002-1.6L21 8H6.2"/><circle cx="10" cy="20.5" r="1"/><circle cx="17" cy="20.5" r="1"/></svg>Spesa<span class="badge hidden" id="shopBadge"></span></button>
+</div></nav>
+
+<div id="sheetDetail" class="sheet hidden" role="dialog" aria-modal="true" aria-label="Ricetta"></div>
+<div id="sheetEdit" class="sheet hidden" role="dialog" aria-modal="true" aria-label="Modifica ricetta"></div>
+<div id="cook" class="cook hidden" role="dialog" aria-modal="true" aria-label="Modalità cucina"></div>
+<div id="sheetSettings" class="sheet hidden" role="dialog" aria-modal="true" aria-label="Impostazioni"></div>
+<div id="auth" class="auth hidden"></div>
+<div id="modalRoot"></div>
+<div class="tdock" id="tdock" data-state="hidden">
+  <div class="tdock-scrim" id="tdockScrim"></div>
+  <button class="tdock-compact" id="tdockCompact" aria-label="Apri i timer">
+    <span class="tring"><svg viewBox="0 0 40 40"><circle class="bg" cx="20" cy="20" r="17"/><circle class="fg" id="tcRing" cx="20" cy="20" r="17" stroke-dasharray="106.81" stroke-dashoffset="0"/></svg><span class="ic"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg></span></span>
+    <span class="tc-main"><span class="tc-time" id="tcTime">0:00</span><span class="tc-lbl" id="tcLbl"></span></span>
+    <span class="tc-more hidden" id="tcMore"></span>
+    <span class="tc-up"><svg class="i" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></span>
+  </button>
+  <div class="tdock-panel" id="tdockPanel" role="dialog" aria-label="Timer">
+    <div class="tgrab" id="tgrab"><span></span></div>
+    <div class="tp-head" id="tpHead"><h3>Timer</h3><button class="btn icon-btn ghost" id="tpClose" aria-label="Riduci i timer"><svg class="i" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></div>
+    <div class="tp-body">
+      <div class="tlist" id="tlist"></div>
+      <div class="tnew"><span class="lbl">Nuovo timer</span>
+        <div class="tpresets"><button data-tp="1">1 min</button><button data-tp="3">3 min</button><button data-tp="5">5 min</button><button data-tp="10">10 min</button><button data-tp="15">15 min</button><button data-tp="30">30 min</button></div>
+        <div class="tcustom"><input class="inp" id="tcName" placeholder="Nome (es. Uova)" autocomplete="off"><input class="inp" id="tcIn" type="number" inputmode="decimal" min="0" step="any" placeholder="min" style="max-width:84px"><button class="btn primary" id="tcGo">Avvia</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toastRoot"></div>
+
+<script type="module">
+import { makeStore, uuid, isUuid } from './store.js';
+let store = null;
+/* ---------- Costanti ---------- */
+const CATEGORIES = ["Antipasti","Primi","Secondi","Contorni","Piatti unici","Pizze e lievitati","Pane","Dolci","Colazione","Salse e condimenti","Conserve","Bevande"];
+const UNIT_MAP = {g:'g',gr:'g',grammi:'g',grammo:'g',kg:'kg',chilo:'kg',chili:'kg',mg:'mg',ml:'ml',cl:'cl',dl:'dl',l:'l',lt:'l',litro:'l',litri:'l',
+  cucchiaio:'cucchiaio',cucchiai:'cucchiaio',cucchiaino:'cucchiaino',cucchiaini:'cucchiaino',tazza:'tazza',tazze:'tazza',tazzina:'tazzina',tazzine:'tazzina',
+  bicchiere:'bicchiere',bicchieri:'bicchiere',pizzico:'pizzico',pizzichi:'pizzico',spicchio:'spicchio',spicchi:'spicchio',foglia:'foglia',foglie:'foglia',
+  fetta:'fetta',fette:'fetta',bustina:'bustina',bustine:'bustina',cubetto:'cubetto',cubetti:'cubetto',rametto:'rametto',rametti:'rametto',
+  mazzetto:'mazzetto',mazzetti:'mazzetto',noce:'noce',pz:'pz',pezzo:'pz',pezzi:'pz',vasetto:'vasetto',vasetti:'vasetto',lattina:'lattina',lattine:'lattina',
+  scatola:'scatola',scatole:'scatola',confezione:'confezione',confezioni:'confezione',manciata:'manciata',manciate:'manciata',goccio:'goccio',
+  filo:'filo',ciuffo:'ciuffo',ciuffi:'ciuffo',rotolo:'rotolo',rotoli:'rotolo',panetto:'panetto',panetti:'panetto',tbsp:'cucchiaio',tsp:'cucchiaino',cup:'tazza'};
+const PLURAL = {cucchiaio:'cucchiai',cucchiaino:'cucchiaini',tazza:'tazze',tazzina:'tazzine',bicchiere:'bicchieri',pizzico:'pizzichi',spicchio:'spicchi',foglia:'foglie',
+  fetta:'fette',bustina:'bustine',cubetto:'cubetti',rametto:'rametti',mazzetto:'mazzetti',vasetto:'vasetti',lattina:'lattine',scatola:'scatole',
+  confezione:'confezioni',manciata:'manciate',ciuffo:'ciuffi',rotolo:'rotoli',panetto:'panetti',noce:'noci'};
+const NUM = "(\\d+\\s+\\d+\\/\\d+|\\d+\\/\\d+|\\d+\\s*[½¼¾⅓⅔⅛]|\\d+(?:[.,]\\d+)?|[½¼¾⅓⅔⅛])";
+const FRAC = {'½':.5,'¼':.25,'¾':.75,'⅓':1/3,'⅔':2/3,'⅛':.125};
+
+/* ---------- Stato ---------- */
+const S = {
+  recipes:[], loaded:false, unreachable:false, noDb:false, readOnly:false,
+  filter:'all', q:'',
+  db:null, assets:null, sample:null, sampleImages:false, downloads:null,
+  openId:null, servings:null, checked:new Set(),
+  edit:null, timers:[], cookIdx:0, wakeLock:null,
+  tab:'ricette', shop:[], shopLoaded:false, plan:{slots:{}}, planKey:null, planLoaded:false, planMonday:mondayOf(new Date()), dict:null, dictState:'idle'
+};
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => uuid();
+
+/* ---------- Parser intelligenti ---------- */
+function parseNum(s){
+  if(s == null) return null;
+  s = String(s).trim();
+  if(FRAC[s] != null) return FRAC[s];
+  let u = s.match(/^(\d+)\s*([½¼¾⅓⅔⅛])$/); if(u) return +u[1] + FRAC[u[2]];
+  let m = s.match(/^(\d+)\s+(\d+)\/(\d+)$/); if(m) return +m[1] + (+m[2]/+m[3]);
+  m = s.match(/^(\d+)\/(\d+)$/); if(m) return (+m[1]/+m[2]);
+  const n = parseFloat(s.replace(',','.')); return isNaN(n) ? null : n;
+}
+function parseIngredient(line){
+  let s = String(line || '').trim();
+  if(!s) return null;
+  if(/^#/.test(s) || /:$/.test(s)) return {text:line.trim(), group:s.replace(/^#+\s*/,'').replace(/:$/,'').trim()};
+  const out = {text:s, qty:null, qtyMax:null, unit:'', name:'', note:''};
+  const qb = /\s*\bq\.?\s?b\.?(?=\s|$|,)/i;
+  if(qb.test(s)){ out.unit = 'q.b.'; s = s.replace(qb,' ').replace(/\s+/g,' ').trim(); }
+  let m = s.match(new RegExp('^' + NUM + '(?:\\s*(?:-|–|÷)\\s*' + NUM + ')?\\s*(.*)$', 'i'));
+  let rest = s;
+  if(m && out.unit !== 'q.b.'){
+    out.qty = parseNum(m[1]); out.qtyMax = m[2] ? parseNum(m[2]) : null; rest = m[3] || '';
+    const um = rest.match(/^([a-zA-Zàèéìòù]+)\.?(?:\s+|$)(.*)$/);
+    if(um && UNIT_MAP[um[1].toLowerCase()]){ out.unit = UNIT_MAP[um[1].toLowerCase()]; rest = um[2]; }
+    rest = rest.replace(/^(di\s+|d['’]\s*)/i,'');
+  } else if(out.unit !== 'q.b.'){
+    const t = s.match(new RegExp('^(.+?)\\s+' + NUM + '\\s*([a-zA-Z]+)?\\.?$', 'i'));
+    if(t && (!t[3] || UNIT_MAP[t[3].toLowerCase()])){ rest = t[1]; out.qty = parseNum(t[2]); out.unit = t[3] ? UNIT_MAP[t[3].toLowerCase()] : ''; }
+  }
+  const c = rest.indexOf(',');
+  if(c > 0){ out.note = rest.slice(c+1).trim(); rest = rest.slice(0,c); }
+  out.name = rest.trim();
+  if(!out.name){ out.name = s; out.qty = null; out.unit = out.unit === 'q.b.' ? 'q.b.' : ''; }
+  return out;
+}
+function detectMinutes(text){
+  const t = String(text || '').toLowerCase();
+  if(/mezz['’ ]?ora/.test(t)) return 30;
+  if(/un['’ ]ora e mezza/.test(t)) return 90;
+  if(/\bun['’ ]ora\b/.test(t)) return 60;
+  const m = t.match(/(\d+(?:[.,]\d+)?)(?:\s*(?:-|–|o|a)\s*(\d+(?:[.,]\d+)?))?\s*(ore|ora|h|minuti|minuto|min|secondi|secondo|sec)\b/);
+  if(!m) return null;
+  const v = parseFloat(m[1].replace(',','.'));
+  if(/^(ore|ora|h)$/.test(m[3])) return Math.round(v*60);
+  if(/^sec/.test(m[3])) return Math.max(1, Math.round(v/60*10)/10);
+  return v;
+}
+
+/* ---------- Formattazione ---------- */
+function fmtNum(q){
+  if(q == null) return '';
+  const whole = Math.floor(q), f = q - whole;
+  const fr = [[0,''],[.25,'¼'],[1/3,'⅓'],[.5,'½'],[2/3,'⅔'],[.75,'¾'],[1,'']];
+  for(const [v,sym] of fr){ if(Math.abs(f - v) < .04){ const w = v === 1 ? whole+1 : whole; return (w ? w : (sym ? '' : '0')) + (sym ? (w ? ' ' : '') + sym : ''); } }
+  return (Math.round(q*10)/10).toLocaleString('it-IT');
+}
+function fmtQty(q, unit){
+  if(q == null) return '';
+  if(['g','ml','mg'].includes(unit)){ if(q >= 100) return String(Math.round(q/5)*5); if(q >= 10) return String(Math.round(q)); return (Math.round(q*10)/10).toLocaleString('it-IT'); }
+  if(['kg','l','dl','cl'].includes(unit)) return (Math.round(q*100)/100).toLocaleString('it-IT');
+  return fmtNum(q);
+}
+function unitLabel(unit, q){ if(!unit || unit === 'q.b.') return ''; return (q != null && q > 1 && PLURAL[unit]) ? PLURAL[unit] : unit; }
+function fmtMin(m){
+  m = Number(m) || 0; if(!m) return '';
+  if(m < 1) return Math.round(m*60) + ' s';
+  const h = Math.floor(m/60), r = Math.round(m % 60);
+  return h ? (h + ' h' + (r ? ' ' + r + ' min' : '')) : (r + ' min');
+}
+function totalMin(r){ return (Number(r.prepMin)||0) + (Number(r.cookMin)||0) + (Number(r.restMin)||0); }
+function ingLine(ing, factor){
+  const p = (ing.group || ing.name != null) ? ing : parseIngredient(ing.text);
+  if(!p) return null;
+  if(p.group) return {group:p.group};
+  if(p.unit === 'q.b.') return {q:'q.b.', txt:p.name, note:p.note};
+  if(p.qty == null) return {q:'', txt:p.name, note:p.note};
+  const q1 = p.qty * factor, q2 = p.qtyMax != null ? p.qtyMax * factor : null;
+  const qs = fmtQty(q1, p.unit) + (q2 != null ? '–' + fmtQty(q2, p.unit) : '');
+  const u = unitLabel(p.unit, q2 ?? q1);
+  return {q: qs + (u ? ' ' + u : ''), txt:p.name, note:p.note};
+}
+function ingToText(ing){
+  if(typeof ing === 'string') return ing;
+  if(ing.text) return ing.text;
+  if(ing.group) return ing.group + ':';
+  return [ing.qty != null ? fmtNum(ing.qty) : '', ing.unit && ing.unit !== 'q.b.' ? ing.unit : '', ing.name, ing.unit === 'q.b.' ? 'q.b.' : ''].filter(Boolean).join(' ') + (ing.note ? ', ' + ing.note : '');
+}
+const photoUrl = id => id && store ? store.photoUrl(id) : '';
+
+/* ---------- Icone ---------- */
+const IC = {
+  clock:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  people:'<svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.5 3.3-5.5 6.5-5.5s5.9 2 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 010 6.8M18 14.8c1.9.7 3.2 2.5 3.5 5.2"/></svg>',
+  star:'<svg class="i" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8L3.5 9.7l5.9-.8z"/></svg>',
+  starF:'<svg class="i" viewBox="0 0 24 24" style="fill:currentColor"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8L3.5 9.7l5.9-.8z"/></svg>',
+  back:'<svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+  edit:'<svg class="i" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg>',
+  trash:'<svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
+  up:'<svg class="i" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>',
+  down:'<svg class="i" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>',
+  x:'<svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  timer:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg>',
+  pot:'<svg class="i" viewBox="0 0 24 24"><path d="M3 10h18M5 10v7a3 3 0 003 3h8a3 3 0 003-3v-7M1 10h2M21 10h2M9 6c0-1 1-1 1-2M13 6c0-1 1-1 1-2"/></svg>',
+  copy:'<svg class="i" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 00-1-1H5a1 1 0 00-1 1v10a1 1 0 001 1h3"/></svg>',
+  book:'<svg class="i" viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h11M9 8h6"/></svg>',
+  plus:'<svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  share:'<svg class="i" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>',
+  clip:'<svg class="i" viewBox="0 0 24 24"><path d="M21 11.5l-8.5 8.5a5 5 0 01-7-7L14 4.5a3.3 3.3 0 014.7 4.7l-8.4 8.4a1.7 1.7 0 01-2.4-2.4L15.5 7.6"/></svg>',
+  dup:'<svg class="i" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M14 11v6M11 14h6M16 8V5a1 1 0 00-1-1H5a1 1 0 00-1 1v10a1 1 0 001 1h3"/></svg>'
+};
+
+/* ---------- UI helpers ---------- */
+let toastT;
+function toast(msg){
+  clearTimeout(toastT);
+  $('#toastRoot').innerHTML = '<div class="toast" role="status"' + (typeof T !== 'undefined' && T.state === 'open' ? ' style="bottom:auto;top:24px"' : '') + '>' + esc(msg) + '</div>';
+  toastT = setTimeout(() => $('#toastRoot').innerHTML = '', 2600);
+}
+function modal(html, onMount){
+  const root = $('#modalRoot');
+  const back = document.createElement('div');
+  back.className = 'modal-back';
+  back.innerHTML = '<div class="modal" role="dialog" aria-modal="true">' + html + '</div>';
+  root.appendChild(back);
+  const close = () => back.remove();
+  back.addEventListener('click', e => { if(e.target === back) close(); });
+  onMount && onMount(back.querySelector('.modal'), close);
+  return close;
+}
+function confirmBox(title, msg, okLabel){
+  return new Promise(res => {
+    modal('<h3>' + esc(title) + '</h3><p>' + esc(msg) + '</p><div class="modal-actions"><button class="btn" data-a="no">Annulla</button><button class="btn primary" data-a="ok" style="background:var(--danger);border-color:var(--danger)">' + esc(okLabel || 'Conferma') + '</button></div>',
+      (m, close) => { m.querySelector('[data-a=no]').onclick = () => { close(); res(false); }; m.querySelector('[data-a=ok]').onclick = () => { close(); res(true); }; });
+  });
+}
+
+/* ---------- Lista ---------- */
+function filtered(){
+  const q = S.q.trim().toLowerCase();
+  let list = S.recipes.slice();
+  if(S.filter === 'fav') list = list.filter(r => r.favorite);
+  else if(S.filter.startsWith('cat:')) list = list.filter(r => (r.category || 'Senza categoria') === S.filter.slice(4));
+  if(q){
+    const words = q.split(/\s+/);
+    list = list.filter(r => {
+      const hay = [r.title, r.category, (r.tags||[]).join(' '), (r.ingredients||[]).map(ingToText).join(' '), r.notes].join(' ').toLowerCase();
+      return words.every(w => hay.includes(w));
+    });
+  }
+  list.sort((a,b) => (b.favorite?1:0) - (a.favorite?1:0) || String(a.title||'').localeCompare(String(b.title||''), 'it'));
+  return list;
+}
+function renderChips(){
+  const cats = [...new Set(S.recipes.map(r => r.category || 'Senza categoria'))].sort((a,b) => {
+    const ia = CATEGORIES.indexOf(a), ib = CATEGORIES.indexOf(b);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b,'it');
+  });
+  const favN = S.recipes.filter(r => r.favorite).length;
+  const items = [['all','Tutte (' + S.recipes.length + ')']];
+  if(favN) items.push(['fav','★ Preferite (' + favN + ')']);
+  cats.forEach(c => items.push(['cat:' + c, c + ' (' + S.recipes.filter(r => (r.category||'Senza categoria') === c).length + ')']));
+  if(!items.some(i => i[0] === S.filter)) S.filter = 'all';
+  $('#chips').innerHTML = items.map(([k,l]) => '<button class="chip" data-f="' + esc(k) + '" aria-pressed="' + (S.filter === k) + '">' + esc(l) + '</button>').join('');
+}
+function renderBanner(){
+  let h = '';
+  if(S.noDb) h = '<div class="banner warn">Il salvataggio nel cloud non è disponibile in questa vista. Apri il ricettario dal tuo account Claude (app o claude.ai) per vedere e salvare le ricette.</div>';
+  else if(S.readOnly) h = '<div class="banner warn">Questo ricettario è in sola lettura per te.</div>';
+  else if(S.unreachable) h = '<div class="banner warn">Non riesco ancora a raggiungere le tue ricette. Controlla la connessione: si aggiornano da sole appena torna la rete.</div>';
+  $('#banner').innerHTML = h;
+}
+function renderList(){
+  renderBanner(); renderChips();
+  $('#count').textContent = !S.loaded ? 'Caricamento…' : (S.recipes.length === 1 ? '1 ricetta' : S.recipes.length + ' ricette') + (BOOT.book && BOOT.book.role !== 'owner' ? ' · condiviso' : '');
+  const grid = $('#grid');
+  if(!S.loaded){ grid.innerHTML = '<div class="empty"><div class="spin"></div><p>Carico le tue ricette…</p></div>'; return; }
+  const list = filtered();
+  if(!S.recipes.length){
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><h2>Il ricettario è vuoto</h2><p>Scrivi la tua prima ricetta, dettala a voce, oppure incolla un testo o fotografa un foglio scritto a mano: l\'assistente AI la trasforma in una ricetta ordinata.</p><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button class="btn primary" data-act="new">Nuova ricetta</button><button class="btn" data-act="dictate">Detta una ricetta</button><button class="btn" data-act="ai">Crea con l\'AI</button></div></div>';
+    return;
+  }
+  if(!list.length){ grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><p>Nessuna ricetta corrisponde alla ricerca.</p></div>'; return; }
+  const TINTS = ['#4E8F6C','#C98A12','#C3613F','#6A7FB0','#8C6BB0','#3F8A8C','#A0703F'];
+  const tint = t => { let h = 0; for(const c of String(t || '')) h = (h * 31 + c.charCodeAt(0)) >>> 0; return TINTS[h % TINTS.length]; };
+  const sig = list.map(r => r.id).join(',') + '|' + S.filter + '|' + S.q;
+  if(sig !== S.lastSig){ S.lastSig = sig; grid.classList.add('stagger'); clearTimeout(S.stT); S.stT = setTimeout(() => grid.classList.remove('stagger'), 900); }
+  let ci = 0;
+  grid.innerHTML = list.map(r => {
+    const t = totalMin(r);
+    const th = r.photoId ? '<img src="' + esc(photoUrl(r.photoId)) + '" alt="" loading="lazy">' : esc((r.title || '?').trim().charAt(0).toUpperCase());
+    return '<button class="card" style="--i:' + Math.min(ci++, 12) + '" data-open="' + esc(r.id) + '"><div class="thumb" style="--tint:' + tint(r.title) + '">' + th + '</div><div class="card-body">' +
+      '<div class="card-title">' + (r.favorite ? '<span class="fav">★</span> ' : '') + esc(r.title || 'Senza titolo') + '</div>' +
+      '<div class="card-meta">' + (r.category ? '<span>' + esc(r.category) + '</span>' : '') + (t ? '<span>⏱ ' + fmtMin(t) + '</span>' : '') +
+      (r.servings ? '<span>' + esc(r.servings) + ' ' + esc(r.servingsUnit || 'porzioni') + '</span>' : '') + (r.difficulty ? '<span>' + esc(r.difficulty) + '</span>' : '') + '</div></div></button>';
+  }).join('');
+}
+
+/* ---------- Dettaglio ---------- */
+function getR(id){ return S.recipes.find(r => r.id === id); }
+function openDetail(id){
+  const r = getR(id); if(!r) return;
+  if(S.openId !== id){ S.servings = Number(r.servings) || null; S.checked = new Set(); }
+  S.openId = id; renderDetail();
+  const el = $('#sheetDetail'); el.classList.remove('hidden'); document.body.style.overflow = 'hidden'; tPos();
+}
+function closeDetail(){ S.openId = null; $('#sheetDetail').classList.add('hidden'); document.body.style.overflow = ''; tPos(); }
+function renderDetail(){
+  const r = getR(S.openId); const el = $('#sheetDetail');
+  if(!r){ if(S.openId) closeDetail(); return; }
+  const base = Number(r.servings) || null;
+  const factor = base && S.servings ? S.servings / base : 1;
+  const ings = (r.ingredients || []).map(i => ingLine(typeof i === 'string' ? {text:i} : i, factor));
+  let ingHtml = '<ul class="ing-list">';
+  ings.forEach((l, i) => {
+    if(!l) return;
+    if(l.group){ ingHtml += '<li class="ing-group">' + esc(l.group) + '</li>'; return; }
+    const done = S.checked.has(i);
+    ingHtml += '<li class="' + (done ? 'done' : '') + '"><label><input type="checkbox" data-chk="' + i + '"' + (done ? ' checked' : '') + '><span class="ing-q">' + esc(l.q) + '</span><span><span class="ing-txt">' + esc(l.txt) + '</span>' + (l.note ? ' <span class="ing-note">· ' + esc(l.note) + '</span>' : '') + '</span></label></li>';
+  });
+  ingHtml += '</ul>';
+  const steps = (r.steps || []).map(s => typeof s === 'string' ? {text:s} : s);
+  const stepsHtml = '<ol class="steps">' + steps.map((s, i) => {
+    const m = s.timerMin != null && s.timerMin !== '' ? Number(s.timerMin) : detectMinutes(s.text);
+    return '<li><div><div class="step-text">' + esc(s.text) + '</div>' + (m ? '<div class="step-actions"><button class="btn small" data-timer="' + i + '">' + IC.timer + ' Avvia timer ' + fmtMin(m) + '</button></div>' : '') + '</div></li>';
+  }).join('') + '</ol>';
+  const pills = [];
+  if(r.prepMin) pills.push('<span class="pill">Preparazione <b>' + fmtMin(r.prepMin) + '</b></span>');
+  if(r.cookMin) pills.push('<span class="pill">Cottura <b>' + fmtMin(r.cookMin) + '</b></span>');
+  if(r.restMin) pills.push('<span class="pill">Riposo <b>' + fmtMin(r.restMin) + '</b></span>');
+  if(totalMin(r) && pills.length > 1) pills.push('<span class="pill">' + IC.clock + ' Totale <b>' + fmtMin(totalMin(r)) + '</b></span>');
+  if(r.difficulty) pills.push('<span class="pill diff-' + esc(r.difficulty) + '">' + esc(r.difficulty) + '</span>');
+  const unit = r.servingsUnit || 'porzioni';
+  const servHtml = base ? '<div class="stepper" aria-label="Porzioni"><button data-serv="-1" aria-label="Meno">−</button><span>' + S.servings + ' ' + esc(unit) + '</span><button data-serv="1" aria-label="Più">+</button></div>' + (factor !== 1 ? '<button class="btn small ghost" data-serv="reset">Ripristina</button>' : '') : '';
+  el.innerHTML =
+    '<div class="sheet-bar"><div class="sheet-bar-inner">' +
+      '<button class="btn icon-btn ghost" data-act="close" aria-label="Indietro">' + IC.back + '</button><div class="spacer"></div>' +
+      '<button class="btn icon-btn ghost" data-act="fav" aria-label="' + (r.favorite ? 'Togli dalle preferite' : 'Aggiungi alle preferite') + '" style="color:var(--spice)">' + (r.favorite ? IC.starF : IC.star) + '</button>' +
+      '<button class="btn icon-btn ghost" data-act="copy" aria-label="Copia la ricetta come testo">' + IC.copy + '</button>' +
+      '<button class="btn icon-btn ghost" data-act="dup" aria-label="Duplica">' + IC.dup + '</button>' +
+      '<button class="btn icon-btn ghost danger" data-act="del" aria-label="Elimina">' + IC.trash + '</button>' +
+      (S.sample ? '<button class="btn icon-btn ghost" data-act="voiceedit" aria-label="Modifica a voce" title="Modifica a voce">' + micIcon + '</button>' : '') +
+      '<button class="btn small" data-act="edit">' + IC.edit + ' Modifica</button>' +
+    '</div></div>' +
+    '<div class="sheet-content">' +
+      (r.photoId
+        ? '<div class="hero"><img src="' + esc(photoUrl(r.photoId)) + '" alt="Foto di ' + esc(r.title) + '"><div class="hero-cap"><h2 class="d-title">' + esc(r.title || 'Senza titolo') + '</h2>' + (r.category ? '<div class="d-sub">' + esc(r.category) + '</div>' : '') + '</div></div>'
+        : '<div><h2 class="d-title">' + esc(r.title || 'Senza titolo') + '</h2>' + (r.category ? '<div class="d-sub">' + esc(r.category) + '</div>' : '') + '</div>') +
+      (pills.length ? '<div class="meta-row">' + pills.join('') + '</div>' : '') +
+      '<div class="detail-actions">' + (steps.length ? '<button class="btn primary" data-act="cook">' + IC.pot + ' Inizia a cucinare</button>' : '') +
+        (ings.some(l => l && !l.group) ? '<button class="btn" data-act="toshop">Aggiungi alla spesa</button>' : '') + '<button class="btn" data-act="toplan">Aggiungi al menù</button></div>' +
+      '<section class="section"><h2><span class="grow">Ingredienti</span>' + servHtml + '</h2>' + (ings.length ? ingHtml : '<p class="hint">Nessun ingrediente.</p>') + '</section>' +
+      '<section class="section"><h2>Procedimento</h2>' + (steps.length ? stepsHtml : '<p class="hint">Nessun passaggio.</p>') + '</section>' +
+      (r.notes ? '<section class="section"><h2>Note</h2><div class="notes">' + esc(r.notes) + '</div></section>' : '') +
+      ((r.tags && r.tags.length) || r.source ? '<section class="section">' + (r.tags && r.tags.length ? '<div class="tags">' + r.tags.map(t => '<span class="tag">#' + esc(t) + '</span>').join('') + '</div>' : '') + (r.source ? '<p class="hint" style="margin-top:10px">Fonte: ' + esc(r.source) + '</p>' : '') + '</section>' : '') +
+    '</div>';
+}
+function recipeAsText(r){
+  const base = Number(r.servings) || null; const factor = base && S.servings ? S.servings/base : 1;
+  let t = r.title + '\n';
+  if(base) t += (S.servings || base) + ' ' + (r.servingsUnit || 'porzioni') + '\n';
+  if(totalMin(r)) t += 'Tempo totale: ' + fmtMin(totalMin(r)) + '\n';
+  t += '\nINGREDIENTI\n';
+  (r.ingredients||[]).forEach(i => { const l = ingLine(typeof i === 'string' ? {text:i} : i, factor); if(!l) return; t += l.group ? '\n' + l.group + ':\n' : '- ' + (l.q ? l.q + ' ' : '') + l.txt + (l.note ? ', ' + l.note : '') + '\n'; });
+  t += '\nPROCEDIMENTO\n';
+  (r.steps||[]).forEach((s, i) => t += (i+1) + '. ' + (typeof s === 'string' ? s : s.text) + '\n');
+  if(r.notes) t += '\nNOTE\n' + r.notes + '\n';
+  return t;
+}
+
+/* ---------- Timer integrato ---------- */
+let audioCtx = null;
+function unlockAudio(){ try{ audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); if(audioCtx.state === 'suspended') audioCtx.resume(); }catch(e){} }
+function beep(){
+  try{
+    if(!audioCtx) return;
+    const now = audioCtx.currentTime;
+    for(let k = 0; k < 3; k++){
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.frequency.value = 880; o.connect(g); g.connect(audioCtx.destination);
+      g.gain.setValueAtTime(0.0001, now + k*.35); g.gain.exponentialRampToValueAtTime(.3, now + k*.35 + .02); g.gain.exponentialRampToValueAtTime(.0001, now + k*.35 + .3);
+      o.start(now + k*.35); o.stop(now + k*.35 + .32);
+    }
+  }catch(e){}
+  try{ navigator.vibrate && navigator.vibrate([300,150,300]); }catch(e){}
+}
+const TK = 'ricettario.timers.v1';
+const T = {list:[], state:'hidden', refs:new Map(), lastBeep:0};
+function tLeft(t){ return t.done ? 0 : t.paused ? t.remaining : Math.max(0, t.end - Date.now()); }
+function fmtClock(ms){
+  const s = Math.ceil(ms/1000), h = Math.floor(s/3600), m = Math.floor((s % 3600)/60), ss = s % 60;
+  return h ? h + ':' + String(m).padStart(2,'0') + ':' + String(ss).padStart(2,'0') : m + ':' + String(ss).padStart(2,'0');
+}
+function tSave(){ try{ localStorage.setItem(TK, JSON.stringify(T.list)); }catch(e){} }
+function tLoad(){ try{ const a = JSON.parse(localStorage.getItem(TK) || '[]'); if(Array.isArray(a)) T.list = a.filter(t => t && t.id && t.total); }catch(e){} }
+function startTimer(label, minutes){
+  unlockAudio();
+  const total = Math.max(1000, Math.round(minutes * 60000));
+  T.list.push({id: Math.random().toString(36).slice(2), label: label || 'Timer', total, end: Date.now() + total, paused:false, remaining:0, done:false});
+  tSave(); if(T.state === 'hidden') T.state = 'compact';
+  tRender(); toast('Timer avviato: ' + fmtMin(minutes));
+}
+function tAction(id, act){
+  const t = T.list.find(x => x.id === id); if(!t) return;
+  unlockAudio();
+  if(act === 'stop'){ T.list = T.list.filter(x => x !== t); if(!T.list.length && T.state !== 'open') T.state = 'hidden'; }
+  else if(act === 'pause' && !t.done){ t.remaining = Math.max(0, t.end - Date.now()); t.paused = true; }
+  else if(act === 'resume'){ t.end = Date.now() + t.remaining; t.paused = false; }
+  else if(act === 'plus'){ if(t.done){ t.done = false; t.paused = false; t.end = Date.now() + 60000; t.total = Math.max(t.total, 60000); } else if(t.paused) t.remaining += 60000; else t.end += 60000; t.total += 60000; }
+  else if(act === 'restart'){ t.done = false; t.paused = false; t.end = Date.now() + t.total; }
+  tSave(); tRender();
+}
+function tPos(){ const d = document.getElementById('tdock'); if(d) d.style.setProperty('--dock-b', tDockBottom() + 'px'); }
+function setDock(state){
+  if(state === 'hidden' && T.list.length) state = 'compact';
+  T.state = state; tRender();
+}
+function openTimers(){ unlockAudio(); setDock('open'); }
+function tDockBottom(){
+  const cooking = !$('#cook').classList.contains('hidden'), editing = !!S.edit, sheet = !!S.openId;
+  return cooking ? 96 : editing ? 84 : sheet ? 16 : 76;
+}
+/* render strutturale: solo quando cambia l'elenco o lo stato, mai a ogni secondo */
+function tRender(){
+  const dock = $('#tdock');
+  if(!T.list.length && T.state === 'compact') T.state = 'hidden';
+  dock.dataset.state = T.state;
+  dock.style.setProperty('--dock-b', tDockBottom() + 'px');
+  const list = $('#tlist');
+  T.refs.clear();
+  list.innerHTML = T.list.length ? T.list.map(t => {
+    const st = t.done ? 'done' : t.paused ? 'paused' : '';
+    return '<div class="trow ' + st + '" data-tid="' + t.id + '"><div class="t-time" data-r="time">' + fmtClock(tLeft(t)) + '</div><div class="t-act">' +
+      (t.done ? '<button data-ta="plus" aria-label="Aggiungi un minuto">+1 min</button><button data-ta="stop" aria-label="Ferma">Fatto</button>'
+        : '<button data-ta="plus" aria-label="Aggiungi un minuto">+1</button>' + (t.paused ? '<button data-ta="resume" aria-label="Riprendi">▶</button>' : '<button data-ta="pause" aria-label="Pausa">❚❚</button>') + '<button data-ta="stop" aria-label="Elimina timer">✕</button>') +
+      '</div><div class="t-bar"><i data-r="bar"></i></div><div class="t-lbl">' + esc(t.label) + ' · ' + fmtMin(t.total/60000) + '</div></div>';
+  }).join('') : '<div class="tempty">Nessun timer attivo. Avviane uno qui sotto o dai passaggi di una ricetta.</div>';
+  list.querySelectorAll('.trow').forEach(row => T.refs.set(row.dataset.tid, {time: row.querySelector('[data-r=time]'), bar: row.querySelector('[data-r=bar]')}));
+  tTick(true);
+}
+/* aggiornamento leggero: cambia solo i testi e le barre */
+function tTick(fromRender){
+  const now = Date.now(); let changed = false;
+  T.list.forEach(t => { if(!t.done && !t.paused && t.end <= now){ t.done = true; changed = true; } });
+  if(changed){ tSave(); beep(); T.lastBeep = now; if(T.state === 'hidden') T.state = 'compact'; if(!fromRender){ tRender(); return; } }
+  const anyDone = T.list.some(t => t.done);
+  if(anyDone && now - T.lastBeep > 6000){ beep(); T.lastBeep = now; }
+  $('#tdock').classList.toggle('has-done', anyDone);
+  T.list.forEach(t => {
+    const r = T.refs.get(t.id); if(!r) return;
+    const left = tLeft(t), txt = t.done ? 'Fatto!' : fmtClock(left);
+    if(r.time.textContent !== txt) r.time.textContent = txt;
+    r.bar.style.width = (t.done ? 100 : (1 - left / t.total) * 100).toFixed(1) + '%';
+  });
+  // barra compatta: il timer più urgente
+  const sorted = T.list.slice().sort((a,b) => (b.done - a.done) || (a.paused - b.paused) || (tLeft(a) - tLeft(b)));
+  const top = sorted[0];
+  if(top){
+    const left = tLeft(top);
+    const ct = top.done ? 'Fatto!' : fmtClock(left);
+    const el = $('#tcTime'); if(el.textContent !== ct) el.textContent = ct;
+    const lb = $('#tcLbl'), lt = top.done ? top.label + ' · tocca per fermarlo' : (top.paused ? 'In pausa · ' : '') + top.label;
+    if(lb.textContent !== lt) lb.textContent = lt;
+    const C = 2 * Math.PI * 17; $('#tcRing').style.strokeDashoffset = (C * (top.done ? 0 : left / top.total)).toFixed(2);
+    const more = $('#tcMore'), mt = T.list.length > 1 ? '+' + (T.list.length - 1) : '';
+    if(more.textContent !== mt){ more.textContent = mt; more.classList.toggle('hidden', !mt); }
+  }
+}
+setInterval(() => { if(T.list.length) tTick(false); }, 250);
+document.addEventListener('visibilitychange', () => { if(!document.hidden && T.list.length) tTick(false); });
+/* trascinamento: su per aprire, giù per tornare compatto */
+function tInitDrag(){
+  const panel = $('#tdockPanel');
+  const drag = (el, mode) => {
+    let y0 = null, dy = 0, moved = false;
+    el.addEventListener('pointerdown', e => { if(e.target.closest('button,input') && mode === 'panel') return; y0 = e.clientY; dy = 0; moved = false; try{ el.setPointerCapture(e.pointerId); }catch(x){} });
+    el.addEventListener('pointermove', e => {
+      if(y0 == null) return; dy = e.clientY - y0; if(Math.abs(dy) > 6) moved = true;
+      if(mode === 'panel' && dy > 0){ panel.classList.add('dragging'); panel.style.transform = 'translateY(' + dy + 'px)'; }
+      if(mode === 'compact' && dy < 0) el.style.transform = 'translateY(' + Math.max(dy, -40) + 'px)';
+    });
+    const end = () => {
+      if(y0 == null) return; y0 = null;
+      panel.classList.remove('dragging'); panel.style.transform = ''; el.style.transform = '';
+      if(mode === 'panel' && dy > 70) setDock('compact');
+      if(mode === 'compact'){ if(!moved || dy < -25) openTimers(); }
+    };
+    el.addEventListener('pointerup', end); el.addEventListener('pointercancel', () => { y0 = null; panel.classList.remove('dragging'); panel.style.transform = ''; el.style.transform = ''; });
+  };
+  drag($('#tdockCompact'), 'compact');
+  drag($('#tgrab'), 'panel'); drag($('#tpHead'), 'panel');
+  $('#tdockScrim').addEventListener('click', () => setDock('compact'));
+  $('#tdock').addEventListener('click', e => {
+    const b = e.target.closest('button'); if(!b) return;
+    if(b.dataset.ta){ tAction(b.closest('.trow').dataset.tid, b.dataset.ta); return; }
+    if(b.dataset.tp){ startTimer('Timer ' + fmtMin(Number(b.dataset.tp)), Number(b.dataset.tp)); return; }
+    if(b.id === 'tcGo'){ const v = parseFloat(($('#tcIn').value || '').replace(',','.')); if(v > 0){ startTimer(($('#tcName').value || '').trim() || 'Timer ' + fmtMin(v), v); $('#tcIn').value = ''; $('#tcName').value = ''; } else toast('Scrivi quanti minuti'); return; }
+    if(b.id === 'tpClose') setDock(T.list.length ? 'compact' : 'hidden');
+  });
+}
+
+/* ---------- Modalità cucina ---------- */
+async function openCook(){
+  const r = getR(S.openId); if(!r) return;
+  unlockAudio(); S.cookIdx = 0; renderCook();
+  $('#cook').classList.remove('hidden'); tPos();
+  try{ if(navigator.wakeLock) S.wakeLock = await navigator.wakeLock.request('screen'); }catch(e){}
+}
+function closeCook(){ $('#cook').classList.add('hidden'); tPos(); try{ S.wakeLock && S.wakeLock.release(); }catch(e){} S.wakeLock = null; }
+function renderCook(){
+  const r = getR(S.openId); if(!r){ closeCook(); return; }
+  const steps = (r.steps || []).map(s => typeof s === 'string' ? {text:s} : s);
+  const i = Math.min(S.cookIdx, steps.length - 1), s = steps[i];
+  const m = s.timerMin != null && s.timerMin !== '' ? Number(s.timerMin) : detectMinutes(s.text);
+  const base = Number(r.servings) || null; const factor = base && S.servings ? S.servings/base : 1;
+  const ingTxt = (r.ingredients||[]).map(x => ingLine(typeof x === 'string' ? {text:x} : x, factor)).filter(Boolean).map(l => l.group ? '<div class="ing-group" style="padding:8px 0 2px">' + esc(l.group) + '</div>' : '<div><b>' + esc(l.q) + '</b> ' + esc(l.txt) + '</div>').join('');
+  $('#cook').innerHTML =
+    '<div class="cook-top"><button class="btn icon-btn ghost" data-cook="close" aria-label="Esci dalla modalità cucina">' + IC.x + '</button><div class="t">' + esc(r.title) + '</div><button class="btn small" data-cook="timers" aria-label="Timer">' + IC.timer + '</button><button class="btn small" data-cook="ings">Ingredienti</button></div>' +
+    '<div class="cook-progress"><div style="width:' + ((i+1)/steps.length*100) + '%"></div></div>' +
+    '<div class="cook-body"><div class="cook-num">PASSAGGIO ' + (i+1) + ' DI ' + steps.length + '</div><div class="cook-text">' + esc(s.text) + '</div>' +
+    (m ? '<div><button class="btn primary" data-cook="timer" data-min="' + m + '">' + IC.timer + ' Avvia timer ' + fmtMin(m) + '</button></div>' : '') +
+    '<div id="cookIngs" class="hidden notes" style="border-left-color:var(--accent)">' + (S.servings && base ? '<div class="hint" style="margin-bottom:6px">Per ' + S.servings + ' ' + esc(r.servingsUnit || 'porzioni') + '</div>' : '') + ingTxt + '</div></div>' +
+    '<div class="cook-nav"><button class="btn" data-cook="prev"' + (i === 0 ? ' disabled' : '') + '>Indietro</button>' +
+    (i < steps.length - 1 ? '<button class="btn primary" data-cook="next">Avanti</button>' : '<button class="btn primary" data-cook="close">Finito</button>') + '</div>';
+}
+
+/* ---------- Editor ---------- */
+function blankRecipe(){ return {title:'', category:'', tags:[], servings:4, servingsUnit:'porzioni', prepMin:'', cookMin:'', restMin:'', difficulty:'facile', ingredients:[''], steps:[{text:'', timerMin:''}], notes:'', source:'', favorite:false, photoId:null}; }
+function openEditor(recipe, isNew, meta){
+  const r = JSON.parse(JSON.stringify(recipe || blankRecipe()));
+  r.ingredients = (r.ingredients || []).map(ingToText); if(!r.ingredients.length) r.ingredients = [''];
+  r.steps = (r.steps || []).map(s => typeof s === 'string' ? {text:s, timerMin:''} : {text:s.text || '', timerMin: s.timerMin ?? ''}); if(!r.steps.length) r.steps = [{text:'', timerMin:''}];
+  r.tagsText = (r.tags || []).join(', ');
+  delete r._doubts;
+  S.edit = {r, isNew: !!isNew, newPhoto:null, newPhotoUrl:null, removePhoto:false, saving:false, meta: meta || null};
+  renderEditor();
+  $('#sheetEdit').classList.remove('hidden'); $('#sheetEdit').scrollTop = 0; document.body.style.overflow = 'hidden'; tPos();
+  setTimeout(() => { const t = $('#e_title'); if(t && isNew && !r.title) t.focus(); }, 50);
+}
+function closeEditor(){
+  if(S.edit && S.edit.newPhotoUrl) URL.revokeObjectURL(S.edit.newPhotoUrl);
+  S.edit = null; $('#sheetEdit').classList.add('hidden');
+  if(!S.openId) document.body.style.overflow = '';
+  tPos();
+}
+function parsedChips(text){
+  const p = parseIngredient(text); if(!p) return '';
+  if(p.group) return '<span class="grp">Gruppo: ' + esc(p.group) + '</span>';
+  const parts = [];
+  if(p.unit === 'q.b.') parts.push('<span>q.b.</span>');
+  else if(p.qty != null) parts.push('<span>' + esc(fmtNum(p.qty) + (p.qtyMax != null ? '–' + fmtNum(p.qtyMax) : '')) + (p.unit ? ' ' + esc(unitLabel(p.unit, p.qtyMax ?? p.qty)) : '') + '</span>');
+  parts.push(esc(p.name));
+  if(p.note) parts.push('<em>' + esc(p.note) + '</em>');
+  return parts.join(' ');
+}
+function renderEditor(){
+  const E = S.edit, r = E.r;
+  const old = E.meta && E.meta.old;
+  const chg = k => old && old.fields[k] !== String(r[k] ?? '') ? ' chg' : '';
+  const photo = E.newPhotoUrl || (!E.removePhoto && r.photoId ? photoUrl(r.photoId) : '');
+  const catOpts = CATEGORIES.map(c => '<option value="' + esc(c) + '">').join('');
+  $('#sheetEdit').innerHTML =
+    '<div class="sheet-bar"><div class="sheet-bar-inner"><button class="btn icon-btn ghost" data-e="cancel" aria-label="Annulla">' + IC.x + '</button><strong style="font-size:17px">' + (E.isNew ? 'Nuova ricetta' : 'Modifica ricetta') + '</strong><div class="spacer"></div>' + (S.sample ? '<button class="btn small glass" data-e="voice">' + micIcon + ' A voce</button>' : '') + '</div></div>' +
+    '<div class="sheet-content">' +
+      (E.meta ? '<div class="draft-banner">' +
+        (E.meta.source === 'modifica'
+          ? '<strong>Ho applicato le modifiche che hai chiesto.</strong><span>I campi cambiati sono evidenziati. Controlla e tocca «Salva ricetta» per confermare, oppure «Annulla» per lasciare tutto com\'era.</span>'
+          : '<strong>L\'assistente ha compilato la ricetta ' + ({dictate:'da quello che hai dettato', link:'dalla pagina che hai incollato', create:'dal tuo testo'}[E.meta.source] || '') + '.</strong><span>Controlla e correggi quello che non torna: sotto ogni ingrediente vedi come è stato interpretato. Niente è salvato finché non tocchi «Salva ricetta».</span>') +
+        (E.meta.changes && E.meta.changes.length ? '<div><b>Modifiche:</b><ul>' + E.meta.changes.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' : '') +
+        (E.meta.doubts && E.meta.doubts.length ? '<div><b>Da controllare:</b><ul>' + E.meta.doubts.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' : '') +
+        (E.meta.transcript ? '<details><summary>' + (E.meta.source === 'dictate' || E.meta.source === 'modifica' ? 'Cosa hai chiesto' : 'Testo originale') + '</summary><div>' + esc(E.meta.transcript) + '</div></details>' : '') + '</div>' : '') +
+      '<div class="field"><label for="e_title">Nome della ricetta</label><input class="inp' + chg('title') + '" id="e_title" data-f="title" value="' + esc(r.title) + '" placeholder="Es. Lasagne della nonna" style="font-size:19px;font-weight:600"></div>' +
+      '<div class="field"><span class="lbl">Foto</span><div class="photo-pick"><div class="photo-prev">' + (photo ? '<img src="' + esc(photo) + '" alt="Anteprima">' : 'Nessuna foto') + '</div>' +
+        (S.assets ? '<span class="btn small file-btn">Scegli foto<input type="file" id="e_photo" accept="image/*" aria-label="Scegli foto"></span>' + (photo ? '<button class="btn small ghost danger" data-e="rmphoto">Rimuovi</button>' : '') : '<span class="hint">Le foto sono disponibili aprendo il ricettario dal tuo account.</span>') + '</div></div>' +
+      '<div class="row"><div class="field"><label for="e_cat">Categoria</label><input class="inp' + chg('category') + '" id="e_cat" data-f="category" list="catlist" value="' + esc(r.category) + '" placeholder="Es. Primi"><datalist id="catlist">' + catOpts + '</datalist></div>' +
+        '<div class="field"><label for="e_tags">Tag</label><input class="inp' + chg('tagsText') + '" id="e_tags" data-f="tagsText" value="' + esc(r.tagsText) + '" placeholder="veloce, vegetariano"></div></div>' +
+      '<div class="row"><div class="field"><label for="e_serv">Quantità prodotta</label><input class="inp' + chg('servings') + '" id="e_serv" data-f="servings" type="number" inputmode="numeric" min="1" value="' + esc(r.servings) + '"></div>' +
+        '<div class="field"><label for="e_su">Unità</label><input class="inp' + chg('servingsUnit') + '" id="e_su" data-f="servingsUnit" list="sulist" value="' + esc(r.servingsUnit) + '"><datalist id="sulist"><option value="porzioni"><option value="persone"><option value="pezzi"><option value="biscotti"><option value="vasetti"><option value="teglia"></datalist></div></div>' +
+      '<div class="field"><span class="lbl">Tempi (minuti)</span><div class="row3">' +
+        '<div class="field"><label class="hint" for="e_prep">Preparazione</label><input class="inp' + chg('prepMin') + '" id="e_prep" data-f="prepMin" type="number" inputmode="numeric" min="0" value="' + esc(r.prepMin) + '"></div>' +
+        '<div class="field"><label class="hint" for="e_cook">Cottura</label><input class="inp' + chg('cookMin') + '" id="e_cook" data-f="cookMin" type="number" inputmode="numeric" min="0" value="' + esc(r.cookMin) + '"></div>' +
+        '<div class="field"><label class="hint" for="e_rest">Riposo / lievitazione</label><input class="inp' + chg('restMin') + '" id="e_rest" data-f="restMin" type="number" inputmode="numeric" min="0" value="' + esc(r.restMin) + '"></div></div></div>' +
+      '<div class="field"><span class="lbl">Difficoltà</span><div class="seg" role="group" aria-label="Difficoltà">' + ['facile','media','difficile'].map(d => '<button data-diff="' + d + '" aria-pressed="' + (r.difficulty === d) + '">' + d.charAt(0).toUpperCase() + d.slice(1) + '</button>').join('') + '</div></div>' +
+      '<div class="field"><span class="lbl">Ingredienti</span><span class="hint">Una riga per ingrediente, scritto come ti viene: «200 g farina 00», «2 uova», «sale q.b.», «1 cucchiaio di olio, extravergine». Una riga che finisce con «:» crea un gruppo (es. «Per la crema:»).</span>' +
+        '<div class="lines" id="e_ings">' + r.ingredients.map((t, i) => '<div class="line"><input class="inp' + (old && t.trim() && !old.ing.has(t) ? ' chg' : '') + '" data-ing="' + i + '" value="' + esc(t) + '" placeholder="Es. 300 g spaghetti" enterkeyhint="next" aria-label="Ingrediente ' + (i+1) + '"><div class="line-tools"><button data-mv="ing:' + i + ':-1" aria-label="Sposta su">' + IC.up + '</button><button data-mv="ing:' + i + ':1" aria-label="Sposta giù">' + IC.down + '</button><button data-rm="ing:' + i + '" aria-label="Elimina riga">' + IC.x + '</button></div><div class="parsed" id="pi_' + i + '">' + parsedChips(t) + '</div></div>').join('') + '</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" data-e="addIng">+ Ingrediente</button><button class="btn small ghost" data-e="pasteIng">Incolla una lista</button></div></div>' +
+      '<div class="field"><span class="lbl">Procedimento</span><span class="hint">Un passaggio per riquadro. Se scrivi un tempo («cuoci per 20 minuti») il timer viene impostato da solo; puoi correggerlo a mano.</span>' +
+        '<div class="lines" id="e_steps">' + r.steps.map((s, i) => { const d = detectMinutes(s.text); return '<div class="step-line"><textarea class="inp' + (old && s.text.trim() && !old.steps.has(s.text) ? ' chg' : '') + '" data-step="' + i + '" rows="2" placeholder="Passaggio ' + (i+1) + '" aria-label="Passaggio ' + (i+1) + '">' + esc(s.text) + '</textarea><div class="line-tools"><button data-mv="step:' + i + ':-1" aria-label="Sposta su">' + IC.up + '</button><button data-mv="step:' + i + ':1" aria-label="Sposta giù">' + IC.down + '</button><button data-rm="step:' + i + '" aria-label="Elimina passaggio">' + IC.x + '</button></div><label class="timer-in">' + IC.timer + ' Timer <input class="inp" type="number" inputmode="decimal" min="0" step="any" data-steptimer="' + i + '" value="' + esc(s.timerMin) + '" placeholder="' + (d != null ? d : '—') + '"> min</label></div>'; }).join('') + '</div>' +
+        '<div><button class="btn small" data-e="addStep">+ Passaggio</button></div></div>' +
+      '<div class="field"><label for="e_notes">Note e consigli</label><textarea class="inp' + chg('notes') + '" id="e_notes" data-f="notes" rows="3" placeholder="Varianti, conservazione, trucchi…">' + esc(r.notes) + '</textarea></div>' +
+      '<div class="field"><label for="e_src">Fonte</label><input class="inp' + chg('source') + '" id="e_src" data-f="source" value="' + esc(r.source) + '" placeholder="Es. Nonna Lina, libro, sito…"></div>' +
+    '</div>' +
+    '<div class="save-bar"><div class="save-bar-inner"><button class="btn" data-e="cancel">Annulla</button><button class="btn primary" data-e="save"' + (S.readOnly || S.noDb ? ' disabled' : '') + '>' + (E.saving ? '<span class="spin"></span> Salvo…' : 'Salva ricetta') + '</button></div></div>';
+}
+function syncEditorFields(){
+  // i campi scrivono già in S.edit.r ad ogni input; qui nulla da fare
+}
+async function downscale(file, max){
+  const url = URL.createObjectURL(file);
+  try{
+    const img = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = url; });
+    const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth*k); c.height = Math.round(img.naturalHeight*k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    return await new Promise(res => c.toBlob(b => res(b), 'image/jpeg', .82));
+  } finally { URL.revokeObjectURL(url); }
+}
+function cleanRecipe(r){
+  const num = v => (v === '' || v == null || isNaN(Number(v))) ? null : Number(v);
+  return {
+    title: String(r.title || '').trim() || 'Senza titolo',
+    category: String(r.category || '').trim(),
+    tags: String(r.tagsText ?? (r.tags||[]).join(',')).split(',').map(t => t.trim().replace(/^#/,'')).filter(Boolean),
+    servings: num(r.servings), servingsUnit: String(r.servingsUnit || 'porzioni').trim(),
+    prepMin: num(r.prepMin), cookMin: num(r.cookMin), restMin: num(r.restMin),
+    difficulty: ['facile','media','difficile'].includes(r.difficulty) ? r.difficulty : 'facile',
+    ingredients: (r.ingredients || []).map(t => parseIngredient(ingToText(t))).filter(Boolean),
+    steps: (r.steps || []).map(s => typeof s === 'string' ? {text:s} : s).filter(s => String(s.text||'').trim()).map(s => ({text:String(s.text).trim(), timerMin:num(s.timerMin)})),
+    notes: String(r.notes || '').trim(), source: String(r.source || '').trim(),
+    favorite: !!r.favorite, photoId: r.photoId || null
+  };
+}
+async function saveEditor(){
+  const E = S.edit; if(!E || E.saving || !S.db) return;
+  if(!String(E.r.title || '').trim()){ toast('Dai un nome alla ricetta'); $('#e_title') && $('#e_title').focus(); return; }
+  E.saving = true; renderEditor();
+  try{
+    const data = cleanRecipe(E.r);
+    const oldPhoto = E.r.photoId || null;
+    if(E.newPhoto && S.assets){
+      const up = await S.assets.upload(E.newPhoto);
+      data.photoId = up.id;
+    } else if(E.removePhoto){ data.photoId = null; }
+    const id = E.isNew ? uid() : E.r.id;
+    const now = new Date().toISOString();
+    data.createdAt = E.r.createdAt || now; data.updatedAt = now;
+    await S.db.collection('recipes').doc(id).set(data);
+    if(oldPhoto && oldPhoto !== data.photoId && S.assets){ try{ await S.assets.delete(oldPhoto); }catch(e){} }
+    closeEditor(); toast('Ricetta salvata');
+    openDetail(id);
+  }catch(e){
+    E.saving = false; renderEditor();
+    toast(e && e.code === 'quota_exceeded' ? 'Spazio esaurito: elimina qualche ricetta o foto.' : 'Non sono riuscito a salvare. Riprova tra poco.');
+  }
+}
+
+/* ---------- Crea con l'AI ---------- */
+/* ---------- Lettura file (foto, PDF, Word, testo) ---------- */
+const FILE_ACCEPT = 'image/*,.pdf,application/pdf,.docx,.odt,.txt,.md,.rtf,.html,.htm,.csv,.json,.doc';
+const MAX_FILE_TEXT = 60000;
+let pdfjsP = null;
+function loadPdfjs(){
+  if(!pdfjsP) pdfjsP = import(new URL('lib/pdf.min.js', location.href).href).then(m => { m.GlobalWorkerOptions.workerSrc = new URL('lib/pdf.worker.min.js', location.href).href; return m; }).catch(e => { pdfjsP = null; throw e; });
+  return pdfjsP;
+}
+function decodeXmlText(s){
+  return s.replace(/<[^>]+>/g, '').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#(\d+);/g, (m, n) => String.fromCodePoint(+n)).replace(/&#x([0-9a-f]+);/gi, (m, n) => String.fromCodePoint(parseInt(n,16))).replace(/&amp;/g,'&');
+}
+async function unzipText(buf, wanted){
+  const dv = new DataView(buf), len = buf.byteLength, dec = new TextDecoder();
+  let eocd = -1;
+  for(let i = len - 22; i >= Math.max(0, len - 65557); i--){ if(dv.getUint32(i, true) === 0x06054b50){ eocd = i; break; } }
+  if(eocd < 0) throw new Error('not_zip');
+  const n = dv.getUint16(eocd + 10, true); let p = dv.getUint32(eocd + 16, true);
+  for(let k = 0; k < n; k++){
+    if(dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true), nl = dv.getUint16(p + 28, true), el = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), lho = dv.getUint32(p + 42, true);
+    const name = dec.decode(new Uint8Array(buf, p + 46, nl));
+    if(name === wanted){
+      const start = lho + 30 + dv.getUint16(lho + 26, true) + dv.getUint16(lho + 28, true);
+      const data = new Uint8Array(buf, start, csize);
+      if(method === 0) return dec.decode(data);
+      if(method === 8){
+        if(typeof DecompressionStream === 'undefined') throw new Error('no_inflate');
+        const out = await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer();
+        return dec.decode(out);
+      }
+      throw new Error('zip_method');
+    }
+    p += 46 + nl + el + cl;
+  }
+  return null;
+}
+function rtfToText(s){
+  return s.replace(/\\par[d]?/g, '\n').replace(/\{\\\*[^{}]*\}/g, '').replace(/\\'([0-9a-f]{2})/gi, (m, h) => String.fromCharCode(parseInt(h,16))).replace(/\\[a-z]+-?\d* ?/gi, '').replace(/[{}]/g, '').replace(/\n{3,}/g, '\n\n');
+}
+async function canvasPages(pdf, count){
+  const out = [];
+  for(let i = 1; i <= Math.min(count, pdf.numPages); i++){
+    const page = await pdf.getPage(i); const v1 = page.getViewport({scale:1});
+    const sc = Math.min(2.5, 1600 / Math.max(v1.width, v1.height)); const v = page.getViewport({scale: sc});
+    const c = document.createElement('canvas'); c.width = Math.round(v.width); c.height = Math.round(v.height);
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+    await page.render({canvasContext: ctx, viewport: v}).promise;
+    out.push(await new Promise(r => c.toBlob(r, 'image/jpeg', .85)));
+  }
+  return out;
+}
+/* Restituisce {kind, label, text?, images?} oppure lancia un Error con un messaggio per l'utente */
+async function readAttachment(file){
+  const name = file.name || 'file', ext = (name.split('.').pop() || '').toLowerCase(), type = file.type || '';
+  if(type.startsWith('image/') || ['jpg','jpeg','png','webp','gif','heic','heif'].includes(ext)){
+    try{ return {kind:'img', label:'Foto', images:[await downscale(file, 1600)]}; }
+    catch(e){ throw new Error('Non riesco ad aprire questa immagine (se è HEIC, prova a esportarla come JPG).'); }
+  }
+  if(ext === 'pdf' || type === 'application/pdf'){
+    let pdfjs; try{ pdfjs = await loadPdfjs(); }catch(e){ throw new Error('Non riesco a caricare il lettore PDF in questa vista. Prova a fare uno screenshot delle pagine.'); }
+    const pdf = await pdfjs.getDocument({data: new Uint8Array(await file.arrayBuffer()), isEvalSupported:false}).promise;
+    let text = '';
+    for(let i = 1; i <= Math.min(pdf.numPages, 40) && text.length < MAX_FILE_TEXT; i++){
+      const tc = await (await pdf.getPage(i)).getTextContent();
+      text += tc.items.map(it => (it.str || '') + (it.hasEOL ? '\n' : ' ')).join('') + '\n\n';
+    }
+    const pages = pdf.numPages + (pdf.numPages === 1 ? ' pagina' : ' pagine');
+    if(text.replace(/\s/g, '').length < 30){
+      // PDF scansionato: passo le prime pagine come immagini
+      const imgs = await canvasPages(pdf, 3);
+      return {kind:'pdf', label:'PDF scansionato · ' + pages, images: imgs};
+    }
+    return {kind:'pdf', label:'PDF · ' + pages, text: text.slice(0, MAX_FILE_TEXT)};
+  }
+  if(ext === 'docx' || ext === 'odt'){
+    let xml;
+    try{ xml = await unzipText(await file.arrayBuffer(), ext === 'docx' ? 'word/document.xml' : 'content.xml'); }
+    catch(e){ throw new Error(e.message === 'no_inflate' ? 'Questo telefono non riesce ad aprire i file Word: salvalo come PDF o copia il testo.' : 'Il file sembra danneggiato o non è un documento valido.'); }
+    if(!xml) throw new Error('Non trovo testo in questo documento.');
+    const t = ext === 'docx'
+      ? decodeXmlText(xml.replace(/<w:tab\/>/g, '\t').replace(/<w:br[^>]*\/>/g, '\n').replace(/<\/w:p>/g, '\n'))
+      : decodeXmlText(xml.replace(/<text:tab\/>/g, '\t').replace(/<text:line-break\/>/g, '\n').replace(/<\/text:(p|h)>/g, '\n'));
+    return {kind:'doc', label: ext === 'docx' ? 'Word' : 'Documento', text: t.replace(/\n{3,}/g, '\n\n').trim().slice(0, MAX_FILE_TEXT)};
+  }
+  if(ext === 'doc') throw new Error('I vecchi file .doc non si possono leggere qui: aprilo e salvalo come .docx o PDF.');
+  if(ext === 'html' || ext === 'htm' || type === 'text/html'){
+    const d = new DOMParser().parseFromString(await file.text(), 'text/html');
+    d.querySelectorAll('script,style,nav,footer,header,noscript').forEach(n => n.remove());
+    return {kind:'txt', label:'Pagina web', text: (d.body ? d.body.innerText || d.body.textContent : '').replace(/\n\s*\n\s*\n+/g, '\n\n').trim().slice(0, MAX_FILE_TEXT)};
+  }
+  if(ext === 'rtf') return {kind:'txt', label:'Testo', text: rtfToText(await file.text()).slice(0, MAX_FILE_TEXT)};
+  const t = await file.text();
+  if(/[\u0000-\u0008\u000E-\u001F]/.test(t.slice(0, 2000))) throw new Error('Questo tipo di file non si può leggere. Usa foto, PDF, Word o testo.');
+  return {kind:'txt', label:'Testo', text: t.slice(0, MAX_FILE_TEXT)};
+}
+
+const AI_TABS = [['create','Testo, foto, file'],['dictate','Dettatura'],['link','Da link']];
+function micRowHtml(autoOn){
+  return S.dict
+    ? '<div class="mic-row"><button class="btn mic-btn' + (autoOn ? ' on' : '') + '" id="dict_btn">' + (autoOn ? '<span class="dot"></span> Ferma' : micIcon + ' Detta') + '</button><span class="hint">Il testo appare qui sotto e puoi correggerlo.</span></div>'
+    : '<p class="hint kb-hint">' + micIcon + '<span>Questo browser non ha la dettatura: tocca il <b>microfono della tastiera</b> e detta nel riquadro, oppure apri l\'app con Chrome o Safari.</span></p>';
+}
+function openAI(mode, ctx){
+  mode = mode || 'create';
+  const isEdit = mode === 'edit', voice = mode === 'dictate' || isEdit;
+  if(!S.sample){ modal('<h3>L\'assistente AI non è disponibile</h3><p>Accedi al ricettario per usare l\'assistente AI. Puoi sempre scrivere o modificare la ricetta a mano.</p><div class="modal-actions"><button class="btn primary" data-x>Ok</button></div>', (m, c) => m.querySelector('[data-x]').onclick = c); return; }
+  // la dettatura deve partire direttamente dal tocco, prima di qualsiasi attesa
+  if(voice && S.dict) startDictation();
+  const atts = [];
+  const maxImgs = S.sampleMaxImages || 3;
+  const T = {
+    create: {title:'Crea con l\'AI', go:'Genera bozza', intro:'Incolla una ricetta, descrivi un\'idea («torta di mele soffice per 8») oppure allega una foto o un file (PDF, Word, testo). Riceverai una bozza da controllare prima di salvarla.', ph:'Es. Carbonara per 4: 320 g spaghetti, 150 g guanciale, 4 tuorli, pecorino…'},
+    dictate: {title:'Crea con l\'AI', go:'Compila la ricetta', intro:'Parla liberamente, come se la spiegassi a un amico: nome del piatto, per quante persone, ingredienti con le quantità, passaggi e tempi. Puoi correggerti mentre parli («anzi, 300 grammi»).', ph:'Es. Torta di mele per otto persone. Servono tre mele, duecento grammi di farina, tre uova…'},
+    link: {title:'Crea con l\'AI', go:'Crea dalla pagina', intro:'Incolla il link della ricetta: l\'assistente apre la pagina, prende solo la ricetta (anche la foto) e scarta pubblicità e chiacchiere. Se un sito blocca l\'accesso, aggiungi qui sotto il testo copiato o qualche screenshot.', ph:'Facoltativo: testo copiato dalla pagina…'},
+    edit: {title:'Modifica a voce', go:'Applica le modifiche', intro:'Di\' cosa cambiare in «' + esc(ctx && ctx.title || 'questa ricetta') + '»: «aggiungi 50 g di burro», «togli l\'aglio», «la cottura è 40 minuti», «fallo per 6 persone», «metti nelle note che si congela».', ph:'Es. Usa 400 grammi di pasta invece di 320 e aggiungi un pizzico di peperoncino…'}
+  }[mode];
+  modal(
+    '<h3>' + T.title + '</h3>' +
+    (isEdit ? '' : '<div class="seg ai-tabs" role="tablist">' + AI_TABS.map(([k, l]) => '<button role="tab" data-aitab="' + k + '" aria-pressed="' + (k === mode) + '">' + l + '</button>').join('') + '</div>') +
+    '<p>' + T.intro + '</p>' +
+    (voice ? micRowHtml(!!S.dict) : '') +
+    (mode === 'link' ? '<div class="field"><label for="ai_url">Link della ricetta</label><input class="inp" id="ai_url" type="url" inputmode="url" placeholder="https://…" autocomplete="off"></div>' : '') +
+    '<textarea class="inp" id="ai_txt" rows="' + (voice ? 8 : 7) + '" placeholder="' + esc(T.ph) + '"></textarea>' +
+    (voice ? '<div class="partial" id="dict_partial" aria-live="polite"></div>' : '') +
+    ((mode === 'create' || mode === 'link') ? '<div class="attach-row"><span class="btn small file-btn">' + IC.clip + (mode === 'link' ? ' Screenshot o file' : ' Foto o file') + '<input type="file" id="ai_img" accept="' + FILE_ACCEPT + '" multiple aria-label="Aggiungi foto o file"></span><span class="hint">Foto, PDF, Word, testo</span></div><div class="atts" id="ai_atts"></div>' : '') +
+    '<div id="ai_status" class="hint" aria-live="polite"></div>' +
+    '<div class="modal-actions"><button class="btn" data-a="no">Annulla</button><button class="btn primary" data-a="go">' + T.go + '</button></div>',
+    (m, closeFn) => {
+      const ctrl = {aborted:false};
+      m.closest('.modal-back').addEventListener('click', e => { if(e.target === e.currentTarget){ ctrl.aborted = true; stopDictation(); } });
+      m.querySelector('[data-a=no]').onclick = () => { ctrl.aborted = true; stopDictation(); closeFn(); };
+      m.querySelectorAll('[data-aitab]').forEach(b => b.onclick = () => {
+        if(b.dataset.aitab === mode) return;
+        const keep = m.querySelector('#ai_txt').value;
+        ctrl.aborted = true; stopDictation(); closeFn(); openAI(b.dataset.aitab);
+        const ta = document.getElementById('ai_txt'); if(ta && keep) ta.value = keep;
+      });
+      const db = m.querySelector('#dict_btn');
+      if(db) db.onclick = () => { if(S.dict.active()) stopDictation(); else startDictation(); };
+      if(!S.dict || !voice) setTimeout(() => { const f = m.querySelector(mode === 'link' ? '#ai_url' : '#ai_txt'); f && f.focus({preventScroll:true}); }, 60);
+      const drawAtts = () => {
+        const box = m.querySelector('#ai_atts'); if(!box) return;
+        box.innerHTML = atts.map((a, i) => '<span class="att' + (a.error ? ' err' : '') + '">' +
+          (a.loading ? '<span class="spin"></span>' : a.thumb ? '<img src="' + a.thumb + '" alt="">' : '<span class="att-ic">' + esc((a.ext || '?').slice(0,4).toUpperCase()) + '</span>') +
+          '<span class="att-t"><b>' + esc(a.name) + '</b><small>' + esc(a.loading ? 'Leggo il file…' : a.error || a.label) + '</small></span><button data-rmatt="' + i + '" aria-label="Togli ' + esc(a.name) + '">✕</button></span>').join('');
+      };
+      m.addEventListener('click', e => { const b = e.target.closest('[data-rmatt]'); if(b){ const a = atts.splice(Number(b.dataset.rmatt), 1)[0]; if(a && a.thumb) URL.revokeObjectURL(a.thumb); drawAtts(); } });
+      const fi = m.querySelector('#ai_img');
+      if(fi) fi.onchange = async () => {
+        const files = [...fi.files]; fi.value = ''; if(!files.length) return;
+        for(const f of files.slice(0, 6)){
+          const a = {name: f.name || 'file', ext: (f.name || '').split('.').pop(), loading: true}; atts.push(a); drawAtts();
+          try{ Object.assign(a, await readAttachment(f)); if(a.images && a.images[0]) a.thumb = URL.createObjectURL(a.images[0]); }
+          catch(err){ a.error = err && err.message && err.message.length < 200 ? err.message : 'Non sono riuscito a leggere questo file.'; }
+          a.loading = false; drawAtts();
+        }
+      };
+      m.querySelector('[data-a=go]').onclick = async (ev) => {
+        const btn = ev.currentTarget, st = m.querySelector('#ai_status');
+        await stopDictation();
+        const txt = m.querySelector('#ai_txt').value.trim();
+        const url = mode === 'link' ? m.querySelector('#ai_url').value.trim() : '';
+        if(atts.some(a => a.loading)){ st.textContent = 'Aspetta un attimo: sto ancora leggendo i file.'; return; }
+        const okAtts = atts.filter(a => !a.error);
+        const imgs = okAtts.flatMap(a => a.images || []).slice(0, maxImgs);
+        const fileText = okAtts.filter(a => a.text).map(a => '--- Contenuto del file «' + a.name + '» ---\n' + a.text).join('\n\n');
+        if(!txt && !imgs.length && !fileText && !(mode === 'link' && /^https?:\/\//i.test(url))){
+          st.textContent = isEdit ? 'Dimmi cosa cambiare, a voce o scrivendo.' : mode === 'dictate' ? 'Non ho ancora sentito niente: detta la ricetta o scrivila nel riquadro.' : mode === 'link' ? (url ? 'Il link deve iniziare con https://' : 'Incolla il link della ricetta.') : 'Scrivi qualcosa o aggiungi una foto.';
+          return;
+        }
+        btn.disabled = true; btn.innerHTML = '<span class="spin"></span> ' + (isEdit ? 'Applico…' : 'Compilo…');
+        st.textContent = 'L\'assistente ci sta lavorando: di solito servono pochi secondi.';
+        try{
+          if(isEdit){
+            const res = await aiEdit(ctx.form, txt);
+            if(ctrl.aborted) return;
+            closeFn(); ctx.apply(res, txt);
+          } else {
+            const draft = await aiDraft([txt, fileText].filter(Boolean).join('\n\n').slice(0, 120000), imgs, mode, url);
+            if(ctrl.aborted) return;
+            closeFn(); openEditor(draft, true, {source: mode, transcript: txt || url, doubts: draft._doubts || []});
+            if(draft._imageBlob && S.edit){ S.edit.newPhoto = draft._imageBlob; S.edit.newPhotoUrl = URL.createObjectURL(draft._imageBlob); renderEditor(); }
+          }
+        }catch(e){
+          btn.disabled = false; btn.textContent = T.go;
+          st.textContent = e && e.code && !['images_unavailable','image_rejected','not_granted'].includes(e.code) ? aiErrorText(e) : e && e.code === 'images_unavailable' ? 'In questa app non posso ricevere immagini: incolla il testo della pagina, oppure apri il ricettario da Chrome (claude.ai) o mandami gli screenshot nella chat di Claude.' : e && e.code === 'image_rejected' ? 'Questa immagine non va bene (troppo grande o troppe immagini): provane un\'altra.' : e && e.code === 'rate_limited' ? 'Troppe richieste ravvicinate: aspetta un minuto e riprova.' : e && e.code === 'not_granted' ? 'Permesso non concesso: puoi comunque fare tutto a mano.' : 'Non ci sono riuscito. Riprova, magari con parole diverse.';
+        }
+      };
+    });
+}
+function normDraft(d){
+  d = d && typeof d === 'object' ? d : {};
+  return {
+    title: String(d.title || ''), category: String(d.category || ''), tags: Array.isArray(d.tags) ? d.tags.map(String) : [],
+    servings: d.servings ?? '', servingsUnit: d.servingsUnit || 'porzioni',
+    prepMin: d.prepMin ?? '', cookMin: d.cookMin ?? '', restMin: d.restMin ?? '',
+    difficulty: d.difficulty || 'facile',
+    ingredients: Array.isArray(d.ingredients) ? d.ingredients.map(String) : [''],
+    steps: Array.isArray(d.steps) ? d.steps.map(s => ({text:String(s), timerMin:''})) : [{text:'', timerMin:''}],
+    notes: String(d.notes || ''), source: String(d.source || ''), favorite:false, photoId:null,
+    _doubts: Array.isArray(d.doubts) ? d.doubts.map(String).slice(0,6) : [],
+    _changes: Array.isArray(d.changes) ? d.changes.map(String).slice(0,10) : []
+  };
+}
+async function aiDraft(text, images, kind, url){
+  const res = kind === 'link'
+    ? await store.ai({action:'link', url, text, images: images || []})
+    : await store.ai({action:'draft', kind: kind === 'dictate' ? 'dictate' : 'create', text, images: images || []});
+  const d = normDraft(res.result);
+  if(url && !d.source) d.source = url;
+  if(res.imageBlob) d._imageBlob = res.imageBlob;
+  return d;
+}
+function formToPlain(r){
+  return {title:r.title || '', category:r.category || '', tags: String(r.tagsText ?? (r.tags || []).join(', ')).split(',').map(t => t.trim()).filter(Boolean),
+    servings: r.servings === '' ? null : Number(r.servings) || null, servingsUnit: r.servingsUnit || 'porzioni',
+    prepMin: r.prepMin === '' || r.prepMin == null ? null : Number(r.prepMin), cookMin: r.cookMin === '' || r.cookMin == null ? null : Number(r.cookMin), restMin: r.restMin === '' || r.restMin == null ? null : Number(r.restMin),
+    difficulty: r.difficulty || 'facile', ingredients: (r.ingredients || []).map(ingToText).filter(t => t.trim()),
+    steps: (r.steps || []).map(s => typeof s === 'string' ? s : s.text).filter(t => String(t).trim()), notes: r.notes || '', source: r.source || ''};
+}
+async function aiEdit(form, instruction){
+  const res = await store.ai({action:'edit', form: formToPlain(form), instruction});
+  return normDraft(res.result);
+}
+function voiceEdit(fromEditor){
+  let form, title;
+  if(fromEditor && S.edit){ form = S.edit.r; title = S.edit.r.title; }
+  else { const r = getR(S.openId); if(!r) return; form = r; title = r.title; }
+  openAI('edit', {title, form, apply: (res, txt) => {
+    const meta = {source:'modifica', transcript: txt, doubts: res._doubts, changes: res._changes};
+    if(fromEditor && S.edit){
+      const E = S.edit, old = E.r;
+      meta.old = snapshotForm(old);
+      const keepTimers = new Map((old.steps || []).map(s => [s.text, s.timerMin]));
+      Object.assign(old, {title: res.title || old.title, category: res.category, tagsText: res.tags.join(', '), servings: res.servings, servingsUnit: res.servingsUnit, prepMin: res.prepMin, cookMin: res.cookMin, restMin: res.restMin, difficulty: res.difficulty, notes: res.notes, source: res.source,
+        ingredients: res.ingredients.length ? res.ingredients : [''], steps: res.steps.length ? res.steps.map(s => ({text:s.text, timerMin: keepTimers.get(s.text) ?? ''})) : [{text:'', timerMin:''}]});
+      E.meta = meta; renderEditor(); $('#sheetEdit').scrollTop = 0;
+    } else {
+      const r = getR(S.openId); if(!r) return;
+      const keepTimers = new Map((r.steps || []).map(s => typeof s === 'string' ? [s, null] : [s.text, s.timerMin]));
+      const merged = Object.assign(JSON.parse(JSON.stringify(r)), {title: res.title || r.title, category: res.category, tags: res.tags, servings: res.servings, servingsUnit: res.servingsUnit, prepMin: res.prepMin, cookMin: res.cookMin, restMin: res.restMin, difficulty: res.difficulty, notes: res.notes, source: res.source,
+        ingredients: res.ingredients, steps: res.steps.map(s => ({text:s.text, timerMin: keepTimers.get(s.text) ?? ''}))});
+      meta.old = snapshotForm(Object.assign({}, r, {ingredients:(r.ingredients||[]).map(ingToText), steps:(r.steps||[]).map(s => typeof s === 'string' ? {text:s} : s), tagsText:(r.tags||[]).join(', ')}));
+      openEditor(merged, false, meta);
+    }
+  }});
+}
+function snapshotForm(r){
+  return {fields: {title:String(r.title ?? ''), category:String(r.category ?? ''), tagsText:String(r.tagsText ?? ''), servings:String(r.servings ?? ''), servingsUnit:String(r.servingsUnit ?? ''), prepMin:String(r.prepMin ?? ''), cookMin:String(r.cookMin ?? ''), restMin:String(r.restMin ?? ''), notes:String(r.notes ?? ''), source:String(r.source ?? '')},
+    ing: new Set((r.ingredients || []).map(ingToText)), steps: new Set((r.steps || []).map(s => typeof s === 'string' ? s : s.text))};
+}
+
+/* ---------- Backup ---------- */
+function openMenu(){
+  modal('<h3>Backup delle ricette</h3><p>Le ricette sono già salvate sul server e le ritrovi su ogni dispositivo. Il backup è una copia in più, da tenere dove vuoi. Puoi anche ripristinare un backup del vecchio ricettario su Claude.</p>' +
+    '<div style="display:grid;gap:10px">' +
+    (S.downloads ? '<button class="btn" data-a="dl">Scarica backup completo, con foto (.json)</button>' : '') +
+    '<button class="btn" data-a="cp">Copia backup negli appunti</button>' +
+    (S.readOnly || S.noDb ? '' : '<span class="btn file-btn">Ripristina o importa un backup<input type="file" id="fileImport" accept="application/json,.json" aria-label="Ripristina da un file di backup"></span>') + '</div>' +
+    '<div class="modal-actions"><button class="btn ghost" data-a="x">Chiudi</button></div>',
+    (m, close) => {
+      const data = () => JSON.stringify({app:'ricettario', version:1, exportedAt:new Date().toISOString(), recipes:S.recipes, plans:S.plan, shopping:S.shop}, null, 2);
+      const fullData = async () => {
+        const recipes = [];
+        for(const r of S.recipes){
+          const c = JSON.parse(JSON.stringify(r));
+          if(r.photoId){
+            try{
+              const b = await (await fetch(photoUrl(r.photoId))).blob();
+              c.photoData = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); });
+            }catch(e){}
+          }
+          recipes.push(c);
+        }
+        return JSON.stringify({app:'ricettario', version:2, exportedAt:new Date().toISOString(), recipes, shopping:S.shop}, null, 1);
+      };
+      m.querySelector('[data-a=x]').onclick = close;
+      const dl = m.querySelector('[data-a=dl]');
+      if(dl) dl.onclick = async () => {
+        dl.disabled = true; const lbl = dl.textContent; dl.innerHTML = '<span class="spin"></span> Preparo il backup con le foto…';
+        try{ const d = await fullData(); await S.downloads.save({filename:'ricettario-' + new Date().toISOString().slice(0,10) + '.json', data:d}); toast('Backup scaricato'); }
+        catch(e){ toast('Download annullato'); }
+        dl.disabled = false; dl.textContent = lbl;
+      };
+      m.querySelector('[data-a=cp]').onclick = async () => { try{ await navigator.clipboard.writeText(data()); toast('Backup copiato'); }catch(e){ toast('Copia non riuscita'); } };
+      const fi = m.querySelector('#fileImport'); if(fi) fi.addEventListener('change', () => setTimeout(close, 0));
+    });
+}
+async function importFile(file){
+  try{
+    const j = JSON.parse(await file.text());
+    const list = Array.isArray(j) ? j : j.recipes;
+    if(!Array.isArray(list)) throw new Error('formato');
+    const ok = await askBox('Importare ' + list.length + ' ricette?', 'Vengono aggiunte al ricettario «' + (BOOT.book ? BOOT.book.name : '') + '», foto comprese se il backup le contiene. Può volerci qualche secondo.', 'Importa');
+    if(!ok) return;
+    toast('Importo le ricette…');
+    let n = 0;
+    for(const r of list){
+      const id = isUuid(r.id) ? r.id : uid();
+      const data = cleanRecipe(r); data.createdAt = r.createdAt || new Date().toISOString(); data.updatedAt = new Date().toISOString();
+      data.photoId = null;
+      if(typeof r.photoData === 'string' && r.photoData.startsWith('data:image/')){
+        try{ const blob = await (await fetch(r.photoData)).blob(); const up = await S.assets.upload(await downscale(new File([blob], 'foto.jpg', {type: blob.type}), 1600)); data.photoId = up.id; }catch(e){}
+      } else if(isUuid(r.id) && r.photoId && String(r.photoId).includes('/')) data.photoId = r.photoId;
+      await S.db.collection('recipes').doc(id).set(data); n++;
+    }
+    toast(n === 1 ? '1 ricetta importata' : n + ' ricette importate');
+  }catch(e){ toast('File non valido: scegli un backup del ricettario (.json)'); }
+}
+
+/* ---------- Schede ---------- */
+function setTab(tab, fromHash){
+  if(!['ricette','menu','spesa'].includes(tab)) tab = 'ricette';
+  S.tab = tab;
+  document.querySelectorAll('[data-tab]').forEach(b => b.dataset.tab === tab ? b.setAttribute('aria-current','page') : b.removeAttribute('aria-current'));
+  $('#tabInd').style.setProperty('--ti', ['ricette','menu','spesa'].indexOf(tab));
+  $('#viewRecipes').classList.toggle('hidden', tab !== 'ricette');
+  $('#viewPlan').classList.toggle('hidden', tab !== 'menu');
+  $('#viewShop').classList.toggle('hidden', tab !== 'spesa');
+  $('#recipeTools').classList.toggle('hidden', tab !== 'ricette');
+  $('#fabs').classList.toggle('hidden', tab !== 'ricette');
+  if(!fromHash){ try{ history.replaceState(null, '', tab === 'ricette' ? location.pathname + location.search : '#' + tab); }catch(e){ try{ location.hash = tab === 'ricette' ? '' : tab; }catch(x){} } }
+  if(tab === 'menu') renderPlan();
+  if(tab === 'spesa') renderShop();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- Salvataggio coalescente (una scrittura alla volta) ---------- */
+function createSync(){ return {dirty:false, saving:false, t:null, pending:null}; }
+function scheduleWrite(sync, path, body){
+  sync.pending = {path, body: JSON.parse(JSON.stringify(body))}; sync.dirty = true;
+  clearTimeout(sync.t); sync.t = setTimeout(() => flushSync(sync), 350);
+}
+async function flushSync(sync){
+  clearTimeout(sync.t);
+  if(sync.saving || !S.db) return;
+  sync.saving = true;
+  while(sync.dirty){
+    sync.dirty = false; const {path, body} = sync.pending;
+    try{ await S.db.doc(path).set(body); }
+    catch(e){ toast(e && e.code === 'quota_exceeded' ? 'Spazio esaurito.' : 'Salvataggio non riuscito: riprova tra poco.'); }
+  }
+  sync.saving = false;
+}
+const busyFor = (sync, path) => (sync.dirty || sync.saving) && sync.pending && sync.pending.path === path;
+const shopSync = createSync(), planSync = createSync();
+
+/* ---------- Lista della spesa ---------- */
+const AISLES = ['Frutta e verdura','Pane e forno','Carne e pesce','Latticini e uova','Dispensa','Surgelati','Altro'];
+const AISLE_RULES = [
+  ['Surgelati', /surgelat|gelato|congelat/],
+  ['Dispensa', /\b(pelati|passata|polpa di pomodoro|concentrato|pomodori secchi|olive|capperi|tonno in|funghi secchi)/],
+  ['Carne e pesce', /\b(poll|manzo|maial|vitell|tacchin|salsicc|guancial|pancett|prosciutt|speck|macinat|carne|agnell|coniglio|salmon|pesce|gamber|cozz|vongol|calamar|polp|seppi|merluzz|baccal|orata|branzin|spigol|bresaola|mortadell|salame|wurstel|bistecc|filett|fesa|petto di|cosce)/],
+  ['Latticini e uova', /\b(latte|burro|panna|yogurt|mozzarell|parmigian|grana|pecorin|ricott|mascarpon|formagg|uov|tuorl|album|stracchin|gorgonzol|scamorz|provol|fontin|emmental|besciamell|feta|philadelphia|robiola|burrata|stracciatell)/],
+  ['Frutta e verdura', /\b(pomodor|insalat|lattug|zucchin|melanzan|peperon|cipoll|scalogn|aglio|carot|sedan|patat|basilic|prezzemol|rosmarin|salvia|limon|aranc|mela\b|mele\b|banan|fragol|spinac|funghi|porr|zucca|cavol|broccol|finocch|rucol|mirtill|pera\b|pere\b|frutta|verdur|menta|timo|erba cipollina|zenzero|avocado|cetriol|ravanell|carciof|asparag|fagiolin|bietol|lampon|uva\b|kiwi|ananas|pesche|albicocc|ciliegi|cicoria|radicchio|songino|valeriana|lime)/],
+  ['Pane e forno', /\b(pane|panin|grissin|piadin|sfoglia|bris[eé]|focacc|crackers|fette biscottate|base pizza|tortill)/],
+  ['Dispensa', /\b(spaghett|penne|rigaton|fusill|linguin|tagliatell|lasagn|pasta|riso|farin|zucchero|sale\b|pepe\b|olio|aceto|lievito|cacao|cioccolat|caff|miele|ceci|lenticch|fagiol|piselli|tonno|acciugh|alici|cannell|noce moscata|curry|paprika|origano|peperoncin|vino|brodo|dado|amido|maizena|noci|mandorl|nocciol|pinoli|pistacch|uvetta|vanigli|biscott|savoiard|gelatina|colla di pesce|semi|couscous|orzo|polenta|pangrattat|marmellat|confettur|cereali|avena|bicarbonato|zafferano|senape|maionese|ketchup|salsa|sugo|latte di cocco|ragù)/]
+];
+function aisleOf(name){ const n = String(name || '').toLowerCase(); for(const [a, re] of AISLE_RULES) if(re.test(n)) return a; return 'Altro'; }
+const UCLASS = {g:['g',1], kg:['g',1000], mg:['g',.001], ml:['ml',1], cl:['ml',10], dl:['ml',100], l:['ml',1000]};
+function normName(n){ return String(n || '').toLowerCase().replace(/\s+/g,' ').trim(); }
+function toShopItem(p, factor, from){
+  let qty = p.qty != null ? (p.qtyMax ?? p.qty) * (factor || 1) : null, unit = p.unit || '';
+  if(qty != null && UCLASS[unit]){ qty = qty * UCLASS[unit][1]; unit = UCLASS[unit][0]; }
+  return {name: p.name, qty, unit, note: p.note || '', from: from ? [from] : [], aisle: aisleOf(p.name)};
+}
+function shopKey(it){ return normName(it.name) + '|' + (it.unit === 'q.b.' ? '' : it.unit); }
+function mergeItems(list, it){
+  const k = shopKey(it); const ex = list.find(x => !x.checked && shopKey(x) === k);
+  if(ex){
+    if(it.qty != null) ex.qty = (ex.qty || 0) + it.qty;
+    if(ex.unit === 'q.b.' && it.unit && it.unit !== 'q.b.') ex.unit = it.unit;
+    (it.from || []).forEach(f => { if(!ex.from.includes(f)) ex.from.push(f); });
+    return list;
+  }
+  list.push(Object.assign({id: uuid(), checked:false}, it));
+  return list;
+}
+function fmtShopQty(it){
+  if(it.unit === 'q.b.') return 'q.b.';
+  if(it.qty == null) return '';
+  let q = it.qty, u = it.unit;
+  if(u === 'g' && q >= 1000){ q = q/1000; u = 'kg'; }
+  if(u === 'ml' && q >= 1000){ q = q/1000; u = 'l'; }
+  const lab = unitLabel(u, q);
+  return fmtQty(q, u) + (lab ? ' ' + lab : '');
+}
+function recipeItems(r, servings){
+  const base = Number(r.servings) || null; const factor = base && servings ? servings / base : 1;
+  return (r.ingredients || []).map(i => typeof i === 'string' ? parseIngredient(i) : (i.group || i.name != null ? i : parseIngredient(i.text))).filter(p => p && !p.group && p.name).map(p => toShopItem(p, factor, r.title));
+}
+function saveShop(){ scheduleWrite(shopSync, 'lists/shopping', {items: S.shop, updatedAt: new Date().toISOString()}); renderShop(); updateBadge(); }
+function updateBadge(){ const n = S.shop.filter(i => !i.checked).length; const b = $('#shopBadge'); b.textContent = n; b.classList.toggle('hidden', !n); }
+function openAddToShop(items, title){
+  const merged = items.reduce((l, it) => mergeItems(l, it), []);
+  if(!merged.length){ toast('Non ci sono ingredienti da aggiungere'); return; }
+  modal('<h3>Aggiungi alla spesa</h3><p>' + esc(title) + '. Togli la spunta a quello che hai già in casa.</p>' +
+    '<ul class="cand">' + merged.map((it, i) => '<li><label><input type="checkbox" data-c="' + i + '"' + (it.unit === 'q.b.' ? '' : ' checked') + '><span><b>' + esc(fmtShopQty(it)) + '</b> ' + esc(it.name) + '</span></label></li>').join('') + '</ul>' +
+    '<div class="modal-actions"><button class="btn" data-a="no">Annulla</button><button class="btn primary" data-a="ok">Aggiungi alla lista</button></div>',
+    (m, close) => {
+      const upd = () => { const n = m.querySelectorAll('[data-c]:checked').length; m.querySelector('[data-a=ok]').textContent = n ? 'Aggiungi ' + n + (n === 1 ? ' prodotto' : ' prodotti') : 'Niente da aggiungere'; m.querySelector('[data-a=ok]').disabled = !n; };
+      m.addEventListener('change', upd); upd();
+      m.querySelector('[data-a=no]').onclick = close;
+      m.querySelector('[data-a=ok]').onclick = () => {
+        const sel = [...m.querySelectorAll('[data-c]:checked')].map(c => merged[Number(c.dataset.c)]);
+        sel.forEach(it => mergeItems(S.shop, JSON.parse(JSON.stringify(it))));
+        saveShop(); close(); toast(sel.length + (sel.length === 1 ? ' prodotto aggiunto' : ' prodotti aggiunti') + ' alla spesa');
+      };
+    });
+}
+function shopAsText(){
+  let t = 'LISTA DELLA SPESA\n';
+  AISLES.forEach(a => { const its = S.shop.filter(i => !i.checked && (i.aisle || 'Altro') === a); if(!its.length) return; t += '\n' + a.toUpperCase() + '\n'; its.forEach(i => t += '- ' + (fmtShopQty(i) ? fmtShopQty(i) + ' ' : '') + i.name + '\n'); });
+  return t;
+}
+function renderShop(){
+  const el = $('#viewShop'); if(S.tab !== 'spesa') return;
+  const todo = S.shop.filter(i => !i.checked), done = S.shop.filter(i => i.checked);
+  const row = it => '<li class="' + (it.checked ? 'done' : '') + '"><label><input type="checkbox" data-sck="' + esc(it.id) + '"' + (it.checked ? ' checked' : '') + '><span class="sq">' + esc(fmtShopQty(it)) + '</span><span class="sn"><span>' + esc(it.name) + '</span>' + (it.from && it.from.length ? '<small>' + esc(it.from.join(' · ')) + '</small>' : '') + '</span></label><button class="rm" data-srm="' + esc(it.id) + '" aria-label="Togli ' + esc(it.name) + '">' + IC.x + '</button></li>';
+  let h = '<div class="view-head"><div class="ttl"><h2>Lista della spesa</h2><div class="sub">' + (S.shopLoaded ? (todo.length ? todo.length + ' da prendere' + (done.length ? ' · ' + done.length + ' nel carrello' : '') : 'Tutto preso') : 'Caricamento…') + '</div></div></div>' +
+    '<form class="add-row" id="shopAdd"><input class="inp" id="shopInp" placeholder="Aggiungi: 1 l latte, pane, 6 uova…" autocomplete="off" enterkeyhint="done"><button class="btn primary" type="submit"' + (S.noDb || S.readOnly ? ' disabled' : '') + '>Aggiungi</button></form>';
+  if(!S.shop.length){
+    h += '<div class="empty"><h2>La lista è vuota</h2><p>Aggiungi i prodotti qui sopra, oppure apri una ricetta o il menù della settimana e tocca «Aggiungi alla spesa»: le quantità uguali vengono sommate da sole.</p></div>';
+  } else {
+    AISLES.forEach(a => { const its = todo.filter(i => (i.aisle || 'Altro') === a); if(its.length) h += '<div class="aisle"><h3>' + esc(a) + '</h3><ul class="shop-list">' + its.map(row).join('') + '</ul></div>'; });
+    if(done.length) h += '<div class="aisle"><h3>Nel carrello</h3><ul class="shop-list">' + done.map(row).join('') + '</ul></div>';
+    h += '<div class="actions"><button class="btn small" data-shop="copy">' + IC.copy + ' Copia la lista</button>' + (done.length ? '<button class="btn small" data-shop="cleardone">Togli i prodotti presi</button>' : '') + '<button class="btn small ghost danger" data-shop="clear">Svuota la lista</button></div>';
+  }
+  el.innerHTML = h;
+}
+
+/* ---------- Menù della settimana ---------- */
+const DAYS = ['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'];
+const MEALS = [['pranzo','Pranzo'],['cena','Cena']];
+function mondayOf(d){ const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; }
+function isoDate(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function weekLabel(mon){
+  const sun = addDays(mon, 6), f = d => d.getDate() + ' ' + d.toLocaleDateString('it-IT', {month:'short'}).replace('.','');
+  return f(mon) + ' – ' + f(sun) + ' ' + sun.getFullYear();
+}
+let planUnsub = null;
+function subscribePlan(){
+  if(!S.db) return;
+  if(planSync.dirty) flushSync(planSync);
+  planUnsub && planUnsub();
+  const key = isoDate(S.planMonday), path = 'plans/' + key;
+  S.planKey = key; S.plan = {slots:{}}; S.planLoaded = false; renderPlan();
+  planUnsub = S.db.doc(path).onSnapshot(snap => {
+    if(S.planKey !== key || busyFor(planSync, path)) return;
+    S.plan = {slots: (snap.exists && snap.data().slots) ? JSON.parse(JSON.stringify(snap.data().slots)) : {}};
+    S.planLoaded = true; renderPlan();
+  }, () => { S.planLoaded = true; renderPlan(); });
+}
+function savePlan(){ scheduleWrite(planSync, 'plans/' + S.planKey, {slots: S.plan.slots, weekStart: S.planKey, updatedAt: new Date().toISOString()}); renderPlan(); }
+async function addToPlan(weekKey, slot, entry){
+  if(weekKey === S.planKey){ (S.plan.slots[slot] = S.plan.slots[slot] || []).push(entry); savePlan(); return; }
+  try{
+    const ref = S.db.doc('plans/' + weekKey); const snap = await ref.get();
+    const slots = snap.exists && snap.data().slots ? JSON.parse(JSON.stringify(snap.data().slots)) : {};
+    (slots[slot] = slots[slot] || []).push(entry);
+    await ref.set({slots, weekStart: weekKey, updatedAt: new Date().toISOString()});
+  }catch(e){ toast('Non sono riuscito a salvare il menù'); throw e; }
+}
+function renderPlan(){
+  const el = $('#viewPlan'); if(S.tab !== 'menu') return;
+  const today = isoDate(new Date()); const isThis = isoDate(mondayOf(new Date())) === S.planKey;
+  const all = Object.values(S.plan.slots || {}).flat(); const nRec = all.filter(e => e.rid && getR(e.rid)).length;
+  let h = '<div class="view-head"><button class="btn icon-btn" data-plan="prev" aria-label="Settimana precedente">' + IC.back + '</button>' +
+    '<div class="ttl" style="text-align:center"><h2>Menù della settimana</h2><div class="sub">' + esc(weekLabel(S.planMonday)) + (isThis ? ' · questa settimana' : '') + '</div></div>' +
+    '<button class="btn icon-btn" data-plan="next" aria-label="Settimana successiva" style="transform:scaleX(-1)">' + IC.back + '</button></div>' +
+    '<div class="actions" style="justify-content:center">' + (nRec ? '<button class="btn small primary" data-plan="toshop">Aggiungi tutto alla spesa</button>' : '') + (isThis ? '' : '<button class="btn small" data-plan="today">Torna a oggi</button>') + (all.length ? '<button class="btn small ghost danger" data-plan="clear">Svuota settimana</button>' : '') + '</div>';
+  if(S.noDb){ el.innerHTML = h + '<div class="empty"><p>Apri il ricettario dal tuo account Claude per usare il menù.</p></div>'; return; }
+  h += '<div class="days">';
+  DAYS.forEach((dn, di) => {
+    const date = addDays(S.planMonday, di), isToday = isoDate(date) === today;
+    h += '<div class="day' + (isToday ? ' today' : '') + '"><div class="day-name">' + dn + ' <small>' + date.getDate() + ' ' + date.toLocaleDateString('it-IT', {month:'long'}) + '</small>' + (isToday ? '<span class="now">Oggi</span>' : '') + '</div>';
+    MEALS.forEach(([mk, ml]) => {
+      const key = di + '-' + mk, entries = (S.plan.slots || {})[key] || [];
+      h += '<div class="slot"><div class="slot-lbl">' + ml + '</div><div class="entries">' + entries.map((e, ei) => {
+        if(e.rid){ const r = getR(e.rid);
+          return '<span class="entry' + (r ? '' : ' gone') + '"><button data-popen="' + esc(e.rid) + '">' + esc(r ? r.title : 'Ricetta eliminata') + (r && e.servings ? ' <small>· ' + esc(e.servings) + '</small>' : '') + '</button><button class="rm" data-prm="' + key + ':' + ei + '" aria-label="Togli">✕</button></span>'; }
+        return '<span class="entry free"><button tabindex="-1">' + esc(e.text) + '</button><button class="rm" data-prm="' + key + ':' + ei + '" aria-label="Togli">✕</button></span>';
+      }).join('') + '<button class="add-slot" data-padd="' + key + '" aria-label="Aggiungi a ' + dn + ' ' + ml + '">+</button></div></div>';
+    });
+    h += '</div>';
+  });
+  el.innerHTML = h + '</div>' + (S.planLoaded ? '' : '<p class="hint" style="text-align:center">Caricamento…</p>');
+}
+function openPlanPicker(slot){
+  const [di, mk] = slot.split('-'); const ml = MEALS.find(m => m[0] === mk)[1];
+  let sel = null, serv = 4;
+  modal('<h3>' + DAYS[di] + ' · ' + ml + '</h3>' +
+    (S.recipes.length ? '<input class="inp" id="pp_q" placeholder="Cerca tra le tue ricette" autocomplete="off"><div class="pick-list" id="pp_list"></div>' +
+    '<div id="pp_sel" class="hidden" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="lbl">Per</span><div class="stepper"><button data-pp="-1" aria-label="Meno">−</button><span id="pp_sv"></span><button data-pp="1" aria-label="Più">+</button></div><button class="btn primary" data-a="add" style="margin-left:auto">Aggiungi al menù</button></div>' : '<p>Non hai ancora ricette salvate: puoi scrivere un piatto qui sotto.</p>') +
+    '<div class="field"><label for="pp_txt">Oppure scrivi un piatto</label><div style="display:flex;gap:8px"><input class="inp" id="pp_txt" placeholder="Es. Pizza fuori, avanzi, insalata…"><button class="btn" data-a="txt">Aggiungi</button></div></div>' +
+    '<div class="modal-actions"><button class="btn ghost" data-a="x">Chiudi</button></div>',
+    (m, close) => {
+      const list = m.querySelector('#pp_list');
+      const draw = () => {
+        if(!list) return;
+        const q = (m.querySelector('#pp_q').value || '').toLowerCase().trim();
+        const rs = S.recipes.filter(r => !q || (r.title + ' ' + (r.category||'') + ' ' + (r.tags||[]).join(' ')).toLowerCase().includes(q)).sort((a,b) => (b.favorite?1:0)-(a.favorite?1:0) || String(a.title).localeCompare(String(b.title),'it'));
+        list.innerHTML = rs.map(r => '<button class="pick" data-pick="' + esc(r.id) + '" aria-pressed="' + (sel === r.id) + '"><span>' + (r.favorite ? '★ ' : '') + esc(r.title) + '</span><small>' + esc(r.category || '') + '</small></button>').join('') || '<p class="hint">Nessuna ricetta trovata.</p>';
+      };
+      const drawSel = () => { const r = getR(sel); const box = m.querySelector('#pp_sel'); box.classList.toggle('hidden', !r); if(r) m.querySelector('#pp_sv').textContent = serv + ' ' + (r.servingsUnit || 'porzioni'); };
+      draw();
+      m.addEventListener('input', e => { if(e.target.id === 'pp_q') draw(); });
+      m.addEventListener('click', async e => {
+        const b = e.target.closest('button'); if(!b) return;
+        if(b.dataset.pick){ sel = b.dataset.pick; serv = Number(getR(sel).servings) || 4; draw(); drawSel(); }
+        else if(b.dataset.pp){ serv = Math.max(1, serv + Number(b.dataset.pp)); drawSel(); }
+        else if(b.dataset.a === 'add' && sel){ await addToPlan(S.planKey, slot, {id: uuid(), rid: sel, servings: serv, text: (getR(sel) || {}).title || ''}); close(); }
+        else if(b.dataset.a === 'txt'){ const t = m.querySelector('#pp_txt').value.trim(); if(!t) return; await addToPlan(S.planKey, slot, {id: uuid(), text: t}); close(); }
+        else if(b.dataset.a === 'x') close();
+      });
+    });
+}
+function openAddToPlan(r){
+  const thisMon = mondayOf(new Date()); let week = 0, day = (new Date().getDay() + 6) % 7, meal = 'cena', serv = S.servings || Number(r.servings) || 4;
+  modal('<h3>Aggiungi al menù</h3><p>' + esc(r.title) + '</p><div class="seg" id="ap_w"><button data-w="0">Questa settimana</button><button data-w="1">Prossima</button></div><div class="days-pick" id="ap_d"></div>' +
+    '<div class="seg" id="ap_m">' + MEALS.map(([k, l]) => '<button data-m="' + k + '">' + l + '</button>').join('') + '</div>' +
+    '<div style="display:flex;align-items:center;gap:10px"><span class="lbl">Per</span><div class="stepper"><button data-sv="-1" aria-label="Meno">−</button><span id="ap_sv"></span><button data-sv="1" aria-label="Più">+</button></div></div>' +
+    '<div class="modal-actions"><button class="btn" data-a="no">Annulla</button><button class="btn primary" data-a="ok">Aggiungi</button></div>',
+    (m, close) => {
+      const draw = () => {
+        const mon = addDays(thisMon, week*7);
+        m.querySelectorAll('[data-w]').forEach(b => b.setAttribute('aria-pressed', Number(b.dataset.w) === week));
+        m.querySelectorAll('[data-m]').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === meal));
+        m.querySelector('#ap_d').innerHTML = DAYS.map((d, i) => '<button data-d="' + i + '" aria-pressed="' + (i === day) + '">' + d.slice(0,3) + '<small>' + addDays(mon, i).getDate() + '</small></button>').join('');
+        m.querySelector('#ap_sv').textContent = serv + ' ' + (r.servingsUnit || 'porzioni');
+      };
+      draw();
+      m.addEventListener('click', async e => {
+        const b = e.target.closest('button'); if(!b) return; const d = b.dataset;
+        if(d.w) week = Number(d.w); else if(d.d) day = Number(d.d); else if(d.m) meal = d.m; else if(d.sv) serv = Math.max(1, serv + Number(d.sv));
+        else if(d.a === 'no') return close();
+        else if(d.a === 'ok'){ try{ await addToPlan(isoDate(addDays(thisMon, week*7)), day + '-' + meal, {id: uuid(), rid: r.id, servings: serv, text: r.title}); close(); toast('Aggiunta a ' + DAYS[day].toLowerCase() + ', ' + meal); }catch(x){} return; }
+        draw();
+      });
+    });
+}
+
+/* ---------- Dettatura ---------- */
+function dictReady(){ return !!S.dict; }
+function setupDictation(d){
+  S.dict = d;
+  d.onPartial(({text}) => { const p = document.getElementById('dict_partial'); if(p) p.textContent = text; });
+  d.onFinal(({text}) => {
+    const ta = document.getElementById('ai_txt'); if(!ta) return;
+    ta.value = ta.value ? ta.value + text : text.replace(/^\s+/, '');
+    ta.scrollTop = ta.scrollHeight;
+    const p = document.getElementById('dict_partial'); if(p) p.textContent = '';
+  });
+  d.onState(({state, reason}) => {
+    S.dictState = state;
+    const b = document.getElementById('dict_btn'); const st = document.getElementById('ai_status');
+    if(b){ const on = state !== 'idle'; b.classList.toggle('on', on); b.innerHTML = on ? '<span class="dot"></span> Ferma' : micIcon + ' ' + (document.getElementById('ai_txt') && document.getElementById('ai_txt').value ? 'Continua a dettare' : 'Inizia a dettare'); }
+    if(state === 'idle' && reason && st){
+      if(reason === 'not_granted') st.textContent = 'Microfono non autorizzato: puoi scrivere nel riquadro o usare il microfono della tastiera.';
+      else if(reason === 'unavailable'){ st.textContent = 'La dettatura non è disponibile qui: usa il microfono della tastiera.'; b && b.classList.add('hidden'); }
+      else if(reason === 'rate_limited') st.textContent = 'Troppe dettature in corso: riprova tra poco.';
+      else if(reason === 'upstream_error') st.textContent = 'Il microfono non ha risposto. Riprova.';
+    }
+  });
+}
+const micIcon = '<svg class="i" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>';
+function startDictation(){
+  if(!S.dict) return;
+  S.dict.start().catch(e => {
+    const st = document.getElementById('ai_status'); if(!st) return;
+    if(e && e.code === 'not_granted') st.textContent = 'Microfono non autorizzato: puoi scrivere nel riquadro o usare il microfono della tastiera.';
+    else if(e && e.code === 'unavailable') st.textContent = 'La dettatura non è disponibile qui: usa il microfono della tastiera.';
+  });
+}
+function stopDictation(){ try{ if(S.dict && S.dict.active()) return S.dict.stop(); }catch(e){} return Promise.resolve(); }
+
+/* ---------- Eventi ---------- */
+document.addEventListener('click', async e => {
+  const t = e.target.closest('button, [data-open]'); if(!t) return;
+  const d = t.dataset;
+  if(d.f !== undefined && t.classList.contains('chip')){ S.filter = d.f; renderList(); return; }
+  if(d.open){ openDetail(d.open); return; }
+  if(d.act === 'new' || t.id === 'btnNew'){ if(S.noDb){ toast('Apri il ricettario dal tuo account Claude per salvare.'); } openEditor(null, true); return; }
+  if(d.act === 'ai' || t.closest('#btnAI')){ openAI(); return; }
+  if(d.act === 'dictate' || t.id === 'btnDictate'){ openAI('dictate'); return; }
+  if(d.tab){ setTab(d.tab); return; }
+  if(d.popen){ openDetail(d.popen); return; }
+  if(d.padd){ openPlanPicker(d.padd); return; }
+  if(d.prm){ const [slot, i] = d.prm.split(':'); const arr = S.plan.slots[slot] || []; arr.splice(Number(i), 1); if(!arr.length) delete S.plan.slots[slot]; savePlan(); return; }
+  if(d.plan){
+    if(d.plan === 'prev' || d.plan === 'next' || d.plan === 'today'){ S.planMonday = d.plan === 'today' ? mondayOf(new Date()) : addDays(S.planMonday, d.plan === 'prev' ? -7 : 7); subscribePlan(); }
+    else if(d.plan === 'clear'){ if(await confirmBox('Svuotare il menù di questa settimana?', 'Togli tutti i piatti dal ' + weekLabel(S.planMonday) + '. Le ricette restano nel ricettario.', 'Svuota')){ S.plan.slots = {}; savePlan(); } }
+    else if(d.plan === 'toshop'){
+      const items = []; Object.values(S.plan.slots).flat().forEach(e => { const r = e.rid && getR(e.rid); if(r) items.push(...recipeItems(r, e.servings)); });
+      openAddToShop(items, 'Ingredienti di tutti i piatti del ' + weekLabel(S.planMonday));
+    }
+    return;
+  }
+  if(d.srm){ S.shop = S.shop.filter(i => i.id !== d.srm); saveShop(); return; }
+  if(d.shop){
+    if(d.shop === 'copy'){ try{ await navigator.clipboard.writeText(shopAsText()); toast('Lista copiata: incollala dove vuoi'); }catch(e){ toast('Copia non riuscita'); } }
+    else if(d.shop === 'cleardone'){ S.shop = S.shop.filter(i => !i.checked); saveShop(); }
+    else if(d.shop === 'clear'){ if(await confirmBox('Svuotare la lista della spesa?', 'Tutti i prodotti vengono tolti dalla lista.', 'Svuota')){ S.shop = []; saveShop(); } }
+    return;
+  }
+  if(t.closest('#btnMenu') || t.closest('#bookBtn')){ openSettings(); return; }
+  if(d.st){ settingsAction(t); return; }
+  // dettaglio
+  if(t.closest('#sheetDetail')){
+    const r = getR(S.openId); if(!r) return;
+    if(d.act === 'close') closeDetail();
+    else if(d.act === 'edit') openEditor(r, false);
+    else if(d.act === 'voiceedit') voiceEdit(false);
+    else if(d.act === 'cook') openCook();
+    else if(d.act === 'toshop'){ if(S.noDb) return toast('Apri il ricettario dal tuo account Claude.'); openAddToShop(recipeItems(r, S.servings || Number(r.servings) || null), r.title + (S.servings ? ', per ' + S.servings + ' ' + (r.servingsUnit || 'porzioni') : '')); }
+    else if(d.act === 'toplan'){ if(S.noDb) return toast('Apri il ricettario dal tuo account Claude.'); openAddToPlan(r); }
+    else if(d.act === 'fav'){ try{ await S.db.collection('recipes').doc(r.id).update({favorite:!r.favorite, updatedAt:new Date().toISOString()}); }catch(err){ toast('Non sono riuscito a salvare'); } }
+    else if(d.act === 'copy'){ try{ await navigator.clipboard.writeText(recipeAsText(r)); toast('Ricetta copiata: incollala dove vuoi'); }catch(err){ toast('Copia non riuscita'); } }
+    else if(d.act === 'dup'){ const c = JSON.parse(JSON.stringify(r)); delete c.id; c.title = r.title + ' (copia)'; c.photoId = null; c.favorite = false; openEditor(c, true); }
+    else if(d.act === 'del'){
+      if(await confirmBox('Eliminare «' + (r.title || 'questa ricetta') + '»?', 'La ricetta e la sua foto vengono cancellate da tutti i tuoi dispositivi. Non si può annullare.', 'Elimina')){
+        try{ await S.db.collection('recipes').doc(r.id).delete(); if(r.photoId && S.assets){ try{ await S.assets.delete(r.photoId); }catch(x){} } closeDetail(); toast('Ricetta eliminata'); }catch(err){ toast('Non sono riuscito a eliminarla'); }
+      }
+    }
+    else if(d.serv){
+      const base = Number(r.servings) || 1;
+      if(d.serv === 'reset') S.servings = base; else S.servings = Math.max(1, (S.servings || base) + Number(d.serv));
+      renderDetail();
+    }
+    else if(d.timer !== undefined){
+      const s = (r.steps || [])[Number(d.timer)]; const st = typeof s === 'string' ? {text:s} : s;
+      const m = st.timerMin != null && st.timerMin !== '' ? Number(st.timerMin) : detectMinutes(st.text);
+      if(m) startTimer(r.title + ' · passo ' + (Number(d.timer)+1), m);
+    }
+    return;
+  }
+  // cucina
+  if(d.cook){
+    const r = getR(S.openId);
+    if(d.cook === 'close') closeCook();
+    else if(d.cook === 'next'){ S.cookIdx++; renderCook(); }
+    else if(d.cook === 'prev'){ S.cookIdx = Math.max(0, S.cookIdx - 1); renderCook(); }
+    else if(d.cook === 'ings') $('#cookIngs').classList.toggle('hidden');
+    else if(d.cook === 'timers') openTimers();
+    else if(d.cook === 'timer' && r) startTimer(r.title + ' · passo ' + (S.cookIdx+1), Number(d.min));
+    return;
+  }
+  // timer
+  // editor
+  if(S.edit && t.closest('#sheetEdit')){
+    const E = S.edit, r = E.r;
+    if(d.e === 'cancel'){ closeEditor(); return; }
+    if(d.e === 'save'){ saveEditor(); return; }
+    if(d.e === 'voice'){ voiceEdit(true); return; }
+    if(d.e === 'rmphoto'){ if(E.newPhotoUrl) URL.revokeObjectURL(E.newPhotoUrl); E.newPhoto = null; E.newPhotoUrl = null; E.removePhoto = true; renderEditor(); return; }
+    if(d.e === 'addIng'){ r.ingredients.push(''); renderEditor(); const ins = document.querySelectorAll('[data-ing]'); ins[ins.length-1].focus(); return; }
+    if(d.e === 'addStep'){ r.steps.push({text:'', timerMin:''}); renderEditor(); const ins = document.querySelectorAll('[data-step]'); ins[ins.length-1].focus(); return; }
+    if(d.e === 'pasteIng'){
+      modal('<h3>Incolla una lista di ingredienti</h3><p>Una riga per ingrediente. Le righe vengono aggiunte in fondo alla lista.</p><textarea class="inp" id="paste_txt" rows="8" placeholder="200 g farina&#10;2 uova&#10;sale q.b."></textarea><div class="modal-actions"><button class="btn" data-a="no">Annulla</button><button class="btn primary" data-a="ok">Aggiungi</button></div>',
+        (m, close) => { m.querySelector('[data-a=no]').onclick = close; m.querySelector('[data-a=ok]').onclick = () => {
+          const lines = m.querySelector('#paste_txt').value.split(/\n/).map(l => l.replace(/^\s*[-•*·]\s*/,'').trim()).filter(Boolean);
+          r.ingredients = r.ingredients.filter(x => String(x).trim()).concat(lines); if(!r.ingredients.length) r.ingredients = [''];
+          close(); renderEditor(); }; setTimeout(() => m.querySelector('#paste_txt').focus(), 30); });
+      return;
+    }
+    if(d.diff){ r.difficulty = d.diff; document.querySelectorAll('[data-diff]').forEach(b => b.setAttribute('aria-pressed', b.dataset.diff === d.diff)); return; }
+    if(d.rm){ const [k, i] = d.rm.split(':'); const arr = k === 'ing' ? r.ingredients : r.steps; arr.splice(Number(i), 1); if(!arr.length) arr.push(k === 'ing' ? '' : {text:'', timerMin:''}); renderEditor(); return; }
+    if(d.mv){ const [k, i, dir] = d.mv.split(':'); const arr = k === 'ing' ? r.ingredients : r.steps; const a = Number(i), b = a + Number(dir); if(b < 0 || b >= arr.length) return; [arr[a], arr[b]] = [arr[b], arr[a]]; renderEditor(); return; }
+  }
+});
+document.addEventListener('input', e => {
+  const t = e.target;
+  if(t.id === 'q'){ S.q = t.value; renderList(); return; }
+  if(!S.edit) return;
+  const r = S.edit.r, d = t.dataset;
+  t.classList && t.classList.remove('chg');
+  if(d.f){ r[d.f] = t.value; return; }
+  if(d.ing !== undefined){ r.ingredients[Number(d.ing)] = t.value; const p = document.getElementById('pi_' + d.ing); if(p) p.innerHTML = parsedChips(t.value); return; }
+  if(d.step !== undefined){ r.steps[Number(d.step)].text = t.value; const ti = document.querySelector('[data-steptimer="' + d.step + '"]'); if(ti){ const m = detectMinutes(t.value); ti.placeholder = m != null ? m : '—'; } return; }
+  if(d.steptimer !== undefined){ r.steps[Number(d.steptimer)].timerMin = t.value; return; }
+});
+document.addEventListener('submit', e => {
+  if(e.target.id === 'shopAdd'){
+    e.preventDefault(); const inp = $('#shopInp'); const v = inp.value.trim(); if(!v) return;
+    v.split(/\s*[;,\n]\s*/).filter(Boolean).forEach(line => { const p = parseIngredient(line); if(p && !p.group && p.name) mergeItems(S.shop, toShopItem(p, 1, null)); });
+    saveShop(); setTimeout(() => { const i = $('#shopInp'); if(i){ i.focus(); } }, 0);
+  }
+});
+document.addEventListener('keydown', e => {
+  const t = e.target;
+  if(e.key === 'Enter' && t.dataset && t.dataset.ing !== undefined){
+    e.preventDefault(); const i = Number(t.dataset.ing);
+    S.edit.r.ingredients.splice(i + 1, 0, ''); renderEditor();
+    const el = document.querySelector('[data-ing="' + (i+1) + '"]'); el && el.focus();
+  }
+  if(e.key === 'Escape' && T.state === 'open'){ setDock('compact'); return; }
+  if(e.key === 'Escape'){
+    if($('#modalRoot').lastElementChild){ stopDictation(); $('#modalRoot').lastElementChild.remove(); }
+    else if(!$('#cook').classList.contains('hidden')) closeCook();
+    else if(S.edit) closeEditor();
+    else if(S.openId) closeDetail();
+    else if(!$('#sheetSettings').classList.contains('hidden')) closeSettings();
+  }
+  if(!$('#cook').classList.contains('hidden')){
+    if(e.key === 'ArrowRight'){ const r = getR(S.openId); if(r && S.cookIdx < (r.steps||[]).length - 1){ S.cookIdx++; renderCook(); } }
+    if(e.key === 'ArrowLeft' && S.cookIdx > 0){ S.cookIdx--; renderCook(); }
+  }
+});
+document.addEventListener('change', async e => {
+  const t = e.target;
+  if(t.dataset && t.dataset.sck !== undefined){ const it = S.shop.find(i => i.id === t.dataset.sck); if(it){ it.checked = t.checked; saveShop(); } return; }
+  if(t.dataset && t.dataset.chk !== undefined){ const i = Number(t.dataset.chk); t.checked ? S.checked.add(i) : S.checked.delete(i); t.closest('li').classList.toggle('done', t.checked); return; }
+  if(t.id === 'e_photo' && S.edit){
+    const f = t.files[0]; if(!f) return;
+    try{ const b = await downscale(f, 1600); if(S.edit.newPhotoUrl) URL.revokeObjectURL(S.edit.newPhotoUrl); S.edit.newPhoto = b; S.edit.newPhotoUrl = URL.createObjectURL(b); S.edit.removePhoto = false; renderEditor(); }
+    catch(err){ toast('Non riesco a leggere questa immagine'); }
+    return;
+  }
+  if(t.id === 'fileImport'){ const f = t.files[0]; t.value = ''; if(f) importFile(f); }
+});
+
+/* ====================================================================
+   App pubblicata: avvio, accesso, ricettari, inviti, impostazioni
+   ==================================================================== */
+const CFG = window.RICETTARIO_CONFIG || {};
+const BOOT = {books: [], book: null, profile: null, installEvt: null, started: false, dataStarted: false, usage: null};
+const cfgOk = () => !!(CFG.supabaseUrl && CFG.supabaseAnonKey && !/INCOLLA/i.test(CFG.supabaseUrl + CFG.supabaseAnonKey));
+
+/* --- download di file (backup) --- */
+const localDownloads = { async save({filename, data}){
+  const url = URL.createObjectURL(new Blob([data], {type: 'application/json'}));
+  const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}};
+
+/* --- dettatura con il riconoscimento vocale del browser (Chrome, Safari, Edge) --- */
+function makeDictation(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR) return null;
+  let rec = null, state = 'idle', wanted = false, lastErr = null, stopWaiters = [];
+  const hP = [], hF = [], hS = [];
+  const setState = (s, reason) => { state = s; hS.forEach(h => h(reason ? {state:s, reason} : {state:s})); };
+  const make = () => {
+    rec = new SR(); rec.lang = 'it-IT'; rec.continuous = false; rec.interimResults = true; rec.maxAlternatives = 1;
+    rec.onstart = () => { if(state !== 'listening') setState('listening'); };
+    rec.onresult = e => {
+      let interim = '';
+      for(let i = e.resultIndex; i < e.results.length; i++){
+        const r = e.results[i];
+        if(r.isFinal){ const t = r[0].transcript.trim(); if(t) hF.forEach(h => h({text: ' ' + t})); }
+        else interim += r[0].transcript;
+      }
+      hP.forEach(h => h({text: interim}));
+    };
+    rec.onerror = e => {
+      if(e.error === 'not-allowed' || e.error === 'service-not-allowed'){ lastErr = 'not_granted'; wanted = false; }
+      else if(e.error === 'no-speech' || e.error === 'aborted'){ /* riparte da sola */ }
+      else { lastErr = 'upstream_error'; wanted = false; }
+    };
+    rec.onend = () => {
+      hP.forEach(h => h({text: ''}));
+      if(wanted && !lastErr && !document.hidden){ try{ rec.start(); return; }catch(x){} }
+      const reason = lastErr || 'stopped'; lastErr = null; wanted = false;
+      setState('idle', reason); stopWaiters.splice(0).forEach(f => f());
+    };
+  };
+  return {
+    start(){ wanted = true; lastErr = null; if(!rec) make(); if(state === 'idle') setState('starting'); try{ rec.start(); }catch(e){} return Promise.resolve(); },
+    stop(){ if(state === 'idle') return Promise.resolve(); wanted = false; return new Promise(res => { stopWaiters.push(res); setState('finishing'); try{ rec.stop(); }catch(e){ res(); } setTimeout(res, 1500); }); },
+    active(){ return state !== 'idle'; },
+    onPartial(h){ hP.push(h); }, onFinal(h){ hF.push(h); }, onState(h){ hS.push(h); }
+  };
+}
+
+/* --- messaggi di errore di Claude --- */
+function aiErrorText(e){
+  const c = e && e.code;
+  if(c === 'limit_user') return 'Hai usato tutte le richieste all\'AI di questo mese' + (e.limit ? ' (' + e.limit + ')' : '') + '. Si azzerano il 1° del mese.';
+  if(c === 'limit_total') return 'Il ricettario ha raggiunto il limite mensile di richieste all\'AI. Si azzera il 1° del mese.';
+  if(c === 'missing_api_key') return 'L\'assistente AI non è ancora configurato sul server: manca una chiave (vedi la guida, passo 5).';
+  if(c === 'page_unreachable' || c === 'bad_url') return 'Non riesco ad aprire quella pagina (il sito potrebbe bloccare l\'accesso). Incolla il testo o allega uno screenshot.';
+  if(c === 'rate_limited') return 'I servizi AI gratuiti hanno raggiunto il loro limite per ora: riprova tra qualche minuto (o domani).';
+  if(c === 'ai_failed') return 'Nessun servizio AI ha risposto in questo momento: riprova tra poco.';
+  if(c === 'offline') return 'Sembra che tu sia offline: controlla la connessione e riprova.';
+  if(c === 'not_signed_in') return 'La sessione è scaduta: esci e rientra.';
+  if(c === 'invalid_json') return 'L\'assistente ha risposto in modo inatteso: riprova.';
+  return 'Non ci sono riuscito. Riprova tra poco.';
+}
+
+/* --- inviti --- */
+function captureInvite(){
+  const p = new URLSearchParams(location.search), code = p.get('invito');
+  if(code && /^[0-9a-f]{8,64}$/i.test(code)){
+    try{ localStorage.setItem('pendingInvite', code); }catch(e){}
+    p.delete('invito');
+    try{ history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '') + location.hash); }catch(e){}
+  }
+}
+async function handlePendingInvite(){
+  let code = null; try{ code = localStorage.getItem('pendingInvite'); }catch(e){}
+  if(!code) return null;
+  try{ localStorage.removeItem('pendingInvite'); }catch(e){}
+  try{
+    const info = await store.books.preview(code);
+    if(!info){ toast('Questo invito non esiste più.'); return null; }
+    if(info.expired){ toast('Questo invito è scaduto: chiedine uno nuovo.'); return null; }
+    const ok = await askBox('Unirti a «' + info.book_name + '»?', (info.invited_by || 'Qualcuno') + ' ti ha invitato nel suo ricettario. Vedrai e potrai modificare ricette, menù e lista della spesa insieme.', 'Unisciti');
+    if(!ok) return null;
+    const id = await store.books.accept(code);
+    toast('Benvenuto in «' + info.book_name + '»');
+    return id;
+  }catch(e){ toast('Non sono riuscito ad aprire l\'invito.'); return null; }
+}
+function askBox(title, msg, okLabel){
+  return new Promise(res => {
+    modal('<h3>' + esc(title) + '</h3><p>' + esc(msg) + '</p><div class="modal-actions"><button class="btn" data-a="no">Non ora</button><button class="btn primary" data-a="ok">' + esc(okLabel) + '</button></div>',
+      (m, close) => { m.querySelector('[data-a=no]').onclick = () => { close(); res(false); }; m.querySelector('[data-a=ok]').onclick = () => { close(); res(true); }; });
+  });
+}
+function promptBox(title, label, value, okLabel){
+  return new Promise(res => {
+    modal('<h3>' + esc(title) + '</h3><div class="field"><label for="pb_in">' + esc(label) + '</label><input class="inp" id="pb_in" value="' + esc(value || '') + '" maxlength="80"></div><div class="modal-actions"><button class="btn" data-a="no">Annulla</button><button class="btn primary" data-a="ok">' + esc(okLabel) + '</button></div>',
+      (m, close) => {
+        const inp = m.querySelector('#pb_in'); setTimeout(() => { inp.focus(); inp.select(); }, 40);
+        const ok = () => { const v = inp.value.trim(); if(!v) return; close(); res(v); };
+        m.querySelector('[data-a=no]').onclick = () => { close(); res(null); };
+        m.querySelector('[data-a=ok]').onclick = ok; inp.addEventListener('keydown', e => { if(e.key === 'Enter') ok(); });
+      });
+  });
+}
+
+/* --- schermata di accesso --- */
+function showAuth(mode){
+  const el = $('#auth'); el.classList.remove('hidden'); document.body.classList.add('locked');
+  mode = mode || 'login';
+  const signup = mode === 'signup', recover = mode === 'recover', newpw = mode === 'newpw';
+  let pendingInv = null; try{ pendingInv = localStorage.getItem('pendingInvite'); }catch(e){}
+  el.innerHTML = '<div class="auth-card"><div class="auth-logo">' + IC.book + '</div><h1>Il mio ricettario</h1>' +
+    '<p class="auth-sub">' + (newpw ? 'Scegli una nuova password.' : recover ? 'Ti mandiamo una mail per reimpostare la password.' : pendingInv ? 'Hai ricevuto un invito: ' + (signup ? 'crea il tuo account' : 'accedi') + ' per unirti al ricettario.' : 'Ricette, menù della settimana e lista della spesa, sincronizzati su tutti i tuoi dispositivi.') + '</p>' +
+    (newpw || recover ? '' : '<div class="seg" role="tablist"><button data-am="login" aria-pressed="' + !signup + '">Accedi</button><button data-am="signup" aria-pressed="' + signup + '">Registrati</button></div>') +
+    '<form id="authForm" class="auth-form" novalidate>' +
+      (signup ? '<div class="field"><label for="au_name">Il tuo nome</label><input class="inp" id="au_name" autocomplete="name" placeholder="Es. Manuel" required></div>' : '') +
+      (newpw ? '' : '<div class="field"><label for="au_email">Email</label><input class="inp" id="au_email" type="email" autocomplete="email" inputmode="email" required></div>') +
+      (recover ? '' : '<div class="field"><label for="au_pw">' + (newpw ? 'Nuova password' : 'Password') + '</label><input class="inp" id="au_pw" type="password" autocomplete="' + (signup || newpw ? 'new-password' : 'current-password') + '" minlength="8" required>' + (signup || newpw ? '<span class="hint">Almeno 8 caratteri.</span>' : '') + '</div>') +
+      '<div id="au_msg" class="auth-msg" role="alert"></div>' +
+      '<button class="btn primary auth-go" type="submit">' + (newpw ? 'Salva la nuova password' : recover ? 'Mandami la mail' : signup ? 'Crea il mio account' : 'Accedi') + '</button>' +
+    '</form>' +
+    (newpw ? '' : recover ? '<button class="btn ghost small" data-am="login">Torna all\'accesso</button>' : !signup ? '<button class="btn ghost small" data-am="recover">Password dimenticata?</button>' : '') +
+    '</div>';
+  el.querySelectorAll('[data-am]').forEach(b => b.onclick = () => showAuth(b.dataset.am));
+  setTimeout(() => { const f = el.querySelector('input'); f && f.focus(); }, 60);
+  $('#authForm').onsubmit = async e => {
+    e.preventDefault();
+    const msg = $('#au_msg'), btn = el.querySelector('.auth-go'), lbl = btn.textContent;
+    const email = ($('#au_email') || {}).value, pw = ($('#au_pw') || {}).value, name = ($('#au_name') || {}).value;
+    msg.className = 'auth-msg';
+    if(!newpw && !/^\S+@\S+\.\S+$/.test(email || '')){ msg.textContent = 'Scrivi un indirizzo email valido.'; return; }
+    if(!recover && (pw || '').length < 8){ msg.textContent = 'La password deve avere almeno 8 caratteri.'; return; }
+    if(signup && !(name || '').trim()){ msg.textContent = 'Scrivi il tuo nome: lo vedranno le persone con cui condividi un ricettario.'; return; }
+    btn.disabled = true; btn.innerHTML = '<span class="spin"></span>';
+    try{
+      let r;
+      if(newpw){ r = await store.auth.setPassword(pw); if(r.error) throw r.error; toast('Password aggiornata'); BOOT.recovery = false; hideAuth(); try{ history.replaceState(null, '', location.pathname); }catch(x){} afterLogin(); return; }
+      if(recover){ r = await store.auth.reset(email); if(r.error) throw r.error; msg.className = 'auth-msg ok'; msg.textContent = 'Fatto: se l\'indirizzo è registrato, trovi una mail con il link per scegliere una nuova password.'; btn.disabled = false; btn.textContent = lbl; return; }
+      if(signup){
+        r = await store.auth.signUp(email, pw, name.trim()); if(r.error) throw r.error;
+        if(!r.data.session){ msg.className = 'auth-msg ok'; msg.textContent = 'Ci siamo quasi: apri la mail che ti abbiamo mandato e conferma l\'indirizzo, poi torna qui e accedi.'; btn.disabled = false; btn.textContent = lbl; return; }
+      } else { r = await store.auth.signIn(email, pw); if(r.error) throw r.error; }
+      afterLogin();
+    }catch(err){
+      const m = String(err && err.message || '');
+      msg.textContent = /invalid login/i.test(m) ? 'Email o password non corrette.' : /not confirmed/i.test(m) ? 'Devi prima confermare l\'indirizzo: cerca la mail di conferma (anche nello spam).' : /already registered|already exists/i.test(m) ? 'Esiste già un account con questa email: prova ad accedere.' : /rate limit|too many/i.test(m) ? 'Troppi tentativi: aspetta qualche minuto e riprova.' : /password/i.test(m) ? 'Password non valida: usane una più lunga o più varia.' : 'Qualcosa non ha funzionato: controlla la connessione e riprova.';
+      btn.disabled = false; btn.textContent = lbl;
+    }
+  };
+}
+function hideAuth(){ $('#auth').classList.add('hidden'); document.body.classList.remove('locked'); }
+function showSetupNeeded(){
+  const el = $('#auth'); el.classList.remove('hidden'); document.body.classList.add('locked');
+  el.innerHTML = '<div class="auth-card"><div class="auth-logo">' + IC.book + '</div><h1>Quasi pronto</h1><p class="auth-sub">Manca il collegamento al database. Apri il file <b>config.js</b> e incolla l\'indirizzo del progetto Supabase e la chiave pubblica, come spiegato nella guida (passo 3).</p></div>';
+}
+
+/* --- dopo l'accesso: ricettari e dati --- */
+async function afterLogin(){
+  if(BOOT.started || BOOT.recovery) return; BOOT.started = true;
+  hideAuth();
+  try{
+    for(let i = 0; i < 4; i++){ BOOT.books = await store.books.list(); if(BOOT.books.length) break; await new Promise(r => setTimeout(r, 700)); }
+    if(!BOOT.books.length){ await store.books.create('Il mio ricettario'); BOOT.books = await store.books.list(); }
+    BOOT.profile = await store.profile();
+  }catch(e){ BOOT.started = false; toast('Non riesco a raggiungere il server: controlla la connessione.'); setTimeout(afterLogin, 5000); return; }
+  const joined = await handlePendingInvite();
+  if(joined) BOOT.books = await store.books.list();
+  let last = null; try{ last = localStorage.getItem('book'); }catch(e){}
+  const pick = (joined && BOOT.books.find(b => b.id === joined)) || BOOT.books.find(b => b.id === last) || BOOT.books[0];
+  selectBook(pick.id);
+}
+function selectBook(id){
+  const b = BOOT.books.find(x => x.id === id); if(!b) return;
+  BOOT.book = b; try{ localStorage.setItem('book', id); }catch(e){}
+  $('#bookName').textContent = b.name;
+  document.title = b.name;
+  if(S.openId) closeDetail();
+  S.recipes = []; S.loaded = false; S.shop = []; S.shopLoaded = false; S.plan = {slots:{}}; S.planLoaded = false; S.lastSig = null;
+  store.setBook(id);
+  if(!BOOT.dataStarted){ BOOT.dataStarted = true; startData(); }
+  renderList(); renderShop(); renderPlan(); updateBadge();
+}
+function startData(){
+  const db = S.db;
+  db.doc('lists/shopping').onSnapshot(snap => {
+    if(busyFor(shopSync, 'lists/shopping')) return;
+    S.shop = snap.exists && Array.isArray(snap.data().items) ? JSON.parse(JSON.stringify(snap.data().items)) : [];
+    S.shopLoaded = true; renderShop(); updateBadge();
+  }, () => { S.shopLoaded = true; renderShop(); });
+  subscribePlan();
+  let timer = setTimeout(() => { S.unreachable = true; if(!S.loaded){ S.loaded = true; } renderList(); }, 10000);
+  db.collection('recipes').onSnapshot(snap => {
+    S.recipes = snap.docs.filter(d => d.exists).map(d => Object.assign({id:d.id}, d.data()));
+    S.loaded = true;
+    if(!snap.metadata.fromCache){ clearTimeout(timer); S.unreachable = false; }
+    renderList();
+    if(S.openId) renderDetail();
+    if(S.tab === 'menu') renderPlan();
+    if(!$('#cook').classList.contains('hidden')) renderCook();
+  }, () => { clearTimeout(timer); S.loaded = true; S.unreachable = true; renderList(); });
+}
+
+/* --- impostazioni --- */
+async function openSettings(){
+  const el = $('#sheetSettings'); el.classList.remove('hidden'); document.body.style.overflow = 'hidden';
+  renderSettings();
+  try{
+    const [books, members, usage] = await Promise.all([store.books.list(), store.books.members(BOOT.book.id), store.aiUsage().catch(() => null)]);
+    BOOT.books = books; BOOT.members = members; BOOT.usage = usage;
+    const cur = books.find(b => b.id === BOOT.book.id); if(cur){ BOOT.book = cur; $('#bookName').textContent = cur.name; }
+    renderSettings();
+  }catch(e){ toast('Non riesco a caricare le impostazioni.'); }
+}
+function closeSettings(){ $('#sheetSettings').classList.add('hidden'); if(!S.openId && !S.edit) document.body.style.overflow = ''; }
+function renderSettings(){
+  const b = BOOT.book, owner = b && b.role === 'owner', ms = BOOT.members || [];
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent), standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  $('#sheetSettings').innerHTML =
+    '<div class="sheet-bar"><div class="sheet-bar-inner"><button class="btn icon-btn ghost" data-st="close" aria-label="Chiudi">' + IC.back + '</button><strong style="font-size:17px">Impostazioni</strong><div class="spacer"></div></div></div>' +
+    '<div class="sheet-content">' +
+      '<section class="section"><h2>Ricettari</h2><div class="set-list">' + BOOT.books.map(x =>
+        '<button class="set-row' + (x.id === b.id ? ' on' : '') + '" data-st="book" data-id="' + esc(x.id) + '"><span class="radio"></span><span class="grow"><b>' + esc(x.name) + '</b><small>' + (x.role === 'owner' ? 'Tuo' : 'Condiviso con te') + '</small></span></button>').join('') +
+        '<button class="set-row add" data-st="newbook">' + IC.plus + '<span class="grow"><b>Nuovo ricettario</b><small>Per esempio uno per la famiglia, da condividere</small></span></button></div></section>' +
+      '<section class="section"><h2>' + esc(b.name) + '</h2><div class="set-card">' +
+        '<div class="set-sub">Persone</div><ul class="members">' + (ms.length ? ms.map(m => '<li><span class="avatar">' + esc((m.name || m.email || '?').charAt(0).toUpperCase()) + '</span><span class="grow"><b>' + esc(m.name || m.email) + (m.me ? ' (tu)' : '') + '</b><small>' + (m.role === 'owner' ? 'Proprietario' : 'Può modificare') + '</small></span>' + (owner && !m.me ? '<button class="btn small ghost danger" data-st="kick" data-id="' + esc(m.user_id) + '">Rimuovi</button>' : '') + '</li>').join('') : '<li class="hint">Caricamento…</li>') + '</ul>' +
+        '<div class="set-actions"><button class="btn primary" data-st="invite">' + IC.share + ' Invita qualcuno</button>' +
+        (owner ? '<button class="btn" data-st="rename">Rinomina</button>' : '') +
+        (owner ? (BOOT.books.filter(x => x.role === 'owner').length > 1 ? '<button class="btn ghost danger" data-st="delbook">Elimina ricettario</button>' : '') : '<button class="btn ghost danger" data-st="leave">Esci da questo ricettario</button>') + '</div>' +
+        '<p class="hint">Chi inviti vede e modifica ricette, menù e lista della spesa di questo ricettario. Il link vale 14 giorni.</p>' +
+      '</div></section>' +
+      '<section class="section"><h2>Il tuo account</h2><div class="set-card">' +
+        '<div class="set-line"><span class="grow"><b>' + esc((BOOT.profile && BOOT.profile.display_name) || '') + '</b><small>' + esc((BOOT.profile && BOOT.profile.email) || '') + '</small></span><button class="btn small" data-st="name">Cambia nome</button></div>' +
+        (BOOT.usage != null ? '<div class="set-line"><span class="grow"><b>Assistente AI questo mese</b><small>' + BOOT.usage + (BOOT.usage === 1 ? ' richiesta' : ' richieste') + ' usate</small></span></div>' : '') +
+        '<div class="set-actions"><button class="btn" data-st="pw">Cambia password</button><button class="btn ghost danger" data-st="logout">Esci</button></div>' +
+      '</div></section>' +
+      '<section class="section"><h2>Dati</h2><div class="set-card"><div class="set-actions"><button class="btn" data-st="backup">Backup e ripristino</button></div><p class="hint">Per portare qui le ricette dal vecchio ricettario su Claude: là apri ⋮ → «Scarica backup completo, con foto», poi qui «Backup e ripristino» → «Ripristina».</p></div></section>' +
+      (standalone ? '' : '<section class="section"><h2>App sul telefono</h2><div class="set-card">' +
+        (BOOT.installEvt ? '<div class="set-actions"><button class="btn primary" data-st="install">Installa l\'app</button></div>' : '') +
+        '<p class="hint">' + (isIOS ? 'Su iPhone: apri questa pagina con Safari, tocca Condividi (il quadrato con la freccia) e poi «Aggiungi alla schermata Home».' : 'Su Android: nel menu ⋮ di Chrome tocca «Installa app» o «Aggiungi a schermata Home». Avrai un\'icona e l\'app si apre a tutto schermo.') + '</p></div></section>') +
+    '</div>';
+}
+async function settingsAction(btn){
+  const a = btn.dataset.st, b = BOOT.book;
+  if(a === 'close') return closeSettings();
+  if(a === 'book'){ if(btn.dataset.id !== b.id){ selectBook(btn.dataset.id); toast('Ricettario: ' + BOOT.book.name); } closeSettings(); return; }
+  if(a === 'newbook'){ const n = await promptBox('Nuovo ricettario', 'Nome', 'Ricettario di famiglia', 'Crea'); if(!n) return; try{ const id = await store.books.create(n); BOOT.books = await store.books.list(); selectBook(id); toast('Creato «' + n + '»'); openSettings(); }catch(e){ toast('Non sono riuscito a crearlo.'); } return; }
+  if(a === 'rename'){ const n = await promptBox('Rinomina ricettario', 'Nome', b.name, 'Salva'); if(!n) return; try{ await store.books.rename(b.id, n); b.name = n; $('#bookName').textContent = n; openSettings(); }catch(e){ toast('Non sono riuscito a rinominarlo.'); } return; }
+  if(a === 'invite'){
+    try{
+      const code = await store.books.invite(b.id);
+      const link = location.origin + location.pathname + '?invito=' + code;
+      const text = 'Ti invito nel mio ricettario «' + b.name + '»: ' + link;
+      if(navigator.share){ try{ await navigator.share({title: b.name, text: 'Ti invito nel mio ricettario «' + b.name + '»', url: link}); return; }catch(x){ if(x && x.name === 'AbortError') return; } }
+      modal('<h3>Invita nel ricettario</h3><p>Manda questo link a chi vuoi invitare. Vale 14 giorni.</p><input class="inp" readonly value="' + esc(link) + '"><div class="modal-actions"><button class="btn" data-a="x">Chiudi</button><button class="btn primary" data-a="cp">Copia il link</button></div>',
+        (m, close) => { m.querySelector('[data-a=x]').onclick = close; m.querySelector('[data-a=cp]').onclick = async () => { try{ await navigator.clipboard.writeText(text); toast('Link copiato'); close(); }catch(x){ m.querySelector('input').select(); } }; });
+    }catch(e){ toast('Non sono riuscito a creare l\'invito.'); }
+    return;
+  }
+  if(a === 'kick'){ const m = (BOOT.members || []).find(x => x.user_id === btn.dataset.id); if(!(await confirmBox('Rimuovere ' + (m ? (m.name || m.email) : 'questa persona') + '?', 'Non vedrà più questo ricettario. Potrai reinvitarla quando vuoi.', 'Rimuovi'))) return; try{ await store.books.removeMember(b.id, btn.dataset.id); openSettings(); }catch(e){ toast('Non sono riuscito a rimuoverla.'); } return; }
+  if(a === 'leave'){ if(!(await confirmBox('Uscire da «' + b.name + '»?', 'Non vedrai più le sue ricette. Per rientrare ti servirà un nuovo invito.', 'Esci'))) return; try{ await store.books.leave(b.id); BOOT.books = await store.books.list(); selectBook(BOOT.books[0].id); closeSettings(); }catch(e){ toast('Non ci sono riuscito.'); } return; }
+  if(a === 'delbook'){ if(!(await confirmBox('Eliminare «' + b.name + '»?', 'Tutte le sue ricette, il menù e la lista della spesa vengono cancellati per tutti i membri. Non si può annullare.', 'Elimina'))) return; try{ await store.books.remove(b.id); BOOT.books = await store.books.list(); selectBook(BOOT.books[0].id); closeSettings(); toast('Ricettario eliminato'); }catch(e){ toast('Non sono riuscito a eliminarlo.'); } return; }
+  if(a === 'name'){ const n = await promptBox('Il tuo nome', 'Nome', BOOT.profile && BOOT.profile.display_name, 'Salva'); if(!n) return; await store.setName(n); BOOT.profile = await store.profile(); openSettings(); return; }
+  if(a === 'pw'){ closeSettings(); showAuth('newpw'); return; }
+  if(a === 'logout'){ if(!(await confirmBox('Uscire dall\'account?', 'Su questo dispositivo dovrai accedere di nuovo. Le ricette restano salvate.', 'Esci'))) return; try{ Object.keys(localStorage).filter(k => k.startsWith('cache.') || k === 'book').forEach(k => localStorage.removeItem(k)); }catch(e){} await store.auth.signOut(); location.reload(); return; }
+  if(a === 'backup'){ openMenu(); return; }
+  if(a === 'install' && BOOT.installEvt){ BOOT.installEvt.prompt(); try{ await BOOT.installEvt.userChoice; }catch(e){} BOOT.installEvt = null; renderSettings(); return; }
+}
+
+/* --- avvio --- */
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); BOOT.installEvt = e; });
+async function boot(){
+  renderList();
+  tLoad(); tInitDrag(); tRender();
+  setTab((location.hash || '').replace('#',''), true);
+  window.addEventListener('hashchange', () => setTab((location.hash || '').replace('#',''), true));
+  captureInvite();
+  if('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+  if(!cfgOk()){ showSetupNeeded(); return; }
+  store = makeStore(CFG);
+  store.onPhotosLoaded(() => { renderList(); if(S.openId) renderDetail(); if(S.edit) renderEditor(); });
+  S.db = store.db; S.assets = store.assets; S.sample = {server: true}; S.sampleImages = true; S.sampleMaxImages = 4; S.downloads = localDownloads;
+  const d = makeDictation(); if(d) setupDictation(d);
+  store.auth.onChange(ev => {
+    if(ev === 'PASSWORD_RECOVERY'){ BOOT.recovery = true; showAuth('newpw'); }
+    else if(ev === 'SIGNED_IN' && !BOOT.recovery) afterLogin();
+  });
+  let session = null; try{ session = await store.auth.session(); }catch(e){}
+  if(BOOT.recovery || location.hash.includes('type=recovery')) return;
+  if(session) afterLogin(); else showAuth(localStorage.getItem('pendingInvite') ? 'signup' : 'login');
+}
+window.addEventListener('offline', () => toast('Sei offline: puoi consultare le ricette, le modifiche richiedono la rete.'));
+window.S = S; window.T = T; window.BOOT = BOOT; window.showAuth = showAuth; window.getStore = () => store;
+boot();
+</script>
+</body>
+</html>
