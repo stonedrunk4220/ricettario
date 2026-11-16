@@ -655,6 +655,18 @@ svg.i{filter:url(#sketch);stroke-width:1.9}
 .swatch[aria-pressed="true"]{border-color:var(--sw);box-shadow:0 0 0 3px color-mix(in srgb,var(--sw) 25%,transparent)}
 
 /* ===== Compositore «Cosa cucino?» ===== */
+.pmode{margin:-4px 0 14px}.pmode button{display:inline-flex;align-items:center;justify-content:center;gap:6px}.pmode .i{width:18px;height:18px}
+.fl-box{background:var(--glass);border:1px solid var(--glass-line);border-radius:20px;box-shadow:var(--shadow);padding:12px;display:grid;gap:10px;margin-bottom:16px}
+.fl-h small{display:block;color:var(--muted);font-size:13px}
+.fl-items{display:grid;gap:6px}
+.fl-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px}
+.fl-row.warn .inp{border-color:var(--warn)}
+.fl-note{grid-column:1/-1;font-size:12px;color:var(--muted);padding-left:4px}.fl-row.warn .fl-note{color:var(--warn)}
+.fl-pantry{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.fl-opts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.fl-opts .seg{flex:1 1 260px}
+.sug.home{border-style:solid;background:color-mix(in srgb,var(--ok) 10%,transparent);border-color:color-mix(in srgb,var(--ok) 55%,transparent)}
+.sug em{font-style:normal;font-size:11px;font-weight:700;color:var(--ok);margin-left:6px;text-transform:uppercase;letter-spacing:.03em}
 .pt-box{background:var(--glass);border:1px solid var(--glass-line);border-radius:20px;box-shadow:var(--shadow);padding:12px;display:grid;gap:10px;position:relative;margin-bottom:18px}
 .pt-input{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:0 12px}
 .pt-input:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 15%,transparent)}
@@ -935,6 +947,7 @@ const IC = {
   copy: sv('M9.3 8.1c3.6-.3 7.2-.3 10.8 0 .3 3.9.3 7.8 0 11.7-3.6.3-7.2.3-10.8 0-.3-3.9-.3-7.8 0-11.7zM15.6 7.8c0-1.1 0-2.3-.1-3.4-3.6-.3-7.2-.3-10.8 0-.3 3.9-.3 7.8 0 11.7 1 .1 2 .1 3.1.1'),
   dup: sv('M9.3 8.1c3.6-.3 7.2-.3 10.8 0 .3 3.9.3 7.8 0 11.7-3.6.3-7.2.3-10.8 0-.3-3.9-.3-7.8 0-11.7zM14.7 11v6M11.7 14c2-.1 4-.1 6 0M15.6 7.8c0-1.1 0-2.3-.1-3.4-3.6-.3-7.2-.3-10.8 0-.3 3.9-.3 7.8 0 11.7 1 .1 2 .1 3.1.1'),
   leaf: sv('M5 19.4C4.6 11 9.6 5 19.6 4.4c.4 9.9-5.5 15.4-14.2 15.1M5.3 19.2c3.1-3.9 6.3-7.2 9.9-10.1'),
+  bolt: sv('M13.4 3.3 5.6 13.2c-.3.4 0 .9.5.9h5l-1.3 6.6c-.1.5.5.8.8.4l7.7-9.9c.3-.4 0-.9-.5-.9h-5l1.4-6.6c.1-.5-.5-.8-.8-.4z'),
   spark: sv('M12 3.2c.6 3.6 2.3 5.6 6.2 6.2-3.9.7-5.6 2.6-6.2 6.3-.7-3.7-2.4-5.6-6.3-6.3 3.9-.6 5.6-2.6 6.3-6.2zM18.6 15.4c.2 1.4.9 2.1 2.3 2.3-1.4.3-2.1 1-2.3 2.4-.3-1.4-1-2.1-2.4-2.4 1.4-.2 2.1-.9 2.4-2.3z'),
   book: sv('M12 6.4C9.5 4.8 6.6 4.4 3.5 4.7v13.5c3.1-.3 6 .1 8.5 1.8 2.5-1.7 5.4-2.1 8.5-1.8V4.7c-3.1-.3-6 .1-8.5 1.7zM12 6.6v13.2M6 8.9c1.3-.1 2.5.1 3.7.6M6 12c1.3-.1 2.5.1 3.7.6M14.3 9.5c1.2-.5 2.4-.7 3.7-.6'),
   plus: sv('M12.2 4.7c-.3 4.9-.2 9.7 0 14.5M4.8 12.1c4.8.2 9.6.1 14.4-.1'),
@@ -1509,7 +1522,7 @@ function planFit(r, meal){
   return {slots: out, facts, assign, verdict, pairs, plan, unknown};
 }
 const fmtPortion = f => f < 0.05 ? 'manca' : (Math.round(f * 10) / 10).toLocaleString('it-IT') + (Math.round(f * 10) === 10 ? ' porzione' : ' porz.');
-const round5 = g => g >= 20 ? Math.round(g / 5) * 5 : Math.max(1, Math.round(g));
+const round5 = g => g >= 10 ? Math.round(g / 5) * 5 : Math.max(1, Math.round(g));
 /* suggerimenti per completare un gruppo */
 function amountLabel(g, name, e){
   if(e && e.f === 'uova'){ const n = Math.max(1, Math.round(g / 55)); return n + (n > 1 ? ' uova' : ' uovo'); }
@@ -2059,10 +2072,16 @@ function composerResults(){
 /* --- interfaccia --- */
 function renderComposer(){
   const el = $('#viewPantry'); if(S.tab !== 'cosa') return;
+  const modeSeg = '<div class="seg pmode" role="tablist" aria-label="Modalità"><button role="tab" data-pmode="ricette" aria-pressed="' + (F.mode !== 'flash') + '">' + IC.book + ' Dalle ricette</button><button role="tab" data-pmode="flash" aria-pressed="' + (F.mode === 'flash') + '">' + IC.bolt + ' Flash</button></div>';
+  if(F.mode === 'flash'){
+    if(!F.meal) F.meal = flashDefaultMeal();
+    el.innerHTML = '<div class="view-head"><div class="ttl"><h2>Cosa cucino?</h2><div class="sub">Flash: un pasto equilibrato con quello che devi finire</div></div></div>' + modeSeg + flashHtml();
+    return;
+  }
   const res = composerResults();
   const chips = P.have.map((n, i) => '<span class="pchip">' + esc(n) + '<button data-pdel="' + i + '" aria-label="Togli ' + esc(n) + '">✕</button></span>').join('');
   const bought = S.shop.filter(i => i.checked).length;
-  let h = '<div class="view-head"><div class="ttl"><h2>Cosa cucino?</h2><div class="sub">Scegli cosa hai in casa: ti dico quali ricette puoi fare</div></div></div>' +
+  let h = '<div class="view-head"><div class="ttl"><h2>Cosa cucino?</h2><div class="sub">Scegli cosa hai in casa: ti dico quali ricette puoi fare</div></div></div>' + modeSeg +
     '<div class="pt-box"><div class="pt-input">' + IC.search + '<input id="pt_in" placeholder="Aggiungi un ingrediente: uova, zucchine, riso…" autocomplete="off" enterkeyhint="done" value="' + esc(P.q) + '" aria-label="Ingrediente" aria-autocomplete="list" aria-controls="pt_ac"></div><div class="ac-list" id="pt_ac" role="listbox"></div>' +
     (P.have.length ? '<div class="pchips">' + chips + '</div>' : '') +
     '<div class="pt-tools">' + (bought ? '<button class="btn small" data-pt="fromshop">' + IC.basket + ' Dalla spesa fatta (' + bought + ')</button>' : '') + (P.have.length ? '<button class="btn small ghost" data-pt="clear">Svuota</button>' : '') + '</div>' +
@@ -2105,7 +2124,143 @@ function drawAc(){
   if(!exact) rows.push('<button role="option" class="ac free' + (list.length === P.acIdx ? ' on' : '') + '" data-pac="' + esc(q) + '">Aggiungi «' + esc(q) + '»</button>');
   box.innerHTML = rows.join(''); box.classList.add('on');
 }
+/* ====================================================================
+   Flash: niente ricetta, solo cose da finire o avanzi. Scrivi cosa vuoi
+   usare e vedi quanto copre del pasto del tuo piano, cosa togliere e
+   cosa abbinarci (prima quello che hai in casa).
+   ==================================================================== */
+function flashDefaultMeal(){ const h = new Date().getHours() + new Date().getMinutes() / 60; return h < 10.5 ? 'colazione' : h < 15.5 ? 'pranzo' : h < 18.5 ? 'spuntino' : 'cena'; }
+const F = {mode: lsJ('composer.mode', 'ricette'), items: lsJ('flash.items', []), meal: null, persons: lsJ('flash.persons', 1), q: ''};
+function fSave(){ lsW('composer.mode', F.mode); lsW('flash.items', F.items); lsW('flash.persons', F.persons); }
+/* pasta, riso e cereali già cotti o avanzati: li riporto al peso a crudo, come nel piano */
+const COOKED_RE = /\b(cott[aoie]|lessat[aoie]|bollit[aoie]|avanzat[aoie]|avanzi|gi[aà] pront[aoie]|del giorno prima|di ieri)\b/i;
+const COOK_FACTOR = {'pasta lunga': 2.2, 'pasta corta': 2.2, 'pastina': 2.2, "pasta all'uovo": 1.6, 'riso': 2.5, 'cereali': 2.5};
+function flashLine(text){
+  const p = parseIngredient(text); if(!p || p.group || !p.name) return {text, note: ''};
+  const e = canon(p.name);
+  // un piatto avanzato ("pasta al pomodoro", "risotto ai funghi"): conto la base di carboidrati
+  const dish = p.name.match(/^(pasta|spaghetti|penne|fusilli|rigatoni|maccheroni|mezze maniche|linguine|bucatini|tagliatelle|fettuccine|pappardelle|lasagn[ae]|riso|risotto|gnocchi|cous ?cous|farro|orzo|quinoa)\b(.*)$/i);
+  if(dish && dish[2].replace(COOKED_RE, ' ').replace(/[^a-zà-ù]+/gi, ' ').trim().length > 2 && (COOKED_RE.test(text) || /^\s*(al|alla|alle|ai|agli|con|e)\b/i.test(dish[2]))){
+    const base = /^risotto$/i.test(dish[1]) ? 'riso' : /^lasagn/i.test(dish[1]) ? "pasta all'uovo" : dish[1].toLowerCase();
+    const eb = canon(base), gd = gramsOf(Object.assign({}, p, {name: base}), eb);
+    const fb = eb ? (COOK_FACTOR[eb.f] || 1) : 1;
+    if(gd){ const raw = Math.round(gd * 0.8 / fb); return {text: raw + ' g ' + base, note: 'Piatto pronto: conto la base, ≈ ' + raw + ' g di ' + base + (fb > 1 ? ' a crudo' : ''), e: eb, g: raw}; }
+  }
+  const fac = e && COOKED_RE.test(text) ? COOK_FACTOR[e.f] : null;
+  const g = gramsOf(p, e);
+  if(fac && g){ const raw = Math.round(g / fac); return {text: raw + ' g ' + p.name.replace(COOKED_RE, '').replace(/\s+/g, ' ').trim(), note: '≈ ' + raw + ' g a crudo', e, g: raw}; }
+  return {text, note: '', e, g};
+}
+function flashRecipe(){
+  const lines = F.items.map(flashLine);
+  return {r: {id: 'flash', title: 'Pasto flash', servings: Math.max(1, F.persons), ingredients: lines.map(l => l.text)}, lines};
+}
+function homeNames(){ return [...new Set(P.have.concat(P.staples))]; }
+/* suggerimenti: prima quello che hai in casa, poi le altre alternative del piano */
+function flashSuggestions(x, usedNames){
+  const need = Math.max(0, 1 - x.f); if(need < 0.08) return [];
+  const out = [], seen = new Set(), home = homeNames().filter(n => !usedNames.has(n));
+  const push = s => { const k = normTxt(s.label); if(seen.has(k)) return; seen.add(k); out.push(s); };
+  if(x.bestCombo && x.bestCombo.cov > 0.05){
+    const c = x.bestCombo.x;
+    c.it.foods.forEach((fd, ci) => {
+      const miss = fd.g - c.got[ci]; if(miss < fd.g * 0.2) return;
+      const m = foodMatcher(fd.name), h = home.find(n => m(canon(n)) > 0);
+      push({label: amountLabel(miss, h || fd.name, canon(h || fd.name)), home: !!h});
+    });
+    return out.sort((a, b) => b.home - a.home);
+  }
+  const singles = x.items.filter(y => !y.combo), covered = new Set();
+  home.forEach(n => {
+    const e = canon(n); if(!e) return;
+    // la stessa alternativa che sceglierà il confronto (la più precisa)
+    let y = null, best = 0;
+    singles.forEach(c => { let sc = foodMatcher(c.it.foods[0].name)(e); if(!sc) return; const w = normTxt(c.it.text).split(' ').filter(x => x.length >= 4 && !/^\d/.test(x)); sc += Math.min(0.4, w.filter(x => (' ' + normTxt(n) + ' ').includes(' ' + x + ' ')).length * 0.1); if(sc > best){ best = sc; y = c; } });
+    if(!y) return;
+    if(['olio'].includes(e.f) && x.s.group !== 'grassi') return;
+    if(!/^(verdura|verdure|frutta)$/.test(normTxt(y.it.foods[0].name))) covered.add(y.it.text);
+    push({label: amountLabel(y.it.foods[0].g * need, n, e), home: true});
+  });
+  slotSuggestions(x).forEach(s => { if(!covered.has(s.item)) push({label: s.label, home: false, combo: s.combo}); });
+  return out;
+}
+function flashHtml(){
+  const plan = mealPlan(F.meal), hasPlan = Object.keys(H().meals || {}).length;
+  const {r, lines} = flashRecipe();
+  const used = new Set(lines.map(l => l.e && l.e.n).filter(Boolean));
+  const fit = F.items.length && plan ? planFit(r, F.meal) : null;
+  const unknownIdx = new Set(fit ? fit.unknown.map(f => f.i) : []);
+  const pantry = P.have.filter(n => !used.has(n)).slice(0, 14);
+  let h = '<div class="fl-box"><div class="fl-h"><b>Cosa devi finire?</b><small>Avanzi, cose in scadenza, quello che c\'è: scrivi anche le quantità.</small></div>' +
+    (F.items.length ? '<div class="fl-items">' + F.items.map((t, i) => '<div class="fl-row' + (unknownIdx.has(i) ? ' warn' : '') + '"><input class="inp" data-fl="' + i + '" value="' + esc(t) + '" aria-label="Ingrediente ' + (i + 1) + '"><button class="hp-x" data-fldel="' + i + '" aria-label="Togli ' + esc(t) + '">' + IC.x + '</button>' +
+      ((lines[i] && lines[i].note) || unknownIdx.has(i) ? '<small class="fl-note">' + (unknownIdx.has(i) ? 'Quanto? Scrivi la quantità (es. 100 g, 2 uova)' : esc(lines[i].note)) + '</small>' : '') + '</div>').join('') + '</div>' : '') +
+    '<div class="pt-input">' + IC.plus + '<input id="fl_in" placeholder="Es. 200 g riso avanzato, 1 zucchina, 2 uova" autocomplete="off" enterkeyhint="done" value="' + esc(F.q) + '" aria-label="Aggiungi cosa vuoi usare"></div>' +
+    (pantry.length ? '<div class="fl-pantry"><span class="hint">Dalla dispensa:</span>' + pantry.map(n => '<button class="pchip-t" data-fladd="' + esc(n) + '">+ ' + esc(n) + '</button>').join('') + '</div>' : '') +
+    '<div class="fl-opts"><div class="seg" role="group" aria-label="Pasto">' + MEAL_LIST.map(([k, l]) => '<button data-flmeal="' + k + '" aria-pressed="' + (k === F.meal) + '">' + l + '</button>').join('') + '</div>' +
+    '<div class="stepper" aria-label="Persone"><button data-flp="-1" aria-label="Meno persone">−</button><span>' + F.persons + (F.persons === 1 ? ' persona' : ' persone') + '</span><button data-flp="1" aria-label="Più persone">+</button></div></div>' +
+    (F.items.length ? '<div class="pt-tools"><button class="btn small ghost" data-flclear="1">Svuota</button></div>' : '') + '</div>';
+  if(!F.items.length) return h + '<div class="empty">' + doodle('fridge') + '<h2>Un pasto con quello che hai</h2><p>Hai del riso avanzato, mezza zucchina, due uova? Scrivili qui: ti dico quanto coprono del pasto del tuo piano, cosa togliere e cosa abbinarci per completarlo, a partire da quello che hai in casa.</p></div>';
+  if(!hasPlan) return h + '<section class="hcard"><p class="hc-msg">Per il prospetto mi serve il tuo piano alimentare: lo usi come riferimento per porzioni e abbinamenti.</p><div class="detail-actions"><button class="btn primary" data-flplan="1">Imposta il piano</button></div></section>';
+  const mealName = (MEAL_LIST.find(x => x[0] === F.meal) || ['', F.meal])[1];
+  if(!fit || !fit.slots.length) return h + '<section class="hcard"><p class="hc-msg">Nel tuo piano non c\'è ancora nulla per ' + mealName.toLowerCase() + '.</p><div class="detail-actions"><button class="btn" data-flplan="1">Modifica il piano</button></div></section>';
+  const [vc, vt] = VERDICTS[fit.verdict];
+  h += '<section class="hcard v-' + vc + '"><div class="hc-head"><span class="hc-title">' + IC.leaf + ' Il tuo pasto</span></div>' +
+    '<div class="hc-verdict"><span class="dot st-' + vc + '"></span><div><b>' + (fit.verdict === 'ok' ? 'Pasto completo ed equilibrato' : vt) + '</b><small>' + esc(mealName + ', ' + (F.persons > 1 ? 'a persona' : '1 porzione') + ': ' + fit.slots.map(x => x.s.name + ' ' + (x.st === 'ok' ? '✓' : fmtPortion(x.f))).join(' · ')) + '</small></div></div>' +
+    '<div class="hslots">' + fit.slots.map((x, si) => {
+      const pct = Math.max(x.f > 0 ? 4 : 0, Math.min(100, x.f / Math.max(1.5, x.hi) * 100)), mark = Math.min(100, 1 / Math.max(1.5, x.hi) * 100);
+      const sug = (x.st === 'miss' || x.st === 'under' || (x.st === 'near' && x.f < 1)) ? flashSuggestions(x, used) : [];
+      const tip = overTip(x);
+      const all = F.sugMore === si;
+      return '<div class="hs st-' + x.st + '"><div class="hs-top"><b>' + esc(x.s.name) + '</b><span class="hs-v">' + (x.st === 'ok' ? '✓ ' : '') + fmtPortion(x.f) + '</span></div>' +
+        '<div class="hs-bar"><i style="width:' + pct + '%"></i><em style="left:' + mark + '%"></em></div>' +
+        (x.who.length ? '<div class="hs-who">' + x.who.map(f => esc(f.name) + (f.grams ? ' ' + fmtG(f.grams) : '')).join(', ') + '</div>' : '') +
+        (sug.length ? '<div class="hs-sug"><span>' + (x.f < 0.05 ? 'Abbina:' : 'Aggiungi:') + '</span>' + sug.slice(0, all ? 40 : 5).map((s, k) => '<button class="sug' + (s.home ? ' home' : '') + '" data-flsug="' + esc(s.label) + '">+ ' + esc(s.label) + (s.home ? '<em>in casa</em>' : '') + '</button>').join('') + (sug.length > 5 && !all ? '<button class="sug more" data-flmore="' + si + '">altre ' + (sug.length - 5) + '</button>' : '') + '</div>' : '') +
+        (tip ? '<div class="hs-tip">' + esc(tip.replace('oppure servitene meno.', 'il resto conservalo per un altro pasto.')) + '</div>' : '') + '</div>';
+    }).join('') + '</div>' +
+    '<p class="hint">Tocca un suggerimento per aggiungerlo. «In casa» viene dalla tua dispensa (modalità «Dalle ricette») e da «Sempre in casa».</p>' +
+    '<div class="detail-actions">' + (S.sample ? '<button class="btn primary" data-flai="1">' + IC.spark + ' Trasformalo in un piatto</button>' : '') + '<button class="btn" data-flsave="1">' + IC.plus + ' Salva come ricetta</button><button class="btn" data-flmenu="1">Metti nel menù</button></div></section>';
+  return h;
+}
+function flashAdd(text){
+  String(text || '').split(/\s*[,;\n]\s*|\s+\+\s+/).map(s => s.trim()).filter(Boolean).forEach(s => F.items.push(s));
+  fSave();
+}
+function flashAction(t){
+  const d = t.dataset;
+  if(d.pmode){ F.mode = d.pmode; fSave(); renderComposer(); return true; }
+  if(F.mode !== 'flash') return false;
+  if(d.fldel != null){ F.items.splice(Number(d.fldel), 1); fSave(); renderComposer(); return true; }
+  if(d.fladd){ F.items.push(d.fladd); fSave(); renderComposer(); const ins = document.querySelectorAll('[data-fl]'); const last = ins[ins.length - 1]; if(last){ last.focus(); last.setSelectionRange(0, 0); } toast('Scrivi davanti la quantità, es. «100 g ' + d.fladd + '»'); return true; }
+  if(d.flmeal){ F.meal = d.flmeal; F.sugMore = null; renderComposer(); return true; }
+  if(d.flp){ F.persons = Math.max(1, Math.min(12, F.persons + Number(d.flp))); fSave(); renderComposer(); return true; }
+  if(d.flclear){ F.items = []; F.sugMore = null; fSave(); renderComposer(); return true; }
+  if(d.flsug){ flashAdd(d.flsug.replace(/\s*\+\s*/g, ', ')); F.sugMore = null; renderComposer(); toast('Aggiunto: ' + d.flsug); return true; }
+  if(d.flmore != null){ F.sugMore = Number(d.flmore); renderComposer(); return true; }
+  if(d.flplan){ openHealthPlan(); return true; }
+  const lines = () => F.items.map(t => (F.persons > 1 ? t : t));
+  if(d.flsave){ openEditor(cleanRecipe({title: 'Pasto flash del ' + new Date().toLocaleDateString('it-IT', {day: 'numeric', month: 'long'}), category: 'Piatti unici', servings: F.persons, ingredients: lines(), tags: ['flash']}), true); return true; }
+  if(d.flmenu){ openAddToPlan({id: null, title: 'Flash: ' + F.items.map(t => { const p = parseIngredient(t); return p && p.name ? p.name : t; }).join(', ').slice(0, 80), servings: F.persons}); return true; }
+  if(d.flai){
+    openAI('create', {prefill: 'Ho da usare questi ingredienti (quantità totali per ' + F.persons + (F.persons === 1 ? ' persona' : ' persone') + '): ' + F.items.join(', ') + '. Ho sempre anche: ' + (P.staples.join(', ') || 'niente') + '. Proponi un piatto veloce e gustoso che li usi tutti, con queste quantità, per ' + F.persons + ' porzioni. Non aggiungere altri ingredienti principali.'});
+    return true;
+  }
+  return false;
+}
+function flashInput(t){
+  if(t.id === 'fl_in'){ F.q = t.value; return true; }
+  if(t.dataset && t.dataset.fl != null){ F.items[Number(t.dataset.fl)] = t.value; fSave(); clearTimeout(F.rt); F.rt = setTimeout(() => { const a = document.activeElement, idx = a && a.dataset ? a.dataset.fl : null, pos = a && a.selectionStart; renderComposer(); if(idx != null){ const el = document.querySelector('[data-fl="' + idx + '"]'); if(el){ el.focus(); try{ el.setSelectionRange(pos, pos); }catch(e){} } } }, 700); return true; }
+  return false;
+}
+function flashKey(e){
+  if(e.target.id !== 'fl_in' || e.key !== 'Enter') return false;
+  e.preventDefault();
+  const v = e.target.value.trim(); if(!v) return true;
+  flashAdd(v); F.q = ''; renderComposer(); const i = $('#fl_in'); i && i.focus();
+  return true;
+}
+
 function composerAction(t){
+  if(flashAction(t)) return;
   const d = t.dataset;
   if(d.pac){ addHave(d.pac); P.q = ''; P.acIdx = 0; renderComposer(); const i = $('#pt_in'); i && i.focus(); return; }
   if(d.pdel !== undefined){ P.have.splice(Number(d.pdel), 1); pSave(); renderComposer(); return; }
@@ -3141,6 +3296,7 @@ document.addEventListener('input', e => {
   if(hpInput(t)) return;
   if(HP && t.dataset && t.dataset.hpv){ const [kind, k] = t.dataset.hpv.split(':'); if(HP.ai){ HP.ai.delete(HP.tab + ':' + kind + ':' + k); const row = t.closest('.hp-ai'); if(row){ row.classList.remove('hp-ai'); const dot = row.querySelector('.ai-dot'); dot && dot.remove(); } } hpSet(kind, k, {v: t.value === '' ? null : Number(t.value)}); return; }
   if(t.id === 'q'){ S.q = t.value; renderList(); return; }
+  if(flashInput(t)) return;
   if(t.id === 'pt_in'){ P.q = t.value; P.acIdx = 0; drawAc(); return; }
   if(!S.edit) return;
   const r = S.edit.r, d = t.dataset;
@@ -3159,6 +3315,7 @@ document.addEventListener('submit', e => {
 });
 document.addEventListener('keydown', e => {
   const t = e.target;
+  if(flashKey(e)) return;
   if(t.id === 'pt_in'){
     const opts = [...document.querySelectorAll('#pt_ac [data-pac]')];
     if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){ e.preventDefault(); if(opts.length){ P.acIdx = (P.acIdx + (e.key === 'ArrowDown' ? 1 : -1) + opts.length) % opts.length; drawAc(); } return; }
