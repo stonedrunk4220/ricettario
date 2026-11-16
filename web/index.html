@@ -401,7 +401,7 @@ input[type=checkbox]:active{transform:scale(.85)}
 .att.err .att-t small{color:var(--danger)}
 .att button{border:0;background:transparent;color:var(--muted);width:36px;height:36px;cursor:pointer;flex:none}
 /* ===== Timer integrato (dock a scomparsa) ===== */
-.tdock{position:fixed;left:0;right:0;bottom:var(--dock-b,76px);z-index:32;display:flex;justify-content:center;pointer-events:none;padding:0 12px;transition:bottom .3s var(--ease)}
+.tdock{position:fixed;left:0;right:0;bottom:var(--dock-b,76px);z-index:37;display:flex;justify-content:center;pointer-events:none;padding:0 12px;transition:bottom .3s var(--ease)}
 .tdock[data-state="hidden"]{display:none}
 .tdock-compact{pointer-events:auto;width:100%;max-width:520px;display:flex;align-items:center;gap:12px;border:1px solid var(--glass-line);background:var(--glass-strong);-webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5);border-radius:20px;padding:8px 14px 8px 8px;box-shadow:0 14px 40px -14px rgba(0,0,0,.45);cursor:pointer;color:var(--ink);text-align:left;touch-action:none;animation:dockIn .4s var(--ease)}
 @keyframes dockIn{from{opacity:0;transform:translateY(24px) scale(.97)}}
@@ -558,6 +558,62 @@ header.top{padding-top:env(safe-area-inset-top)}
 .hp-in{display:flex;align-items:center;gap:4px;flex:none}
 .hp-in .inp{width:76px;text-align:right;padding:8px 10px;font-variant-numeric:tabular-nums}
 .hp-in span{font-size:12.5px;color:var(--muted);min-width:28px}
+.hslots{display:grid;gap:10px;margin:12px 0 4px}
+.hs{border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:color-mix(in srgb,var(--surface) 70%,transparent)}
+.hs-top{display:flex;align-items:baseline;gap:8px}.hs-top b{flex:1}
+.hs-v{font-size:13px;font-weight:700;color:var(--muted)}
+.hs.st-ok .hs-v{color:var(--ok,#2E7D4F)}.hs.st-near .hs-v{color:var(--warn)}.hs.st-under .hs-v,.hs.st-miss .hs-v,.hs.st-over .hs-v{color:var(--danger)}
+.hs-bar{position:relative;height:6px;border-radius:99px;background:var(--line);margin:7px 0 6px;overflow:visible}
+.hs-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--muted)}
+.hs.st-ok .hs-bar i{background:var(--ok,#2E7D4F)}.hs.st-near .hs-bar i{background:var(--warn)}.hs.st-under .hs-bar i,.hs.st-over .hs-bar i{background:var(--danger)}
+.hs-bar em{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.45;border-radius:2px}
+.hs-who{font-size:13px;color:var(--muted)}
+.hs-pairs,.hs-sug{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.hs-sug>span{font-size:12px;font-weight:700;color:var(--muted)}
+.pair{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;padding:4px 4px 4px 10px;border-radius:99px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--ink)}
+.pair button{border:0;background:transparent;color:var(--muted);cursor:pointer;padding:2px 6px;font-size:12px}
+.sug{border:1px dashed color-mix(in srgb,var(--accent) 60%,transparent);background:transparent;color:var(--ink);border-radius:99px;padding:5px 10px;font-size:13px;cursor:pointer}
+.sug:active{transform:scale(.97)}.sug.more{border-style:solid;color:var(--muted)}
+.hs-tip{font-size:13px;color:var(--danger);margin-top:6px}
+.e-pairs{display:block;font-size:12px;color:var(--muted);font-weight:500}
+.weekly{margin:4px 0 14px;padding:12px;border-radius:var(--r);background:var(--glass);border:1px solid var(--glass-line)}
+.weekly-h{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px;margin-bottom:8px}.weekly-h small{color:var(--muted);font-weight:500}
+.weekly-h .i{color:var(--accent);width:18px;height:18px}
+.weekly-chips{display:flex;flex-wrap:wrap;gap:6px}
+.wchip{font-size:13px;padding:5px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface)}
+.wchip small{color:var(--muted)}
+.wchip.st-ok{border-color:color-mix(in srgb,var(--ok,#2E7D4F) 50%,transparent);background:color-mix(in srgb,var(--ok,#2E7D4F) 10%,var(--surface))}
+.wchip.st-over{border-color:var(--danger);background:color-mix(in srgb,var(--danger) 10%,var(--surface))}
+.hp-slots{display:grid;gap:10px}
+.hp-slot{background:var(--glass);border:1px solid var(--glass-line);border-radius:var(--r);box-shadow:var(--shadow);padding:10px 12px}
+.hp-slot-h{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.hp-sname{font-weight:700;flex:1;min-width:0}
+.hp-slot-h .ai-dot .i{width:16px;height:16px;color:var(--accent)}
+.hp-alt{display:grid;grid-template-columns:54px minmax(0,1fr) auto;align-items:center;gap:6px;margin-top:6px}
+.hp-or{font-size:12px;color:var(--muted);text-align:right}
+.hp-alt.bad .inp{border-color:var(--danger)}
+.hp-x{border:0;background:transparent;color:var(--muted);cursor:pointer;padding:6px;border-radius:8px}
+.hp-x .i{width:18px;height:18px}
+.hp-add{margin-top:8px}
+.hp-tpl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px}
+.hp-more{margin:16px 0}.hp-more summary{cursor:pointer;font-weight:700;padding:6px 0}
+.hp-w{display:grid;grid-template-columns:minmax(0,1fr) 62px 10px 62px auto;align-items:center;gap:6px;padding:6px 0}
+.set-sub-row{display:flex;align-items:center;gap:8px;padding:0 0 10px;color:var(--muted);font-size:14px}
+.set-sub-row .inp{width:auto}
+.sup-today{margin:4px 0 12px;padding:12px;border-radius:var(--r);background:var(--glass);border:1px solid var(--glass-line)}
+.sup-item{display:flex;align-items:center;gap:10px;padding:8px 2px;border-top:1px solid var(--line);cursor:pointer}
+.sup-item:first-of-type{border-top:0}
+.sup-item input{width:20px;height:20px;accent-color:var(--accent);flex:none}
+.sup-item small{display:block;color:var(--muted);font-size:13px}
+.sup-item.done b{text-decoration:line-through;color:var(--muted)}
+.sup-time{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent);min-width:44px}
+.sup-fields{display:grid;gap:6px;margin:6px 0}
+.sup-remind{display:flex;align-items:center;gap:10px;font-weight:600;margin:8px 0 4px}
+.sup-trow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px}
+.sup-trow input[type=time]{width:auto}
+.daychips{display:flex;gap:3px}
+.daychip{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:12px;cursor:pointer;padding:0}
+.daychip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
 .hp-import{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:var(--r);border:1px dashed color-mix(in srgb,var(--accent) 55%,transparent);background:color-mix(in srgb,var(--accent) 7%,var(--glass));margin-bottom:14px}
 .hp-import .btn{align-self:flex-start}
 .hp-imp-t{display:flex;gap:10px;align-items:flex-start}
@@ -1041,7 +1097,7 @@ async function saveBaseCopy(b, open){
     await S.db.collection('recipes').doc(id).set(data);
     toast('Salvata nel tuo ricettario: ora puoi modificarla');
     if(open) openDetail(id, null);
-    if(healthOn()) setTimeout(() => analyzeNutrition(id, null, {silent: true}), 300);
+    if(healthOn() && planHasMacros()) setTimeout(() => analyzeNutrition(id, null, {silent: true}), 300);
     return id;
   }catch(e){ toast('Non sono riuscito a salvarla.'); return null; }
 }
@@ -1070,7 +1126,7 @@ function renderDetail(){
   if(S.variantId && !(r0.variants || []).some(v => v.id === S.variantId)) S.variantId = null;
   const r = effR(r0, S.variantId);
   const isBase = !!r0.isBase;
-  const hc = !isBase && healthOn() && r.nutrition ? healthCheck(r, mealFor(r)) : null;
+  const hc = healthOn() ? planFit(r, mealFor(r)) : null;
   const base = Number(r.servings) || null;
   const factor = base && S.servings ? S.servings / base : 1;
   const ings = (r.ingredients || []).map(i => ingLine(typeof i === 'string' ? {text:i} : i, factor));
@@ -1118,7 +1174,7 @@ function renderDetail(){
       '<div class="detail-actions">' + (steps.length ? '<button class="btn primary" data-act="cook">' + IC.pot + ' Inizia a cucinare</button>' : '') +
         (ings.some(l => l && !l.group) ? '<button class="btn" data-act="toshop">Aggiungi alla spesa</button>' : '') + '<button class="btn" data-act="toplan">Aggiungi al menù</button>' +
         ((r0.variants || []).length || isBase ? '' : '<button class="btn" data-act="addvariant">+ Variante</button>') + '</div>' +
-      (isBase ? (healthOn() ? '<section class="hcard"><div class="hc-head"><span class="hc-title">' + IC.leaf + ' Healthy</span></div><p class="hc-msg">Salva la ricetta nel tuo ricettario per calcolare i valori e confrontarla con il tuo piano.</p><div class="detail-actions"><button class="btn primary" data-act="savebase">' + IC.plus + ' Salva nel mio ricettario</button></div></section>' : '') : healthCardHtml(r)) +
+      healthCardHtml(r, {allSug: S.sugMore}) +
       '<section class="section"><h2><span class="grow">Ingredienti</span>' + servHtml + '</h2>' + (ings.length ? ingHtml : '<p class="hint">Nessun ingrediente.</p>') + '</section>' +
       '<section class="section"><h2>Procedimento</h2>' + (steps.length ? stepsHtml : '<p class="hint">Nessun passaggio.</p>') + '</section>' +
       (r.notes ? '<section class="section"><h2>Note</h2><div class="notes">' + esc(r.notes) + '</div></section>' : '') +
@@ -1154,7 +1210,6 @@ const MACROS = [['kcal', 'Calorie', 'kcal'], ['carbs', 'Carboidrati', 'g'], ['pr
 const MEAL_LIST = [['colazione', 'Colazione'], ['pranzo', 'Pranzo'], ['cena', 'Cena'], ['spuntino', 'Spuntino']];
 const DEFAULT_MODE = {verdure: 'min', frutta: 'min', protein: 'min'};
 function defaultHealth(){ return {enabled: false, tolerance: 10, defaultMeal: 'pranzo', meals: {}}; }
-function H(){ return S.health || (S.health = defaultHealth()); }
 function healthOn(){ return !!(S.health && S.health.enabled); }
 const groupLabel = k => (FOOD_GROUPS.find(g => g[0] === k) || [k, k === 'altro' ? 'Altro' : k])[1];
 const fmtG = v => (v >= 100 ? Math.round(v / 5) * 5 : Math.round(v)) + ' g';
@@ -1200,73 +1255,411 @@ function evalTarget(v, t, tol){
   if(t.mode === 'min'){ if(v >= lim) return 'ok'; if(v >= lim * (1 - tol / 100)) return 'near'; return 'out'; }
   if(v <= lim) return 'ok'; if(v <= lim * (1 + tol / 100)) return 'near'; return 'out';
 }
-function healthCheck(r, meal){
-  const pp = perPortion(r); if(!pp) return null;
-  const plan = (H().meals || {})[meal] || {}, tol = Number(H().tolerance ?? 10);
-  const g = {}, m = {}, issues = [];
-  FOOD_GROUPS.forEach(([k, label]) => {
-    const t = plan.groups && plan.groups[k], v = pp.groups[k] || 0, st = evalTarget(v, t, tol);
-    if(!st) return; g[k] = st;
-    if(st !== 'ok') issues.push({st, txt: label + ' ' + (t.mode === 'min' ? '−' + fmtG(Number(t.v) - v) : '+' + fmtG(v - Number(t.v)))});
-  });
-  MACROS.forEach(([k, label]) => {
-    const t = plan.macros && plan.macros[k], v = pp.macros[k] || 0, st = evalTarget(v, t, tol);
-    if(!st) return; m[k] = st;
-    if(st !== 'ok') issues.push({st, txt: label + ' ' + (t.mode === 'min' ? '−' : '+') + fmtMacro(k, Math.abs(v - Number(t.v)))});
-  });
-  const all = [...Object.values(g), ...Object.values(m)];
-  const verdict = !all.length ? 'noplan' : all.includes('out') ? 'out' : all.includes('near') ? 'near' : 'ok';
-  issues.sort((a, b) => (a.st === 'out' ? 0 : 1) - (b.st === 'out' ? 0 : 1));
-  return {pp, g, m, verdict, plan, issues};
+/* ====================================================================
+   Healthy v2: piano a porzioni con alternative equivalenti ("scambi")
+   Pasto = gruppi (Carboidrati, Proteine, Verdura, Condimento, oppure un
+   "menù" a scelta) e per ogni gruppo le alternative, es. 170 g pasta o
+   170 g riso o 420 g gnocchi. Una ricetta "copre" una frazione della
+   porzione di ogni gruppo; ciò che manca si completa con abbinamenti.
+   ==================================================================== */
+const SLOT_TEMPLATES = [
+  ['Carboidrati', 'carboidrati', 'portion', '170 g pasta'],
+  ['Proteine', 'proteine', 'portion', '180 g carne bianca'],
+  ['Verdura', 'verdure', 'min', '150-200 g verdura'],
+  ['Condimento', 'grassi', 'portion', '10 g olio'],
+  ['Frutta', 'frutta', 'portion', '150 g frutta'],
+  ['Menù a scelta', 'misto', 'portion', '150 g yogurt greco + 50 g granola']
+];
+const NOT_VEG_F = ['frutta', 'frutti rossi', 'agrumi', 'patate', 'aglio', 'erbe', 'peperoncino', 'spezie'];
+function isVeg(e){ return !!e && ((e.a === 'Frutta e verdura' && !NOT_VEG_F.includes(e.f) && !['avocado', 'cocco'].includes(e.n)) || e.f === 'funghi' || (e.f === 'conserva di pomodoro' && e.n !== 'concentrato di pomodoro')); }
+function isFruit(e){ return !!e && (['frutta', 'frutti rossi'].includes(e.f) && e.n !== 'cocco' || (e.f === 'agrumi' && !['limone', 'lime'].includes(e.n))); }
+const fam = (...f) => e => !!e && f.includes(e.f);
+const CARB_F = ['pasta lunga', 'pasta corta', 'pastina', "pasta all'uovo", 'gnocchi', 'pasta ripiena', 'riso', 'cereali', 'farina', 'pane', 'impasti', 'patate', 'amidi'];
+const PROT_F = ['pollo', 'macinato', 'manzo', 'maiale', 'agnello', 'salumi', 'pesce', 'pesce bianco', 'pesce azzurro', 'pesce in scatola', 'crostacei', 'molluschi', 'uova', 'legumi', 'proteine vegetali'];
+const DAIRY_F = ['latte', 'yogurt', 'formaggio grattugiato', 'formaggio fresco', 'formaggio cremoso', 'formaggio filante', 'formaggio erborinato'];
+const FAT_F = ['olio', 'burro', 'panna', 'semi', 'olive'];
+const SUGAR_F = ['zucchero', 'confettura', 'creme spalmabili', 'biscotti', 'cacao', 'cioccolato'];
+function groupOfEntry(e){
+  if(!e) return 'altro';
+  const f = e.f, n = e.n;
+  if(CARB_F.includes(f) || ['piadina', 'grissini', 'crackers', 'fette biscottate', 'tortilla'].includes(n)) return n === 'pangrattato' ? 'altro' : 'carboidrati';
+  if(PROT_F.includes(f) || n === 'coniglio' || n === 'fave secche') return 'proteine';
+  if(DAIRY_F.includes(f)) return 'latticini';
+  if(FAT_F.includes(f) || (f === 'frutta secca' && !['uvetta', 'datteri', 'castagne'].includes(n)) || ['avocado', 'maionese', 'pesto', 'cocco'].includes(n)) return 'grassi';
+  if(SUGAR_F.includes(f) || n === 'miele') return 'zuccheri';
+  if(isFruit(e) || ['uvetta', 'datteri'].includes(n)) return 'frutta';
+  if(isVeg(e)) return 'verdure';
+  return 'altro';
 }
+const GEN = {
+  'verdura': isVeg, 'verdure': isVeg, 'ortaggi': isVeg, 'insalata mista': isVeg,
+  'frutta': isFruit, 'frutta fresca': isFruit, 'frutto': isFruit,
+  'carne bianca': e => !!e && (e.f === 'pollo' || e.n === 'coniglio'),
+  'carne rossa': fam('manzo', 'maiale', 'macinato', 'agnello'),
+  'carne': e => !!e && (['pollo', 'manzo', 'maiale', 'macinato', 'agnello'].includes(e.f) || e.n === 'coniglio'),
+  'pesce': fam('pesce', 'pesce bianco', 'pesce azzurro', 'pesce in scatola'), 'pesce magro': fam('pesce', 'pesce bianco', 'pesce azzurro', 'pesce in scatola'),
+  'pesce azzurro': fam('pesce azzurro'), 'pesce grasso': fam('pesce', 'pesce azzurro'),
+  'molluschi': fam('molluschi', 'crostacei'), 'crostacei': fam('molluschi', 'crostacei'), 'frutti di mare': fam('molluschi', 'crostacei'), 'molluschi crostacei': fam('molluschi', 'crostacei'),
+  'affettato': fam('salumi'), 'affettati': fam('salumi'), 'salumi': fam('salumi'),
+  'formaggio': e => !!e && String(e.f || '').startsWith('formaggio'), 'formaggi': e => !!e && String(e.f || '').startsWith('formaggio'),
+  'formaggio magro': fam('formaggio fresco', 'formaggio cremoso'), 'formaggio fresco': fam('formaggio fresco', 'formaggio cremoso'), 'formaggio stagionato': fam('formaggio grattugiato', 'formaggio filante'),
+  'legumi': fam('legumi', 'piselli', 'fave'), 'uova': fam('uova'), 'uovo': fam('uova'),
+  'pasta': fam('pasta lunga', 'pasta corta', 'pastina'), 'pasta di semola': fam('pasta lunga', 'pasta corta', 'pastina'), 'pasta integrale': fam('pasta lunga', 'pasta corta', 'pastina'),
+  "pasta all'uovo": fam("pasta all'uovo"), 'pasta fresca': fam("pasta all'uovo"), 'gnocchi': fam('gnocchi'), 'pasta ripiena': fam('pasta ripiena'),
+  'riso': fam('riso'), 'cereali': fam('cereali'), 'cereali integrali': fam('cereali'),
+  'pane': e => !!e && ((e.f === 'pane' && e.n !== 'pangrattato') || ['piadina', 'grissini', 'crackers', 'fette biscottate', 'tortilla'].includes(e.n)),
+  'patate': fam('patate'), 'olio': fam('olio'), 'olio extravergine': fam('olio'),
+  'frutta secca': e => !!e && ((e.f === 'frutta secca' && !['uvetta', 'datteri', 'castagne'].includes(e.n)) || e.f === 'semi'),
+  'yogurt': fam('yogurt'), 'latte': fam('latte'), 'dolci': e => groupOfEntry(e) === 'zuccheri',
+  'carboidrati': e => groupOfEntry(e) === 'carboidrati', 'proteine': e => groupOfEntry(e) === 'proteine', 'latticini': e => groupOfEntry(e) === 'latticini',
+  'grassi': e => groupOfEntry(e) === 'grassi', 'zuccheri': e => groupOfEntry(e) === 'zuccheri'
+};
+const GEN_KEYS = Object.keys(GEN).sort((a, b) => b.length - a.length);
+const matcherCache = new Map();
+/* nome di un alimento del piano -> funzione che riconosce gli ingredienti (con punteggio di precisione) */
+function foodMatcher(name){
+  const key = String(name || '');
+  if(matcherCache.has(key)) return matcherCache.get(key);
+  const preds = [];
+  key.replace(/\([^)]*\)/g, ' ').split(/\s*(?:\/|\||\boppure\b|\bo\b)\s*/i).map(normTxt).filter(Boolean).forEach(t => {
+    if(GEN[t]){ preds.push([GEN[t], 1]); return; }
+    const e = canon(t);
+    if(e && GEN[normTxt(e.n)]){ preds.push([GEN[normTxt(e.n)], 1]); return; }
+    if(e){ preds.push([x => !!x && (x.n === e.n || (!!e.f && x.f === e.f)), 2]); return; }
+    let best = null, pos = 1e9;
+    GEN_KEYS.forEach(k => { const i = (' ' + t + ' ').indexOf(' ' + k + ' '); if(i >= 0 && i < pos){ pos = i; best = k; } });
+    if(best) preds.push([GEN[best], 1]);
+  });
+  const fn = e => { let s = 0; preds.forEach(([p, w]) => { if(w > s && p(e)) s = w; }); return s; };
+  matcherCache.set(key, fn); return fn;
+}
+/* peso in grammi di una quantità */
+const PIECE_G = {uovo: 55, zucchina: 200, melanzana: 300, peperone: 200, cipolla: 100, scalogno: 30, cipollotto: 30, carota: 80, patata: 150, 'patata dolce': 200, pomodoro: 120, mela: 150, pera: 150, banana: 120, arancia: 180, mandarino: 80, kiwi: 80, pesca: 150, limone: 100, mozzarella: 125, burrata: 150, avocado: 200, piadina: 100, tortilla: 60, 'petto di pollo': 150, finocchio: 250, cetriolo: 250, sedano: 40, porro: 150, carciofo: 120, 'cavolfiore': 800, broccolo: 400, lattuga: 300, 'fette biscottate': 9, crackers: 25, grissini: 5, 'yogurt': 125, salsiccia: 100, wurstel: 50, 'formaggio a fette': 20, pane: 50};
+const UNIT_G = {g: 1, kg: 1000, mg: 0.001, ml: 1, cl: 10, dl: 100, l: 1000, cucchiaio: 10, cucchiaino: 5, tazza: 200, tazzina: 50, bicchiere: 200, pizzico: 0.5, spicchio: 4, foglia: 0.5, fetta: 30, bustina: 10, cubetto: 10, rametto: 1, mazzetto: 20, noce: 10, vasetto: 125, lattina: 240, scatola: 240, confezione: 250, manciata: 30, goccio: 5, filo: 5, ciuffo: 5, rotolo: 230, panetto: 250};
+function gramsOf(p, e){
+  if(!p) return null;
+  if(p.unit === 'q.b.') return e && e.f === 'olio' ? 10 : 0;
+  const q = Number(p.qty); if(!(q > 0)) return e && e.f === 'olio' ? 10 : (p.name ? null : 0);
+  const q2 = Number(p.qtyMax) > q ? (q + Number(p.qtyMax)) / 2 : q;
+  if(p.unit && p.unit !== 'pz'){
+    if(p.unit === 'fetta' && e && String(e.f || '').startsWith('formaggio')) return q2 * 20;
+    if(p.unit === 'cucchiaio' && e && (e.f === 'zucchero' || e.n === 'miele' || e.f === 'confettura')) return q2 * 12;
+    if(p.unit === 'lattina' && e && e.f === 'pesce in scatola') return q2 * 80;
+    return UNIT_G[p.unit] != null ? q2 * UNIT_G[p.unit] : null;
+  }
+  if(e && PIECE_G[e.n] != null) return q2 * PIECE_G[e.n];
+  if(e && e.f === 'uova') return q2 * 55;
+  return null;
+}
+/* ingredienti della ricetta per 1 porzione: nome, voce del database, grammi, gruppo */
+function ingFacts(r){
+  const serv = Number(r.servings) || 1;
+  const n = r.nutrition, useAI = n && Array.isArray(n.items) && n.hash === ingHash(r);
+  const ai = new Map(useAI ? n.items.map(it => [Number(it.i), it]) : []);
+  const out = [];
+  (r.ingredients || []).forEach((raw, i) => {
+    const p = typeof raw === 'string' ? parseIngredient(raw) : (raw.group || raw.name != null ? raw : parseIngredient(raw.text));
+    if(!p || p.group || !p.name) return;
+    const e = canon(p.name), it = ai.get(i);
+    let grams = it && Number(it.grams) >= 0 ? Number(it.grams) / serv : null;
+    if(grams == null){ const g = gramsOf(p, e); grams = g == null ? null : g / serv; }
+    const group = it && FOOD_GROUPS.some(x => x[0] === it.group) ? it.group : groupOfEntry(e);
+    out.push({i, name: p.name, raw: p.text || p.name, e, grams, group, qb: p.unit === 'q.b.'});
+  });
+  return out;
+}
+/* testo di un'alternativa ("150 g yogurt greco + 1 cucchiaio di miele") -> componenti con grammi */
+function parseItemText(text){
+  return String(text || '').split(/\s+\+\s+|\s*\+\s*(?=\d)/).map(s => s.trim()).filter(Boolean).map(part => {
+    const p = parseIngredient(part); if(!p || p.group) return null;
+    const name = String(p.name || part).replace(/\([^)]*\)/g, ' ').replace(/\b\d+\s*%/g, ' ').replace(/\s+/g, ' ').trim();
+    const e = canon(name);
+    const g = gramsOf(Object.assign({}, p, {qtyMax: null}), e), gMax = p.qtyMax ? gramsOf(Object.assign({}, p, {qty: p.qtyMax, qtyMax: null}), e) : null;
+    return g > 0 ? {name, g: Math.round(g), gMax: gMax > g ? Math.round(gMax) : null} : null;
+  }).filter(Boolean);
+}
+function itemName(it){ return String(it.text || (it.foods || []).map(f => f.name).join(' + ')).replace(/^\s*[\d.,]+\s*(?:[-–]\s*[\d.,]+\s*)?(?:g|gr|ml|kg)?\.?\s*(?:di\s+|d['’]\s*)?/i, '').trim(); }
+
+/* --- normalizzazione / migrazione dal vecchio formato a grammi per gruppo --- */
+function normSlot(s){
+  if(!s || typeof s !== 'object') return null;
+  const items = (Array.isArray(s.items) ? s.items : []).map(it => {
+    if(typeof it === 'string') it = {text: it};
+    const text = String(it.text || '').trim();
+    let foods = Array.isArray(it.foods) ? it.foods.map(f => ({name: String(f.name || '').trim(), g: Math.round(Number(f.g)) || 0, gMax: Number(f.gMax) > Number(f.g) ? Math.round(Number(f.gMax)) : null})).filter(f => f.name && f.g > 0) : [];
+    if(!foods.length && text) foods = parseItemText(text);
+    return foods.length ? {text: text || foods.map(f => f.g + ' g ' + f.name).join(' + '), foods} : null;
+  }).filter(Boolean);
+  if(!items.length) return null;
+  const group = FOOD_GROUPS.some(g => g[0] === s.group) ? s.group : 'misto';
+  return {name: String(s.name || groupLabel(group) || 'Gruppo').slice(0, 40), group, mode: s.mode === 'min' ? 'min' : 'portion', items};
+}
+function normMeal(m){
+  if(!m || typeof m !== 'object') return null;
+  let slots = Array.isArray(m.slots) ? m.slots.map(normSlot).filter(Boolean) : [];
+  if(!slots.length && m.groups){
+    FOOD_GROUPS.forEach(([k, label]) => { const t = m.groups[k]; const v = Math.round(Number(t && t.v)); if(v > 0) slots.push({name: label, group: k, mode: t.mode === 'min' ? 'min' : 'portion', items: [{text: v + ' g ' + label.toLowerCase(), foods: [{name: k, g: v, gMax: null}]}]}); });
+  }
+  const macros = {};
+  Object.entries(m.macros || {}).forEach(([k, t]) => { const v = Number(t && typeof t === 'object' ? t.v : t); if(MACROS.some(x => x[0] === k) && v > 0) macros[k] = {v: Math.round(v), mode: t && t.mode === 'min' ? 'min' : (t && t.mode === 'max' ? 'max' : (DEFAULT_MODE[k] || 'max'))}; });
+  if(!slots.length && !Object.keys(macros).length) return null;
+  const out = {slots}; if(Object.keys(macros).length) out.macros = macros;
+  return out;
+}
+function normWeekly(list){
+  return (Array.isArray(list) ? list : []).map(w => {
+    const name = String(w && w.name || '').trim().slice(0, 40); if(!name) return null;
+    const num = v => v === null || v === undefined || v === '' ? NaN : Number(v); const min = num(w.min), max = num(w.max);
+    const foods = Array.isArray(w.foods) && w.foods.length ? w.foods.map(String).filter(Boolean).slice(0, 8) : [name];
+    return {name, foods, min: min >= 0 ? Math.round(min) : null, max: max > 0 ? Math.round(max) : null};
+  }).filter(w => w && (w.min != null || w.max != null));
+}
+function normHealth(h){
+  h = h && typeof h === 'object' ? h : {};
+  const out = {v: 2, enabled: !!h.enabled, tolerance: Number(h.tolerance ?? 10) || 0, defaultMeal: h.defaultMeal || 'pranzo', meals: {}, weekly: normWeekly(h.weekly), pairs: h.pairs && typeof h.pairs === 'object' ? h.pairs : {}, supplementsOn: !!h.supplementsOn, supplements: normSupps(h.supplements)};
+  MEAL_LIST.forEach(([k]) => { const m = normMeal((h.meals || {})[k]); if(m) out.meals[k] = m; });
+  return out;
+}
+function H(){ if(!S.health || S.health.v !== 2) S.health = normHealth(S.health); return S.health; }
+function mealPlan(meal){ return (H().meals || {})[meal] || null; }
+function planHasMacros(){ return Object.values(H().meals || {}).some(m => m.macros && Object.keys(m.macros).length); }
+
+/* --- abbinamenti salvati per ricetta e pasto (solo tuoi) --- */
+const rKey = r => (r.id || '') + '|' + (r.variantId || '');
+function pairsFor(r, meal){ const p = (H().pairs || {})[rKey(r)]; return (p && Array.isArray(p[meal])) ? p[meal] : []; }
+let pairSaveT = null;
+function savePairsSoon(){ clearTimeout(pairSaveT); pairSaveT = setTimeout(() => { store && store.saveHealth(H()).catch(() => toast('Non sono riuscito a salvare l\'abbinamento')); }, 500); }
+function setPairs(r, meal, list){
+  const h = H(); h.pairs = h.pairs || {};
+  const k = rKey(r), cur = h.pairs[k] || {};
+  if(list.length) cur[meal] = list; else delete cur[meal];
+  if(Object.keys(cur).length) h.pairs[k] = cur; else delete h.pairs[k];
+  savePairsSoon();
+}
+
+/* --- confronto ricetta / piano --- */
+function planFit(r, meal){
+  const plan = mealPlan(meal);
+  if(!plan || !plan.slots || !plan.slots.length) return plan && plan.macros ? {slots: [], facts: ingFacts(r), assign: new Map(), verdict: 'noplan', pairs: [], plan, unknown: []} : null;
+  const tol = Math.max(5, Number(H().tolerance ?? 10)) / 100;
+  const facts = ingFacts(r);
+  // contenitori
+  const S2 = plan.slots.map(s => ({s, items: s.items.map(it => ({it, combo: it.foods.length > 1, got: it.foods.map(() => 0), who: it.foods.map(() => [])})), extra: 0, extraWho: [], pairs: []}));
+  const assign = new Map();
+  const cookedIng = f => /scatola|cott|lessat|precott|vasetto|barattolo/i.test(f.raw);
+  // 1) assegna ogni ingrediente all'alternativa più precisa
+  facts.forEach(f => {
+    if(f.grams === 0 && !f.qb) return;
+    let best = null;
+    S2.forEach((sl, si) => sl.items.forEach((x, ii) => x.it.foods.forEach((fd, ci) => {
+      let sc = foodMatcher(fd.name)(f.e);
+      if(!sc && !f.e){ const t = normTxt(f.name); if(t && normTxt(fd.name).includes(t)) sc = 1; }
+      if(!sc) return;
+      if(cookedIng(f) && /cott|scatola/i.test(x.it.text)) sc += 0.5;
+      { const words = normTxt(x.it.text).split(' ').filter(w => w.length >= 4 && !/^\d/.test(w)); const rt = ' ' + normTxt(f.raw) + ' '; sc += Math.min(0.4, words.filter(w => rt.includes(' ' + w + ' ')).length * 0.1); }
+      if(!cookedIng(f) && /cott/i.test(x.it.text)) sc -= 0.2;
+      if(!best || sc > best.sc) best = {sc, si, ii, ci};
+    })));
+    if(!best && ['carboidrati', 'proteine', 'verdure', 'frutta', 'grassi', 'latticini', 'zuccheri'].includes(f.group) && (f.grams || 0) >= 3){
+      const si = S2.findIndex(sl => sl.s.group === f.group && sl.items.some(x => !x.combo));
+      if(si >= 0) best = {sc: 0.5, si, ii: -1, ci: -1};
+    }
+    if(!best) return;
+    assign.set(f.i, {si: best.si, ii: best.ii, ci: best.ci});
+    const sl = S2[best.si];
+    if(best.ii < 0){ sl.extra += f.grams || 0; sl.extraWho.push(f); }
+    else { sl.items[best.ii].got[best.ci] += f.grams || 0; sl.items[best.ii].who[best.ci].push(f); }
+  });
+  // 2) abbinamenti scelti
+  const pairs = pairsFor(r, meal);
+  pairs.forEach((p, pi) => {
+    const si = S2.findIndex(sl => sl.s.name === p.slot); if(si < 0) return;
+    const sl = S2[si]; let ii = sl.items.findIndex(x => x.it.text === p.item);
+    if(ii < 0) ii = sl.items.findIndex(x => !x.combo && x.it.foods[0] && foodMatcher(x.it.foods[0].name)(canon(p.food || '')) > 0);
+    sl.pairs.push(Object.assign({pi}, p));
+    if(ii < 0){ sl.extra += Number(p.g) || 0; return; }
+    if(p.combo){ sl.items[ii].it.foods.forEach((fd, k) => { sl.items[ii].got[k] += fd.g; }); return; }
+    const ci = p.comp >= 0 && p.comp < sl.items[ii].got.length ? p.comp : 0;
+    sl.items[ii].got[ci] += Number(p.g) || 0;
+  });
+  // 3) quanto è coperta ogni porzione
+  const out = S2.map(sl => {
+    const singles = sl.items.filter(x => !x.combo), combos = sl.items.filter(x => x.combo);
+    let f = 0, hiRatio = 1;
+    singles.forEach(x => { const fd = x.it.foods[0]; f += x.got[0] / fd.g; if(fd.gMax) hiRatio = Math.max(hiRatio, fd.gMax / fd.g); });
+    const ref = singles.length ? singles[0].it.foods[0].g : 0;
+    if(sl.extra && ref) f += sl.extra / ref;
+    let bestCombo = null;
+    combos.forEach(x => {
+      const cov = x.it.foods.reduce((a, fd, ci) => a + Math.min(x.got[ci] / fd.g, 1.5), 0) / x.it.foods.length;
+      if(!bestCombo || cov > bestCombo.cov) bestCombo = {x, cov};
+    });
+    if(bestCombo) f += bestCombo.cov;
+    const lo = 1 - tol, hi = hiRatio + tol;
+    let st;
+    if(f < 0.05) st = 'miss';
+    else if(sl.s.mode === 'min') st = f >= lo ? 'ok' : f >= lo - 0.15 ? 'near' : 'under';
+    else st = f < lo - 0.15 ? 'under' : f < lo ? 'near' : f <= hi ? 'ok' : f <= hi + 0.15 ? 'near' : 'over';
+    const who = sl.items.flatMap(x => x.who.flat()).concat(sl.extraWho);
+    return {s: sl.s, f, st, who, pairs: sl.pairs, items: sl.items, bestCombo, ref, hiRatio, lo, hi};
+  });
+  const sts = out.map(x => x.st);
+  const verdict = sts.includes('over') ? 'out' : (sts.includes('miss') || sts.includes('under')) ? 'todo' : sts.includes('near') ? 'near' : 'ok';
+  const unknown = facts.filter(f => f.grams == null && !f.qb && assign.has(f.i));
+  return {slots: out, facts, assign, verdict, pairs, plan, unknown};
+}
+const fmtPortion = f => f < 0.05 ? 'manca' : (Math.round(f * 10) / 10).toLocaleString('it-IT') + (Math.round(f * 10) === 10 ? ' porzione' : ' porz.');
+const round5 = g => g >= 20 ? Math.round(g / 5) * 5 : Math.max(1, Math.round(g));
+/* suggerimenti per completare un gruppo */
+function amountLabel(g, name, e){
+  if(e && e.f === 'uova'){ const n = Math.max(1, Math.round(g / 55)); return n + (n > 1 ? ' uova' : ' uovo'); }
+  return round5(g) + ' g ' + String(name).split(/\s*\/\s*/)[0];
+}
+/* "2 cucchiai di pesto" × 0,5 -> "1 cucchiaio di pesto"; "170 g pasta" × 0,5 -> "85 g pasta" */
+function scaledText(text, k){
+  const p = parseIngredient(text);
+  if(!p || p.group || !(Number(p.qty) > 0) || /\+/.test(text)) return null;
+  const nm = String(p.name).trim(), e = canon(nm);
+  if(!p.unit || ['g', 'ml', 'kg', 'l', 'cl', 'dl'].includes(p.unit)){
+    if(!p.unit && e && e.f === 'uova') return amountLabel(p.qty * 55 * k, nm, e);
+    if(!p.unit){ const q = Math.max(1, Math.round(p.qty * k)); return q + ' ' + nm; }
+    const g = p.qty * (UNIT_G[p.unit] || 1) * k; return round5(g) + ' g ' + nm;
+  }
+  const q = Math.max(0.5, Math.round(p.qty * k * 2) / 2);
+  return fmtQty(q, p.unit) + ' ' + unitLabel(p.unit, q) + ' di ' + nm.replace(/^(di\s+|d['’]\s*)/i, '');
+}
+const VEG_IDEAS = ['insalata', 'zucchine', 'spinaci', 'carote', 'pomodori'];
+function slotSuggestions(x){
+  const out = [], need = Math.max(0, 1 - x.f);
+  if(need < 0.08) return out;
+  if(x.bestCombo && x.bestCombo.cov > 0.05){
+    const c = x.bestCombo.x;
+    c.it.foods.forEach((fd, ci) => { const miss = fd.g - c.got[ci]; if(miss >= fd.g * 0.2) out.push({item: c.it.text, comp: ci, food: fd.name, g: round5(miss), label: amountLabel(miss, fd.name, canon(fd.name))}); });
+    return out;
+  }
+  const singles = x.items.filter(y => !y.combo);
+  const veg = x.s.group === 'verdure';
+  // prima: un po' di più di quello che c'è già (non per le verdure: un sugo non diventa un contorno)
+  if(!veg) singles.forEach(y => { const f0 = y.who[0][0]; if(y.got[0] > 0 && f0){ const g = round5(y.it.foods[0].g * need); out.push({item: y.it.text, comp: 0, food: f0.name, g, label: amountLabel(g, f0.name, f0.e), same: true}); } });
+  singles.forEach(y => {
+    if(!veg && y.got[0] > 0) return;
+    const fd = y.it.foods[0], g = round5(fd.g * need);
+    out.push({item: y.it.text, comp: 0, food: fd.name, g, label: scaledText(y.it.text, need) || amountLabel(g, itemName(y.it) || fd.name, canon(fd.name))});
+  });
+  if(veg && singles[0]){ const y = singles[0], g = round5(y.it.foods[0].g * need); VEG_IDEAS.forEach(v => out.push({item: y.it.text, comp: 0, food: v, g, label: g + ' g ' + v})); }
+  if(!singles.length) x.items.forEach(y => out.push({item: y.it.text, comp: -1, food: y.it.foods.map(f => f.name).join(' + '), g: 0, label: y.it.text, combo: true}));
+  return out;
+}
+function overTip(x){
+  if(x.st !== 'over' && !(x.st === 'near' && x.f > 1)) return '';
+  const main = x.who.filter(f => f.grams).sort((a, b) => b.grams - a.grams)[0];
+  const target = (x.hiRatio + 1) / 2;
+  if(!main) return 'Porzione abbondante: mangiane un po\' meno.';
+  const want = round5(main.grams / x.f * target);
+  return 'Per stare nella porzione: circa ' + want + ' g di ' + main.name + ' a porzione (ora ' + round5(main.grams) + ' g), oppure servitene meno.';
+}
+function healthCheck(r, meal){ const fit = planFit(r, meal); return fit; }
 function mealFor(r){
   if(S.healthMeal) return S.healthMeal;
-  if((r.category || '') === 'Colazione') return 'colazione';
+  const c = r.category || '';
+  if(c === 'Colazione') return 'colazione';
   return H().defaultMeal || 'pranzo';
 }
-function healthCardHtml(r){
+const VERDICTS = {ok: ['ok', 'In linea con il tuo piano'], near: ['near', 'Quasi in linea'], todo: ['near', 'Da completare con un abbinamento'], out: ['out', 'Porzione abbondante'], noplan: ['none', '']};
+function healthCardHtml(r, opts){
   if(!healthOn()) return '';
-  const key = r.id + '|' + (r.variantId || ''), busy = S.analyzing && S.analyzing.has(key);
+  opts = opts || {};
+  const key = rKey(r), busy = S.analyzing && S.analyzing.has(key);
   const meal = mealFor(r), mealName = (MEAL_LIST.find(x => x[0] === meal) || ['', meal])[1];
   const planEmpty = !Object.keys(H().meals || {}).length;
   const head = '<div class="hc-head"><span class="hc-title">' + IC.leaf + ' Healthy</span><div class="hc-meals" role="group" aria-label="Confronta con il pasto">' + MEAL_LIST.map(([k, l]) => '<button data-hmeal="' + k + '" aria-pressed="' + (k === meal) + '">' + l + '</button>').join('') + '</div></div>';
-  if(busy) return '<section class="hcard">' + head + '<div class="hc-wait"><span class="spin"></span> Calcolo i valori nutrizionali… (puoi continuare a usare l\'app)</div></section>';
-  if(!r.nutrition) return '<section class="hcard">' + head + '<p class="hc-msg">Valori nutrizionali non ancora calcolati per questa ' + (r.variantName ? 'variante' : 'ricetta') + '.</p><div class="detail-actions"><button class="btn primary" data-act="analyze">' + IC.spark + ' Calcola con l\'AI</button></div></section>';
-  const hc = healthCheck(r, meal); if(!hc) return '';
-  const VERD = {ok: ['ok', 'In linea con il tuo piano'], near: ['near', 'Quasi in linea'], out: ['out', 'Fuori dal piano'], noplan: ['none', 'Nessun valore impostato per ' + mealName.toLowerCase()]};
-  const [vc, vt] = VERD[hc.verdict];
-  let h = '<section class="hcard v-' + vc + '">' + head +
-    '<div class="hc-verdict"><span class="dot st-' + vc + '"></span><div><b>' + vt + '</b>' + (hc.issues.length ? '<small>' + hc.issues.slice(0, 4).map(x => esc(x.txt)).join(' · ') + '</small>' : hc.verdict === 'ok' ? '<small>' + mealName + ', per una porzione</small>' : '') + '</div></div>';
-  if(hc.pp.stale) h += '<div class="hc-stale">Gli ingredienti sono cambiati dall\'ultimo calcolo. <button class="btn small" data-act="analyze">Ricalcola</button></div>';
+  if(planEmpty) return '<section class="hcard">' + head + '<p class="hc-msg">Imposta il tuo piano alimentare per vedere se la ricetta ci sta dentro e cosa abbinarci.</p><div class="detail-actions"><button class="btn primary" data-act="healthplan">Imposta il piano</button></div></section>';
+  const fit = planFit(r, meal);
+  if(!fit) return '<section class="hcard">' + head + '<p class="hc-msg">Nel tuo piano non c\'è ancora nulla per ' + mealName.toLowerCase() + '.</p><div class="detail-actions"><button class="btn" data-act="healthplan">Modifica il piano</button></div></section>';
+  const [vc, vt] = VERDICTS[fit.verdict];
+  const sum = fit.slots.map(x => x.s.name + ' ' + (x.st === 'ok' ? '✓' : fmtPortion(x.f))).join(' · ');
+  let h = '<section class="hcard v-' + vc + '">' + head;
+  if(fit.slots.length) h += '<div class="hc-verdict"><span class="dot st-' + vc + '"></span><div><b>' + vt + '</b><small>' + esc(mealName + ', 1 porzione: ' + sum) + '</small></div></div>';
+  if(busy) h += '<div class="hc-wait"><span class="spin"></span> Stimo i pesi con l\'AI…</div>';
   // gruppi
-  const rows = FOOD_GROUPS.filter(([k]) => (hc.pp.groups[k] || 0) > 0.5 || (hc.plan.groups && hc.plan.groups[k] && Number(hc.plan.groups[k].v) > 0));
-  h += '<div class="hc-groups">' + rows.map(([k, label]) => {
-    const v = hc.pp.groups[k] || 0, t = hc.plan.groups && hc.plan.groups[k], st = hc.g[k] || 'none';
-    const lim = t && Number(t.v) > 0 ? Number(t.v) : 0;
-    return '<div class="hg st-' + st + '"><div class="hg-top"><span>' + label + '</span><b>' + fmtG(v) + '</b><small>' + (lim ? (t.mode === 'min' ? 'almeno ' : 'max ') + fmtG(lim) : 'senza limite') + '</small></div><div class="hg-bar"><i style="width:' + (lim ? Math.max(3, Math.min(100, v / lim * (t.mode === 'min' ? 100 : 100))) : 0) + '%"></i>' + (lim && t.mode !== 'min' && v > lim ? '<em style="left:' + Math.round(lim / v * 100) + '%"></em>' : '') + '</div></div>';
+  h += '<div class="hslots">' + fit.slots.map((x, si) => {
+    const pct = Math.max(x.f > 0 ? 4 : 0, Math.min(100, x.f / Math.max(1.5, x.hi) * 100)), mark = Math.min(100, 1 / Math.max(1.5, x.hi) * 100);
+    const whoTxt = x.who.length ? x.who.map(f => esc(f.name) + (f.grams ? ' ' + fmtG(f.grams) : '')).join(', ') : '';
+    const sug = (x.st === 'miss' || x.st === 'under' || (x.st === 'near' && x.f < 1)) ? slotSuggestions(x) : [];
+    const tip = overTip(x);
+    return '<div class="hs st-' + x.st + '"><div class="hs-top"><b>' + esc(x.s.name) + '</b><span class="hs-v">' + (x.st === 'ok' ? '✓ ' : '') + fmtPortion(x.f) + '</span></div>' +
+      '<div class="hs-bar"><i style="width:' + pct + '%"></i><em style="left:' + mark + '%"></em></div>' +
+      (whoTxt ? '<div class="hs-who">' + whoTxt + '</div>' : '') +
+      (x.pairs.length ? '<div class="hs-pairs">' + x.pairs.map(p => '<span class="pair">+ ' + esc(p.label) + '<button data-pairrm="' + p.pi + '" aria-label="Togli ' + esc(p.label) + '">✕</button></span>').join('') + '</div>' : '') +
+      (sug.length ? '<div class="hs-sug"><span>' + (x.bestCombo && x.bestCombo.cov > 0.05 ? 'Completa con:' : x.f < 0.05 ? 'Abbina:' : 'Aggiungi:') + '</span>' + sug.slice(0, opts.allSug === si ? 40 : 4).map((s, k) => '<button class="sug" data-pairadd="' + si + ':' + k + '">+ ' + esc(s.label) + '</button>').join('') + (sug.length > 4 && opts.allSug !== si ? '<button class="sug more" data-sugmore="' + si + '">altre ' + (sug.length - 4) + '</button>' : '') + '</div>' : '') +
+      (tip ? '<div class="hs-tip">' + esc(tip) + '</div>' : '') + '</div>';
   }).join('') + '</div>';
-  // macro
-  h += '<div class="hc-macros">' + MACROS.map(([k, label]) => {
-    const t = hc.plan.macros && hc.plan.macros[k], st = hc.m[k] || 'none';
-    return '<div class="hm st-' + st + '"><small>' + label + '</small><b>' + fmtMacro(k, hc.pp.macros[k]) + '</b>' + (t && Number(t.v) > 0 ? '<span>' + (t.mode === 'min' ? '≥ ' : '≤ ') + fmtMacro(k, Number(t.v)) + '</span>' : '<span>&nbsp;</span>') + '</div>';
-  }).join('') + '</div>';
-  h += '<div class="detail-actions">' + (hc.verdict === 'out' || hc.verdict === 'near' ? '<button class="btn primary" data-act="fitplan">' + IC.spark + ' Crea una variante adatta al piano</button>' : '') + (planEmpty ? '<button class="btn" data-act="healthplan">Imposta il tuo piano</button>' : '<button class="btn ghost small" data-act="healthplan">Modifica il piano</button>') + '</div>';
-  h += '<p class="hint">Per 1 porzione' + (hc.pp.servings ? ' (la ricetta è per ' + hc.pp.servings + ')' : ' — porzioni non indicate: valori per l\'intera ricetta') + ' · valori stimati dall\'AI, indicativi.</p>';
+  // macro (facoltative)
+  const pm = fit.plan.macros;
+  if(pm && Object.keys(pm).length){
+    const pp = perPortion(r);
+    if(pp && !pp.stale){
+      const tol = Number(H().tolerance ?? 10);
+      h += '<div class="hc-macros">' + MACROS.map(([k, label]) => { const t = pm[k], st = evalTarget(pp.macros[k] || 0, t, tol) || 'none';
+        return '<div class="hm st-' + st + '"><small>' + label + '</small><b>' + fmtMacro(k, pp.macros[k] || 0) + '</b>' + (t ? '<span>' + (t.mode === 'min' ? '≥ ' : '≤ ') + fmtMacro(k, Number(t.v)) + '</span>' : '<span>&nbsp;</span>') + '</div>'; }).join('') + '</div>';
+    } else if(!r.isBase && !busy) h += '<div class="hc-stale">Calorie e macro non ancora calcolate. <button class="btn small" data-act="analyze">Calcola con l\'AI</button></div>';
+  }
+  if(fit.unknown.length && !r.isBase && !busy) h += '<div class="hc-stale">Non so quanto pesano: ' + esc(fit.unknown.map(f => f.raw).slice(0, 3).join(', ')) + '. <button class="btn small" data-act="analyze">Stima con l\'AI</button></div>';
+  h += '<div class="detail-actions">' + ((fit.verdict === 'out' || fit.verdict === 'todo' || fit.verdict === 'near') && !r.isBase ? '<button class="btn" data-act="fitplan">' + IC.spark + ' Variante adatta al piano</button>' : '') + '<button class="btn ghost small" data-act="healthplan">Modifica il piano</button></div>';
+  h += '<p class="hint">Per 1 porzione' + (Number(r.servings) ? ' (la ricetta è per ' + Number(r.servings) + ')' : ' — porzioni non indicate: conto l\'intera ricetta') + '. Gli abbinamenti valgono per ' + mealName.toLowerCase() + ' e finiscono anche nella spesa e nel menù.</p>';
   return h + '</section>';
 }
-/* pallino colorato accanto all'ingrediente */
-function ingChip(r, idx, hc){
-  if(!hc) return '';
-  const it = hc.pp.byIdx.get(idx); if(!it) return '';
-  if(it.group === 'altro' && it.grams < 1) return '';
-  const st = hc.g[it.group] || 'none';
-  return ' <span class="hchip st-' + st + '" title="' + esc(groupLabel(it.group)) + ', a porzione">' + esc(groupLabel(it.group).slice(0, 4).toLowerCase()) + ' ' + fmtG(it.grams) + '</span>';
+/* etichetta accanto all'ingrediente */
+function ingChip(r, idx, fit){
+  if(!fit || !fit.slots) return '';
+  const a = fit.assign.get(idx), f = fit.facts.find(x => x.i === idx);
+  if(!a){ return f && f.grams >= 5 && ['zuccheri', 'grassi', 'carboidrati', 'proteine'].includes(f.group) ? ' <span class="hchip st-none" title="Non previsto dal piano per questo pasto">extra</span>' : ''; }
+  const x = fit.slots[a.si]; if(!x) return '';
+  let ref = 0;
+  if(a.ii >= 0){ const it = x.items[a.ii].it; ref = it.foods[a.ci].g; } else ref = x.ref;
+  const pct = f && f.grams != null && ref ? Math.round(f.grams / ref * 100) : null;
+  return ' <span class="hchip st-' + x.st + '" title="' + esc(x.s.name) + ': parte della porzione">' + esc(x.s.name.toLowerCase().slice(0, 6)) + (pct != null ? ' ' + pct + '%' : '') + '</span>';
 }
 function listDot(r){
-  if(!healthOn() || !r.nutrition) return '';
-  const hc = healthCheck(r, (r.category === 'Colazione') ? 'colazione' : (H().defaultMeal || 'pranzo'));
-  if(!hc || hc.verdict === 'noplan') return '';
-  return '<span class="ldot st-' + hc.verdict + '" title="' + (hc.verdict === 'ok' ? 'In linea con il piano' : hc.verdict === 'near' ? 'Quasi in linea con il piano' : 'Fuori dal piano') + '">' + (hc.verdict === 'ok' ? 'in dieta' : hc.verdict === 'near' ? 'quasi' : 'fuori') + '</span>';
+  if(!healthOn() || !Object.keys(H().meals || {}).length) return '';
+  const fit = planFit(r, (r.category === 'Colazione') ? 'colazione' : (H().defaultMeal || 'pranzo'));
+  if(!fit || fit.verdict === 'noplan') return '';
+  const L = {ok: ['ok', 'in dieta'], near: ['near', 'quasi'], todo: ['near', 'da abbinare'], out: ['out', 'abbondante']}[fit.verdict];
+  return '<span class="ldot st-' + L[0] + '" title="' + esc(VERDICTS[fit.verdict][1]) + '">' + L[1] + '</span>';
+}
+/* abbinamenti -> righe della spesa (grammi a porzione × porzioni) */
+function pairShopItems(r, meal, servings, title){
+  if(!healthOn()) return [];
+  const n = Number(servings) || 1;
+  return pairsFor(r, meal).flatMap(p => {
+    if(p.combo) return parseItemText(p.item).map(fd => toShopItem({qty: fd.g * n, unit: 'g', name: fd.name, text: fd.name}, 1, title + ' (abbinamento)'));
+    const eggs = /^\d+ uov/.test(p.label);
+    return [toShopItem(eggs ? {qty: parseInt(p.label, 10) * n, unit: '', name: 'uova', text: 'uova'} : {qty: p.g * n, unit: 'g', name: p.label.replace(/^[\d.,]+\s*g\s+/, ''), text: p.label}, 1, title + ' (abbinamento)')];
+  });
+}
+/* frequenze settimanali (sui pranzi e le cene del menù) */
+function weeklyStatus(){
+  const rules = H().weekly || []; if(!rules.length) return [];
+  const counts = rules.map(() => 0);
+  Object.entries(S.plan.slots || {}).forEach(([key, entries]) => {
+    const meal = key.split('-')[1];
+    entries.forEach(e => {
+      if(!e.rid) return; const r0 = getR(e.rid); if(!r0) return; const r = effR(r0, e.vid);
+      const facts = ingFacts(r).filter(f => f.grams == null ? !f.qb : f.grams >= 25);
+      const pf = pairsFor(r, meal).map(p => ({e: canon(p.food || p.label), name: p.food}));
+      rules.forEach((w, wi) => { if(facts.concat(pf).some(f => w.foods.some(fd => foodMatcher(fd)(f.e) > 0))) counts[wi]++; });
+    });
+  });
+  return rules.map((w, wi) => {
+    const c = counts[wi];
+    const st = w.max != null && c > w.max ? 'over' : w.min != null && c < w.min ? 'under' : 'ok';
+    return {w, c, st};
+  });
+}
+function weeklyHtml(){
+  if(!healthOn()) return '';
+  const ws = weeklyStatus(); if(!ws.length) return '';
+  return '<div class="weekly"><div class="weekly-h">' + IC.leaf + ' Frequenze della settimana <small>pranzi e cene</small></div><div class="weekly-chips">' + ws.map(x => '<span class="wchip st-' + x.st + '"><b>' + esc(x.w.name) + '</b> ' + x.c + '<small>/' + (x.w.min != null && x.w.max != null && x.w.min !== x.w.max ? x.w.min + '–' + x.w.max : (x.w.max != null ? (x.w.min == null ? 'max ' : '') + x.w.max : 'min ' + x.w.min)) + '</small></span>').join('') + '</div></div>';
 }
 
 /* --- calcolo con l'AI (in background, sopravvive allo standby) --- */
@@ -1303,74 +1696,117 @@ async function applyNutrition(recipeId, variantId, nut){
 /* --- pagina del piano alimentare --- */
 let HP = null; // bozza in modifica
 function openHealthPlan(){
-  HP = JSON.parse(JSON.stringify(H())); HP.meals = HP.meals || {}; HP.tab = HP.defaultMeal || 'pranzo';
+  HP = JSON.parse(JSON.stringify(H())); HP.meals = HP.meals || {}; HP.weekly = HP.weekly || []; HP.tab = HP.defaultMeal || 'pranzo';
   renderHealthPlan();
   const el = $('#sheetHealth'); el.classList.remove('hidden'); el.scrollTop = 0; document.body.style.overflow = 'hidden';
 }
 function closeHealthPlan(){ HP = null; $('#sheetHealth').classList.add('hidden'); if(!S.openId && !S.edit && $('#sheetSettings').classList.contains('hidden')) document.body.style.overflow = ''; }
+function hpMeal(){ const m = HP.meals[HP.tab] = HP.meals[HP.tab] || {}; m.slots = m.slots || []; return m; }
 function hpVal(kind, k){ const m = HP.meals[HP.tab] || {}; return (m[kind] || {})[k] || null; }
-function renderHealthPlan(){
-  const m = HP.tab;
-  const row = (kind, k, label, hint, unit) => {
-    const t = hpVal(kind, k), mode = (t && t.mode) || DEFAULT_MODE[k] || 'max';
-    const ai = HP.ai && HP.ai.has(m + ':' + kind + ':' + k);
-    return '<div class="hp-row' + (ai ? ' hp-ai' : '') + '"><div class="hp-l"><b>' + label + (ai ? ' <span class="ai-dot" title="Compilato dall\'AI">' + IC.spark + '</span>' : '') + '</b>' + (hint ? '<small>' + hint + '</small>' : '') + '</div>' +
-      '<button class="hp-mode" data-hpmode="' + kind + ':' + k + '" aria-label="' + (mode === 'min' ? 'Almeno' : 'Al massimo') + ', tocca per cambiare">' + (mode === 'min' ? '≥ almeno' : '≤ max') + '</button>' +
-      '<label class="hp-in"><input class="inp" type="number" inputmode="decimal" min="0" step="any" data-hpv="' + kind + ':' + k + '" value="' + (t && t.v != null ? esc(t.v) : '') + '" placeholder="—" aria-label="' + label + ' (' + unit + ')"><span>' + unit + '</span></label></div>';
-  };
-  $('#sheetHealth').innerHTML =
-    '<div class="sheet-bar"><div class="sheet-bar-inner"><button class="btn icon-btn ghost" data-hp="close" aria-label="Chiudi">' + IC.back + '</button><strong style="font-size:17px">Il mio piano alimentare</strong><div class="spacer"></div></div></div>' +
-    '<div class="sheet-content">' +
-      (HP.importInfo
-        ? '<div class="hp-import done"><div class="hp-imp-t">' + IC.spark + '<div><b>Piano compilato dall\'AI</b><small>' + esc(HP.importInfo.summary || 'Ho riempito i valori dei pasti che ho trovato.') + ' Controlla i valori segnati con ' + IC.spark + ' in ogni pasto, poi premi «Salva il piano».</small></div></div>' +
-          (HP.importInfo.doubts && HP.importInfo.doubts.length ? '<ul class="hp-doubts">' + HP.importInfo.doubts.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '') +
-          '<div class="hp-imp-a"><button class="btn small" data-hp="import">Importa di nuovo</button><button class="btn small ghost" data-hp="dismissai">Ok, chiudi</button></div></div>'
-        : '<div class="hp-import"><div class="hp-imp-t">' + IC.spark + '<div><b>Compila dal tuo piano</b><small>Carica il PDF o la foto della dieta, incolla il testo o dettala: l\'AI riempie i valori di ogni pasto e tu li controlli.</small></div></div><button class="btn small primary" data-hp="import">Importa il piano</button></div>') +
-      '<label class="switch-row"><span><b>Attiva Healthy</b><small>Le ricette mostrano se sono in linea con il tuo piano, con i valori verdi, gialli o rossi accanto agli ingredienti.</small></span><input type="checkbox" class="switch" id="hp_on"' + (HP.enabled ? ' checked' : '') + '></label>' +
-      '<div class="field"><span class="lbl">Quantità per una porzione al pasto</span><div class="seg" role="tablist">' + MEAL_LIST.map(([k, l]) => '<button role="tab" data-hptab="' + k + '" aria-pressed="' + (k === m) + '">' + l + '</button>').join('') + '</div>' +
-        '<span class="hint">Scrivi solo i valori che ti servono; i campi vuoti non vengono controllati. «≤ max» segnala quando sfori, «≥ almeno» quando ne manca.</span></div>' +
-      '<section class="section"><h2>Gruppi alimentari</h2><div class="hp-card">' + FOOD_GROUPS.map(([k, l, hint]) => row('groups', k, l, hint, 'g')).join('') + '</div></section>' +
-      '<section class="section"><h2>Calorie e macronutrienti</h2><div class="hp-card">' + MACROS.map(([k, l, u]) => row('macros', k, l, '', u)).join('') + '</div></section>' +
-      '<div class="hp-copy"><span class="hint">Copia i valori da:</span>' + MEAL_LIST.filter(([k]) => k !== m && HP.meals[k]).map(([k, l]) => '<button class="btn small" data-hpcopy="' + k + '">' + l + '</button>').join('') + (MEAL_LIST.some(([k]) => k !== m && HP.meals[k]) ? '' : '<span class="hint">—</span>') + '</div>' +
-      '<section class="section"><h2>Opzioni</h2><div class="hp-card">' +
-        '<div class="hp-row"><div class="hp-l"><b>Pasto predefinito</b><small>Con cosa confrontare le ricette (puoi cambiarlo anche da ogni ricetta)</small></div><select class="inp" id="hp_def" style="width:auto">' + MEAL_LIST.map(([k, l]) => '<option value="' + k + '"' + (k === HP.defaultMeal ? ' selected' : '') + '>' + l + '</option>').join('') + '</select></div>' +
-        '<div class="hp-row"><div class="hp-l"><b>Tolleranza</b><small>Entro questo margine il valore è giallo invece che rosso</small></div><select class="inp" id="hp_tol" style="width:auto">' + [0, 5, 10, 15, 20].map(v => '<option value="' + v + '"' + (Number(HP.tolerance) === v ? ' selected' : '') + '>' + v + '%</option>').join('') + '</select></div>' +
-      '</div></section>' +
-      '<p class="hint">I valori delle ricette sono stime fatte dall\'AI sugli ingredienti: usali come indicazione. Il riferimento resta il tuo piano e chi te l\'ha dato.</p>' +
-    '</div>' +
-    '<div class="save-bar"><div class="save-bar-inner"><button class="btn" data-hp="close">Annulla</button><button class="btn primary" data-hp="save">Salva il piano</button></div></div>';
-}
 function hpSet(kind, k, patch){
-  const meal = HP.meals[HP.tab] = HP.meals[HP.tab] || {};
+  const meal = hpMeal();
   const bag = meal[kind] = meal[kind] || {};
   const cur = bag[k] || {v: null, mode: DEFAULT_MODE[k] || 'max'};
   Object.assign(cur, patch); bag[k] = cur;
 }
+function renderHealthPlan(){
+  const m = HP.tab, meal = HP.meals[m] || {slots: []}, slots = meal.slots || [];
+  const mrow = (k, label, unit) => {
+    const t = hpVal('macros', k), mode = (t && t.mode) || DEFAULT_MODE[k] || 'max';
+    return '<div class="hp-row"><div class="hp-l"><b>' + label + '</b></div>' +
+      '<button class="hp-mode" data-hpmode="macros:' + k + '" aria-label="' + (mode === 'min' ? 'Almeno' : 'Al massimo') + ', tocca per cambiare">' + (mode === 'min' ? '≥ almeno' : '≤ max') + '</button>' +
+      '<label class="hp-in"><input class="inp" type="number" inputmode="decimal" min="0" step="any" data-hpv="macros:' + k + '" value="' + (t && t.v != null ? esc(t.v) : '') + '" placeholder="—" aria-label="' + label + ' (' + unit + ')"><span>' + unit + '</span></label></div>';
+  };
+  const altRow = (si, ii, it) => {
+    const bad = it.text && !parseItemText(it.text).length && !(it.foods && it.foods.length);
+    return '<div class="hp-alt' + (bad ? ' bad' : '') + '"><span class="hp-or">' + (ii ? 'oppure' : '') + '</span><input class="inp" data-hpit="' + si + ':' + ii + '" value="' + esc(it.text || '') + '" placeholder="Es. 170 g pasta di semola" aria-label="Alternativa ' + (ii + 1) + '"><button class="hp-x" data-hpitdel="' + si + ':' + ii + '" aria-label="Togli alternativa">' + IC.x + '</button></div>';
+  };
+  const slotCard = (s, si) => {
+    const ai = HP.ai && HP.ai.has(m);
+    return '<div class="hp-slot"><div class="hp-slot-h"><input class="inp hp-sname" data-hpsn="' + si + '" value="' + esc(s.name) + '" aria-label="Nome del gruppo">' + (ai ? '<span class="ai-dot" title="Compilato dall\'AI">' + IC.spark + '</span>' : '') +
+      '<button class="hp-mode" data-hpsm="' + si + '" title="Tocca per cambiare">' + (s.mode === 'min' ? '≥ almeno' : '1 porzione') + '</button><button class="hp-x" data-hpsdel="' + si + '" aria-label="Elimina il gruppo ' + esc(s.name) + '">' + IC.trash + '</button></div>' +
+      (s.items || []).map((it, ii) => altRow(si, ii, it)).join('') +
+      '<button class="btn small ghost hp-add" data-hpitadd="' + si + '">+ alternativa</button></div>';
+  };
+  const wrow = (w, wi) => '<div class="hp-w"><input class="inp" data-hpwn="' + wi + '" value="' + esc(w.name) + '" placeholder="Es. Pesce" aria-label="Alimento"><input class="inp" type="number" inputmode="numeric" min="0" data-hpwmin="' + wi + '" value="' + (w.min != null ? w.min : '') + '" placeholder="min" aria-label="Minimo a settimana"><span>–</span><input class="inp" type="number" inputmode="numeric" min="0" data-hpwmax="' + wi + '" value="' + (w.max != null ? w.max : '') + '" placeholder="max" aria-label="Massimo a settimana"><button class="hp-x" data-hpwdel="' + wi + '" aria-label="Togli">' + IC.x + '</button></div>';
+  const others = MEAL_LIST.filter(([k]) => k !== m && HP.meals[k] && ((HP.meals[k].slots || []).length || HP.meals[k].macros));
+  $('#sheetHealth').innerHTML =
+    '<div class="sheet-bar"><div class="sheet-bar-inner"><button class="btn icon-btn ghost" data-hp="close" aria-label="Chiudi">' + IC.back + '</button><strong style="font-size:17px">Il mio piano alimentare</strong><div class="spacer"></div></div></div>' +
+    '<div class="sheet-content">' +
+      (HP.importInfo
+        ? '<div class="hp-import done"><div class="hp-imp-t">' + IC.spark + '<div><b>Piano compilato dall\'AI</b><small>' + esc(HP.importInfo.summary || '') + ' Controlla ogni pasto, poi premi «Salva il piano».</small></div></div>' +
+          (HP.importInfo.doubts && HP.importInfo.doubts.length ? '<ul class="hp-doubts">' + HP.importInfo.doubts.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '') +
+          '<div class="hp-imp-a"><button class="btn small" data-hp="import">Importa di nuovo</button><button class="btn small ghost" data-hp="dismissai">Ok, chiudi</button></div></div>'
+        : '<div class="hp-import"><div class="hp-imp-t">' + IC.spark + '<div><b>Compila dal tuo piano</b><small>Carica il PDF o la foto della dieta, incolla il testo o dettala: l\'AI riempie i pasti con le alternative e tu li controlli.</small></div></div><button class="btn small primary" data-hp="import">Importa il piano</button></div>') +
+      '<label class="switch-row"><span><b>Attiva Healthy</b><small>Le ricette mostrano quanto coprono di ogni porzione del pasto e cosa abbinarci per completarlo.</small></span><input type="checkbox" class="switch" id="hp_on"' + (HP.enabled ? ' checked' : '') + '></label>' +
+      '<div class="field"><span class="lbl">Pasto</span><div class="seg" role="tablist">' + MEAL_LIST.map(([k, l]) => '<button role="tab" data-hptab="' + k + '" aria-pressed="' + (k === m) + '">' + l + '</button>').join('') + '</div>' +
+        '<span class="hint">Ogni gruppo è una porzione: scegli <b>una</b> delle alternative, sono equivalenti. Scrivi le quantità come in una ricetta («170 g riso», «3 uova», «150 g yogurt greco + 50 g granola» per un menù completo). «≥ almeno» per le verdure: di più va bene.</span></div>' +
+      '<section class="section"><div class="hp-slots">' + (slots.length ? slots.map(slotCard).join('') : '<p class="hint">Nessun gruppo per questo pasto.</p>') + '</div>' +
+        '<div class="hp-tpl"><span class="hint">Aggiungi un gruppo:</span>' + SLOT_TEMPLATES.map((t, i) => '<button class="btn small" data-hpsadd="' + i + '">+ ' + t[0] + '</button>').join('') + '</div>' +
+        (others.length ? '<div class="hp-copy"><span class="hint">Copia da:</span>' + others.map(([k, l]) => '<button class="btn small" data-hpcopy="' + k + '">' + l + '</button>').join('') + '</div>' : '') + '</section>' +
+      '<details class="hp-more"' + (meal.macros && Object.keys(meal.macros).length ? ' open' : '') + '><summary>Calorie e macronutrienti (facoltativo)</summary><div class="hp-card">' + MACROS.map(([k, l, u]) => mrow(k, l, u)).join('') + '</div><p class="hint">Se li imposti, per controllarli l\'AI stima i valori delle ricette.</p></details>' +
+      '<section class="section"><h2>Frequenze settimanali</h2><p class="hint" style="margin-top:-4px">Quante volte a settimana, tra pranzi e cene del menù. Es. Pesce 1–2, Legumi 2, Carne rossa max 1.</p><div class="hp-card hp-weekly">' + (HP.weekly.length ? HP.weekly.map(wrow).join('') : '<p class="hint" style="padding:8px 0">Nessuna frequenza impostata.</p>') + '</div><button class="btn small ghost hp-add" data-hpwadd="1">+ frequenza</button></section>' +
+      hpSuppsHtml() +
+      '<section class="section"><h2>Opzioni</h2><div class="hp-card">' +
+        '<div class="hp-row"><div class="hp-l"><b>Pasto predefinito</b><small>Con cosa confrontare le ricette (puoi cambiarlo anche da ogni ricetta)</small></div><select class="inp" id="hp_def" style="width:auto">' + MEAL_LIST.map(([k, l]) => '<option value="' + k + '"' + (k === HP.defaultMeal ? ' selected' : '') + '>' + l + '</option>').join('') + '</select></div>' +
+        '<div class="hp-row"><div class="hp-l"><b>Tolleranza</b><small>Entro questo margine una porzione è considerata giusta</small></div><select class="inp" id="hp_tol" style="width:auto">' + [5, 10, 15, 20].map(v => '<option value="' + v + '"' + (Number(HP.tolerance) === v ? ' selected' : '') + '>' + v + '%</option>').join('') + '</select></div>' +
+      '</div></section>' +
+      '<p class="hint">I pesi delle ricette sono stimati dagli ingredienti: usali come indicazione. Il riferimento resta il tuo piano e chi te l\'ha dato.</p>' +
+    '</div>' +
+    '<div class="save-bar"><div class="save-bar-inner"><button class="btn" data-hp="close">Annulla</button><button class="btn primary" data-hp="save">Salva il piano</button></div></div>';
+}
+/* modifiche nei campi di testo: niente nuovo render, così la tastiera resta aperta */
+function hpInput(t){
+  if(!HP || !t.dataset) return false;
+  if(hpSuppInput(t)) return true;
+  const d = t.dataset;
+  if(d.hpsn != null){ const s = hpMeal().slots[Number(d.hpsn)]; if(s) s.name = t.value; return true; }
+  if(d.hpit != null){
+    const [si, ii] = d.hpit.split(':').map(Number), s = hpMeal().slots[si]; if(!s) return true;
+    const it = s.items[ii]; it.text = t.value; it.foods = parseItemText(t.value);
+    t.closest('.hp-alt').classList.toggle('bad', !!t.value.trim() && !it.foods.length);
+    return true;
+  }
+  if(d.hpwn != null){ const w = HP.weekly[Number(d.hpwn)]; if(w){ w.name = t.value; w.foods = [t.value]; } return true; }
+  if(d.hpwmin != null){ const w = HP.weekly[Number(d.hpwmin)]; if(w) w.min = t.value === '' ? null : Number(t.value); return true; }
+  if(d.hpwmax != null){ const w = HP.weekly[Number(d.hpwmax)]; if(w) w.max = t.value === '' ? null : Number(t.value); return true; }
+  return false;
+}
 function hpClean(h){
-  const out = {enabled: !!h.enabled, tolerance: Number(h.tolerance) || 0, defaultMeal: h.defaultMeal || 'pranzo', meals: {}};
-  Object.entries(h.meals || {}).forEach(([m, val]) => {
-    const mm = {};
-    ['groups', 'macros'].forEach(kind => {
-      const bag = {};
-      Object.entries((val || {})[kind] || {}).forEach(([k, t]) => { const v = Number(t && t.v); if(v > 0) bag[k] = {v, mode: t.mode === 'min' ? 'min' : 'max'}; });
-      if(Object.keys(bag).length) mm[kind] = bag;
-    });
-    if(Object.keys(mm).length) out.meals[m] = mm;
-  });
+  const out = normHealth(h);
+  out.pairs = H().pairs || {};
   return out;
 }
 async function healthPlanAction(t){
   const d = t.dataset;
+  if(hpSuppClick(d)) return;
   if(d.hp === 'close') return closeHealthPlan();
   if(d.hp === 'import') return openPlanImport();
   if(d.hp === 'dismissai'){ HP.importInfo = null; renderHealthPlan(); return; }
   if(d.hptab){ HP.tab = d.hptab; renderHealthPlan(); return; }
   if(d.hpmode){ const [kind, k] = d.hpmode.split(':'); const cur = hpVal(kind, k); hpSet(kind, k, {mode: ((cur && cur.mode) || DEFAULT_MODE[k] || 'max') === 'min' ? 'max' : 'min'}); renderHealthPlan(); return; }
-  if(d.hpcopy){ HP.meals[HP.tab] = JSON.parse(JSON.stringify(HP.meals[d.hpcopy] || {})); renderHealthPlan(); toast('Valori copiati: puoi modificarli'); return; }
+  if(d.hpsm != null){ const s = hpMeal().slots[Number(d.hpsm)]; if(s){ s.mode = s.mode === 'min' ? 'portion' : 'min'; renderHealthPlan(); } return; }
+  if(d.hpsdel != null){ hpMeal().slots.splice(Number(d.hpsdel), 1); renderHealthPlan(); return; }
+  if(d.hpsadd != null){
+    const [name, group, mode, ex] = SLOT_TEMPLATES[Number(d.hpsadd)];
+    hpMeal().slots.push({name, group, mode, items: [{text: '', foods: []}]}); renderHealthPlan();
+    const ins = $('#sheetHealth').querySelectorAll('[data-hpit]'); const last = ins[ins.length - 1]; if(last){ last.placeholder = 'Es. ' + ex; last.focus(); }
+    return;
+  }
+  if(d.hpitadd != null){
+    const s = hpMeal().slots[Number(d.hpitadd)]; if(!s) return;
+    s.items.push({text: '', foods: []}); renderHealthPlan();
+    const el = $('#sheetHealth').querySelector('[data-hpit="' + d.hpitadd + ':' + (s.items.length - 1) + '"]'); el && el.focus();
+    return;
+  }
+  if(d.hpitdel != null){ const [si, ii] = d.hpitdel.split(':').map(Number), s = hpMeal().slots[si]; if(s){ s.items.splice(ii, 1); if(!s.items.length) hpMeal().slots.splice(si, 1); renderHealthPlan(); } return; }
+  if(d.hpwadd){ HP.weekly.push({name: '', foods: [], min: null, max: null}); renderHealthPlan(); const ins = $('#sheetHealth').querySelectorAll('[data-hpwn]'); ins[ins.length - 1] && ins[ins.length - 1].focus(); return; }
+  if(d.hpwdel != null){ HP.weekly.splice(Number(d.hpwdel), 1); renderHealthPlan(); return; }
+  if(d.hpcopy){ HP.meals[HP.tab] = JSON.parse(JSON.stringify(HP.meals[d.hpcopy] || {slots: []})); renderHealthPlan(); toast('Copiato: puoi modificarlo'); return; }
   if(d.hp === 'save'){
     const clean = hpClean(HP);
     t.disabled = true;
-    try{ await store.saveHealth(clean); S.health = clean; closeHealthPlan(); toast(clean.enabled ? 'Piano salvato: Healthy è attivo' : 'Piano salvato'); renderList(); if(S.openId) renderDetail(); if(!$('#sheetSettings').classList.contains('hidden')) renderSettings(); }
+    try{ await store.saveHealth(clean); S.health = clean; closeHealthPlan(); updateDigest();  toast(clean.enabled ? 'Piano salvato: Healthy è attivo' : 'Piano salvato'); renderList(); if(S.openId) renderDetail(); if(S.tab === 'menu') renderPlan(); if(!$('#sheetSettings').classList.contains('hidden')) renderSettings(); }
     catch(e){ t.disabled = false; toast('Non sono riuscito a salvare il piano.' + (e && e.message ? ' (' + e.message + ')' : '')); }
   }
 }
@@ -1378,30 +1814,18 @@ async function healthPlanAction(t){
 function applyPlanImport(res){
   if(!HP) openHealthPlan();
   res = res && typeof res === 'object' ? res : {};
-  const meals = res.meals && typeof res.meals === 'object' ? res.meals : {};
-  const ai = new Set(), filled = [];
-  const validK = {groups: FOOD_GROUPS.map(g => g[0]), macros: MACROS.map(x => x[0])};
-  MEAL_LIST.forEach(([m]) => {
-    const src = meals[m]; if(!src || typeof src !== 'object') return;
-    const out = {};
-    ['groups', 'macros'].forEach(kind => {
-      const bag = {};
-      Object.entries(src[kind] || {}).forEach(([k, t]) => {
-        if(!validK[kind].includes(k)) return;
-        const v = Math.round(Number(t && typeof t === 'object' ? t.v : t));
-        if(!(v > 0) || v > 20000) return;
-        bag[k] = {v, mode: t && (t.mode === 'min' || t.mode === 'max') ? t.mode : (DEFAULT_MODE[k] || 'max')};
-        ai.add(m + ':' + kind + ':' + k);
-      });
-      if(Object.keys(bag).length) out[kind] = bag;
-    });
-    if(Object.keys(out).length){ HP.meals[m] = out; filled.push(m); }
-  });
-  if(!filled.length){ toast('Non ho trovato valori utili nel piano: prova con una foto più nitida o scrivi i pasti.'); return false; }
-  HP.ai = ai; HP.enabled = true;
-  if(!filled.includes(HP.tab)) HP.tab = filled.includes(HP.defaultMeal) ? HP.defaultMeal : filled[0];
+  const meals = Object.assign({}, res.meals && typeof res.meals === 'object' ? res.meals : {});
+  Object.keys(meals).forEach(k => { if(typeof meals[k] === 'string' && meals[meals[k]] && typeof meals[meals[k]] === 'object') meals[k] = JSON.parse(JSON.stringify(meals[meals[k]])); });
+  const filled = [];
+  MEAL_LIST.forEach(([m]) => { const nm = normMeal(meals[m]); if(nm){ HP.meals[m] = nm; filled.push(m); } });
+  const weekly = normWeekly(res.weekly), sups = normSupps(res.supplements);
+  if(sups.length){ HP.supplements = sups; HP.supplementsOn = true; }
+  if(!filled.length && !weekly.length && !sups.length){ toast('Non ho trovato valori utili nel piano: prova con una foto più nitida o scrivi i pasti.'); return false; }
+  if(weekly.length) HP.weekly = weekly;
+  HP.ai = new Set(filled); HP.enabled = true;
+  if(!filled.includes(HP.tab)) HP.tab = filled.includes(HP.defaultMeal) ? HP.defaultMeal : (filled[0] || HP.tab);
   const names = filled.map(m => (MEAL_LIST.find(x => x[0] === m) || ['', m])[1].toLowerCase());
-  HP.importInfo = {summary: (String(res.summary || '').slice(0, 300) || '') + (res.summary ? ' ' : '') + 'Pasti compilati: ' + names.join(', ') + '.', doubts: Array.isArray(res.doubts) ? res.doubts.map(String).slice(0, 5) : []};
+  HP.importInfo = {summary: (res.summary ? String(res.summary).slice(0, 300) + ' ' : '') + (names.length ? 'Pasti compilati: ' + names.join(', ') + '.' : '') + (weekly.length ? ' Frequenze settimanali: ' + weekly.length + '.' : '') + (sups.length ? ' Integratori: ' + sups.length + ' (controlla orari e dosi dei promemoria).' : ''), doubts: Array.isArray(res.doubts) ? res.doubts.map(String).slice(0, 5) : []};
   renderHealthPlan(); $('#sheetHealth').scrollTop = 0;
   return true;
 }
@@ -1472,13 +1896,13 @@ function openPlanImport(){
 }
 function planInstruction(r){
   const meal = mealFor(r), mealName = (MEAL_LIST.find(x => x[0] === meal) || ['', meal])[1].toLowerCase();
-  const plan = (H().meals || {})[meal] || {}, parts = [];
-  FOOD_GROUPS.forEach(([k, l]) => { const t = plan.groups && plan.groups[k]; if(t) parts.push(l.toLowerCase() + ' ' + (t.mode === 'min' ? 'almeno ' : 'massimo ') + t.v + ' g'); });
-  MACROS.forEach(([k, l, u]) => { const t = plan.macros && plan.macros[k]; if(t) parts.push(l.toLowerCase() + ' ' + (t.mode === 'min' ? 'almeno ' : 'massimo ') + t.v + ' ' + u); });
-  const hc = healthCheck(r, meal);
-  return 'Adatta la ricetta al mio piano alimentare per una porzione a ' + mealName + ': ' + parts.join(', ') + '.' +
-    (hc && hc.issues.length ? ' Adesso sforo così: ' + hc.issues.map(x => x.txt).join(', ') + '.' : '') +
-    ' Mantieni il piatto riconoscibile e gustoso: regola prima le quantità per ' + (r.servings || 1) + ' porzioni, sostituisci ingredienti solo se serve, e aggiorna i passaggi di conseguenza.';
+  const plan = mealPlan(meal) || {slots: []};
+  const parts = plan.slots.map(s => s.name + (s.mode === 'min' ? ' (almeno)' : '') + ': una porzione tra ' + s.items.map(it => it.text).join(' oppure '));
+  const fit = planFit(r, meal);
+  const now = fit ? fit.slots.map(x => x.s.name + ' ' + (x.f < 0.05 ? 'assente' : (Math.round(x.f * 10) / 10) + ' porzioni')).join(', ') : '';
+  return 'Adatta la ricetta al mio piano alimentare per ' + mealName + '. Ogni porzione della ricetta deve contenere: ' + parts.join('; ') + '.' +
+    (now ? ' Adesso una porzione contiene: ' + now + '.' : '') +
+    ' Le quantità vanno scritte per ' + (r.servings || 1) + ' porzioni (porzione del piano × ' + (r.servings || 1) + '). Mantieni il piatto riconoscibile e gustoso: regola prima le quantità, aggiungi verdura o la fonte mancante se serve, sostituisci ingredienti solo se necessario, e aggiorna i passaggi di conseguenza.';
 }
 
 /* --- varianti: creazione, modifica, eliminazione --- */
@@ -1530,7 +1954,7 @@ async function saveVariant(){
     await S.db.collection('recipes').doc(parent.id).update({variants, updatedAt: new Date().toISOString()});
     closeEditor(); toast('Variante salvata');
     openDetail(parent.id, v.id);
-    if(healthOn() && !v.nutrition) analyzeNutrition(parent.id, v.id, {silent: true});
+    if(healthOn() && planHasMacros() && !v.nutrition) analyzeNutrition(parent.id, v.id, {silent: true});
   }catch(e){ E.saving = false; renderEditor(); toast('Non sono riuscito a salvare la variante.'); }
 }
 async function deleteVariant(r0, vid){
@@ -1732,6 +2156,7 @@ function startTimer(label, minutes){
   unlockAudio();
   const total = Math.max(1000, Math.round(minutes * 60000));
   T.list.push({id: Math.random().toString(36).slice(2), label: label || 'Timer', total, end: Date.now() + total, paused:false, remaining:0, done:false});
+  tPushSync(T.list[T.list.length - 1]);
   tSave(); if(T.state === 'hidden') T.state = 'compact';
   tRender(); toast('Timer avviato: ' + fmtMin(minutes));
 }
@@ -1743,6 +2168,7 @@ function tAction(id, act){
   else if(act === 'resume'){ t.end = Date.now() + t.remaining; t.paused = false; }
   else if(act === 'plus'){ if(t.done){ t.done = false; t.paused = false; t.end = Date.now() + 60000; t.total = Math.max(t.total, 60000); } else if(t.paused) t.remaining += 60000; else t.end += 60000; t.total += 60000; }
   else if(act === 'restart'){ t.done = false; t.paused = false; t.end = Date.now() + t.total; }
+  if(act === 'stop') tPushCancel(t.id); else tPushSync(t);
   tSave(); tRender();
 }
 function tPos(){ const d = document.getElementById('tdock'); if(d) d.style.setProperty('--dock-b', tDockBottom() + 'px'); }
@@ -1981,7 +2407,7 @@ async function saveEditor(){
       if(existing.nutrition && existing.nutrition.hash === ingHash(data)) data.nutrition = existing.nutrition;
     }
     await S.db.collection('recipes').doc(id).set(data);
-    if(healthOn() && !data.nutrition) setTimeout(() => analyzeNutrition(id, null, {silent: true}), 300);
+    if(healthOn() && planHasMacros() && !data.nutrition) setTimeout(() => analyzeNutrition(id, null, {silent: true}), 300);
     if(oldPhoto && oldPhoto !== data.photoId && S.assets){ try{ await S.assets.delete(oldPhoto); }catch(e){} }
     closeEditor(); toast('Ricetta salvata');
     openDetail(id, null);
@@ -2462,10 +2888,10 @@ function subscribePlan(){
   planUnsub = S.db.doc(path).onSnapshot(snap => {
     if(S.planKey !== key || busyFor(planSync, path)) return;
     S.plan = {slots: (snap.exists && snap.data().slots) ? JSON.parse(JSON.stringify(snap.data().slots)) : {}};
-    S.planLoaded = true; renderPlan();
+    S.planLoaded = true; renderPlan(); updateDigest();
   }, () => { S.planLoaded = true; renderPlan(); });
 }
-function savePlan(){ scheduleWrite(planSync, 'plans/' + S.planKey, {slots: S.plan.slots, weekStart: S.planKey, updatedAt: new Date().toISOString()}); renderPlan(); }
+function savePlan(){ scheduleWrite(planSync, 'plans/' + S.planKey, {slots: S.plan.slots, weekStart: S.planKey, updatedAt: new Date().toISOString()}); renderPlan(); updateDigest(); }
 async function addToPlan(weekKey, slot, entry){
   if(weekKey === S.planKey){ (S.plan.slots[slot] = S.plan.slots[slot] || []).push(entry); savePlan(); return; }
   try{
@@ -2484,7 +2910,7 @@ function renderPlan(){
     '<button class="btn icon-btn" data-plan="next" aria-label="Settimana successiva" style="transform:scaleX(-1)">' + IC.back + '</button></div>' +
     '<div class="actions" style="justify-content:center">' + (nRec ? '<button class="btn small primary" data-plan="toshop">Aggiungi tutto alla spesa</button>' : '') + (isThis ? '' : '<button class="btn small" data-plan="today">Torna a oggi</button>') + (all.length ? '<button class="btn small ghost danger" data-plan="clear">Svuota settimana</button>' : '') + '</div>';
   if(S.noDb){ el.innerHTML = h + '<div class="empty"><p>Apri il ricettario dal tuo account Claude per usare il menù.</p></div>'; return; }
-  h += '<div class="days">';
+  h += supTodayHtml() + weeklyHtml() + '<div class="days">';
   DAYS.forEach((dn, di) => {
     const date = addDays(S.planMonday, di), isToday = isoDate(date) === today;
     h += '<div class="day' + (isToday ? ' today' : '') + '"><div class="day-name">' + dn + ' <small>' + date.getDate() + ' ' + date.toLocaleDateString('it-IT', {month:'long'}) + '</small>' + (isToday ? '<span class="now">Oggi</span>' : '') + '</div>';
@@ -2492,7 +2918,8 @@ function renderPlan(){
       const key = di + '-' + mk, entries = (S.plan.slots || {})[key] || [];
       h += '<div class="slot"><div class="slot-lbl">' + ml + '</div><div class="entries">' + entries.map((e, ei) => {
         if(e.rid){ const r = getR(e.rid) && effR(getR(e.rid), e.vid);
-          return '<span class="entry' + (r ? '' : ' gone') + '"><button data-popen="' + esc(e.rid) + '" data-pvid="' + esc(e.vid || '') + '">' + esc(r ? titleWithVariant(r) : 'Ricetta eliminata') + (r && e.servings ? ' <small>· ' + esc(e.servings) + '</small>' : '') + '</button><button class="rm" data-prm="' + key + ':' + ei + '" aria-label="Togli">✕</button></span>'; }
+          const pr = r && healthOn() ? pairsFor(r, mk) : [];
+          return '<span class="entry' + (r ? '' : ' gone') + '"><button data-popen="' + esc(e.rid) + '" data-pvid="' + esc(e.vid || '') + '">' + esc(r ? titleWithVariant(r) : 'Ricetta eliminata') + (r && e.servings ? ' <small>· ' + esc(e.servings) + '</small>' : '') + (pr.length ? '<span class="e-pairs">+ ' + esc(pr.map(p => p.label.replace(/^[\d.,]+\s*g\s+/, '')).join(', ')) + '</span>' : '') + '</button><button class="rm" data-prm="' + key + ':' + ei + '" aria-label="Togli">✕</button></span>'; }
         return '<span class="entry free"><button tabindex="-1">' + esc(e.text) + '</button><button class="rm" data-prm="' + key + ':' + ei + '" aria-label="Togli">✕</button></span>';
       }).join('') + '<button class="add-slot" data-padd="' + key + '" aria-label="Aggiungi a ' + dn + ' ' + ml + '">+</button></div></div>';
     });
@@ -2608,7 +3035,7 @@ document.addEventListener('click', async e => {
     if(d.plan === 'prev' || d.plan === 'next' || d.plan === 'today'){ S.planMonday = d.plan === 'today' ? mondayOf(new Date()) : addDays(S.planMonday, d.plan === 'prev' ? -7 : 7); subscribePlan(); }
     else if(d.plan === 'clear'){ if(await confirmBox('Svuotare il menù di questa settimana?', 'Togli tutti i piatti dal ' + weekLabel(S.planMonday) + '. Le ricette restano nel ricettario.', 'Svuota')){ S.plan.slots = {}; savePlan(); } }
     else if(d.plan === 'toshop'){
-      const items = []; Object.values(S.plan.slots).flat().forEach(e => { const r = e.rid && getR(e.rid) && effR(getR(e.rid), e.vid); if(r) items.push(...recipeItems(r, e.servings)); });
+      const items = []; Object.entries(S.plan.slots).forEach(([key, list]) => list.forEach(e => { const r = e.rid && getR(e.rid) && effR(getR(e.rid), e.vid); if(r) items.push(...recipeItems(r, e.servings), ...pairShopItems(r, key.split('-')[1], e.servings || Number(r.servings) || 1, titleWithVariant(r))); }));
       openAddToShop(items, 'Ingredienti di tutti i piatti del ' + weekLabel(S.planMonday));
     }
     return;
@@ -2628,7 +3055,19 @@ document.addEventListener('click', async e => {
     const r0 = getR(S.openId); if(!r0) return;
     const r = effR(r0, S.variantId);
     if(d.vtab !== undefined){ S.variantId = d.vtab || null; S.servings = Number(effR(r0, S.variantId).servings) || null; S.checked = new Set(); renderDetail(); return; }
-    if(d.hmeal){ S.healthMeal = d.hmeal; renderDetail(); return; }
+    if(d.hmeal){ S.healthMeal = d.hmeal; S.sugMore = null; renderDetail(); return; }
+    if(d.sugmore != null){ S.sugMore = Number(d.sugmore); renderDetail(); return; }
+    if(d.pairadd != null || d.pairrm != null){
+      const meal = mealFor(r), list = pairsFor(r, meal).slice();
+      if(d.pairrm != null) list.splice(Number(d.pairrm), 1);
+      else {
+        const [si, k] = d.pairadd.split(':').map(Number), fit = planFit(r, meal), x = fit && fit.slots[si];
+        const sg = x && slotSuggestions(x)[k]; if(!sg) return;
+        list.push({slot: x.s.name, item: sg.item, comp: sg.comp, food: sg.food, g: sg.g, label: sg.label, combo: !!sg.combo});
+        toast('Abbinamento aggiunto per ' + (MEAL_LIST.find(m => m[0] === meal) || ['', meal])[1].toLowerCase());
+      }
+      S.sugMore = null; setPairs(r, meal, list); renderDetail(); return;
+    }
     if(r0.isBase && ['fav','del','voiceedit','addvariant','fitplan','delvariant','analyze'].includes(d.act)) return;
     if(d.act === 'close') closeDetail();
     else if(d.act === 'savebase'){ if(r0.isBase){ t.disabled = true; await saveBaseCopy(r0, true); } }
@@ -2641,7 +3080,7 @@ document.addEventListener('click', async e => {
     else if(d.act === 'analyze') analyzeNutrition(r0.id, S.variantId);
     else if(d.act === 'healthplan') openHealthPlan();
     else if(d.act === 'cook') openCook();
-    else if(d.act === 'toshop'){ if(S.noDb) return toast('Apri il ricettario dal tuo account Claude.'); openAddToShop(recipeItems(r, S.servings || Number(r.servings) || null), titleWithVariant(r) + (S.servings ? ', per ' + S.servings + ' ' + (r.servingsUnit || 'porzioni') : '')); }
+    else if(d.act === 'toshop'){ if(S.noDb) return toast('Apri il ricettario dal tuo account Claude.'); openAddToShop(recipeItems(r, S.servings || Number(r.servings) || null).concat(pairShopItems(r, mealFor(r), S.servings || Number(r.servings) || 1, titleWithVariant(r))), titleWithVariant(r) + (S.servings ? ', per ' + S.servings + ' ' + (r.servingsUnit || 'porzioni') : '')); }
     else if(d.act === 'toplan'){ if(S.noDb) return toast('Apri il ricettario dal tuo account Claude.'); openAddToPlan(r); }
     else if(d.act === 'fav'){ try{ await S.db.collection('recipes').doc(r0.id).update({favorite:!r0.favorite, updatedAt:new Date().toISOString()}); }catch(err){ toast('Non sono riuscito a salvare'); } }
     else if(d.act === 'copy'){ try{ await navigator.clipboard.writeText(recipeAsText(r)); toast('Ricetta copiata: incollala dove vuoi'); }catch(err){ toast('Copia non riuscita'); } }
@@ -2699,6 +3138,7 @@ document.addEventListener('click', async e => {
 });
 document.addEventListener('input', e => {
   const t = e.target;
+  if(hpInput(t)) return;
   if(HP && t.dataset && t.dataset.hpv){ const [kind, k] = t.dataset.hpv.split(':'); if(HP.ai){ HP.ai.delete(HP.tab + ':' + kind + ':' + k); const row = t.closest('.hp-ai'); if(row){ row.classList.remove('hp-ai'); const dot = row.querySelector('.ai-dot'); dot && dot.remove(); } } hpSet(kind, k, {v: t.value === '' ? null : Number(t.value)}); return; }
   if(t.id === 'q'){ S.q = t.value; renderList(); return; }
   if(t.id === 'pt_in'){ P.q = t.value; P.acIdx = 0; drawAc(); return; }
@@ -2747,6 +3187,9 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('change', async e => {
   const t = e.target;
+  if(notifyChange(t)) return;
+  if(hpSuppChange(t)) return;
+  if(t.dataset && t.dataset.supchk != null){ supChk(t); return; }
   if(HP && t.id === 'hp_on'){ HP.enabled = t.checked; return; }
   if(t.id === 'pt_base'){ P.base = t.checked; pSave(); renderComposer(); return; }
   if(t.id === 'set_base'){ S.showBase = t.checked; try{ localStorage.setItem('showBase', t.checked ? '1' : '0'); }catch(x){} if(!t.checked && S.filter === 'base') S.filter = 'all'; renderList(); return; }
@@ -2937,13 +3380,15 @@ async function afterLogin(){
     for(let i = 0; i < 4; i++){ BOOT.books = await store.books.list(); if(BOOT.books.length) break; await new Promise(r => setTimeout(r, 700)); }
     if(!BOOT.books.length){ await store.books.create('Il mio ricettario'); BOOT.books = await store.books.list(); }
     BOOT.profile = await store.profile();
-    try{ const st = await store.getSettings(); S.health = Object.assign(defaultHealth(), (st && st.health) || {}); }catch(x){ S.health = defaultHealth(); }
+    try{ const st = await store.getSettings(); S.health = Object.assign(defaultHealth(), (st && st.health) || {}); S.notify = (st && st.notify) || null; }catch(x){ S.health = defaultHealth(); }
   }catch(e){ BOOT.started = false; toast('Non riesco a raggiungere il server: controlla la connessione.'); setTimeout(afterLogin, 5000); return; }
   const joined = await handlePendingInvite();
   if(joined) BOOT.books = await store.books.list();
   let last = null; try{ last = localStorage.getItem('book'); }catch(e){}
   const pick = (joined && BOOT.books.find(b => b.id === joined)) || BOOT.books.find(b => b.id === last) || BOOT.books[0];
   selectBook(pick.id);
+  pushInit().catch(() => {});
+  setTimeout(() => handleOpen(location.href), 300);
 }
 function selectBook(id){
   const b = BOOT.books.find(x => x.id === id); if(!b) return;
@@ -3021,6 +3466,220 @@ function setAccent(k){
   document.querySelectorAll('meta[name="theme-color"]').forEach((m, i) => { if(i === 0) m.setAttribute('content', c); });
 }
 
+/* ====================================================================
+   Notifiche (Web Push): attivazione per dispositivo, preferenze,
+   timer programmati sul server, riepilogo frequenze, link dalle notifiche
+   ==================================================================== */
+const PUSH = {supported: 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window, sub: null, checked: false};
+const WEEKDAYS = [[1, 'Lunedì'], [2, 'Martedì'], [3, 'Mercoledì'], [4, 'Giovedì'], [5, 'Venerdì'], [6, 'Sabato'], [7, 'Domenica']];
+function notifyDefaults(){ return {timer: true, ai: true, menu: {on: true, time: '20:30'}, weekly: {on: true, day: 4, time: '19:00'}}; }
+function N(){ if(!S.notify) S.notify = notifyDefaults(); return S.notify; }
+const b64uToU8 = s => { s = String(s).replace(/-/g, '+').replace(/_/g, '/'); while(s.length % 4) s += '='; return Uint8Array.from(atob(s), c => c.charCodeAt(0)); };
+function deviceName(){ const u = navigator.userAgent; const m = u.match(/Android[^;)]*;\s*([^;)]+?)(?:\sBuild|\))/); return (m ? m[1] : /iPhone|iPad/.test(u) ? 'iPhone' : /Windows/.test(u) ? 'PC Windows' : /Mac/.test(u) ? 'Mac' : 'Dispositivo').slice(0, 60); }
+async function swReg(){ if(!PUSH.supported) return null; try{ return await Promise.race([navigator.serviceWorker.ready, new Promise(r => setTimeout(() => r(null), 4000))]); }catch(e){ return null; } }
+async function pushInit(){
+  if(!PUSH.supported){ PUSH.checked = true; return; }
+  const reg = await swReg(); PUSH.sub = reg ? await reg.pushManager.getSubscription().catch(() => null) : null;
+  S.pushOn = !!PUSH.sub && Notification.permission === 'granted';
+  PUSH.checked = true;
+  // il fuso orario può cambiare in viaggio: lo tengo aggiornato
+  if(S.notify && S.notify.tz !== Intl.DateTimeFormat().resolvedOptions().timeZone) saveNotifySoon();
+}
+let notifyT = null;
+function saveNotifySoon(){
+  const n = N(); n.tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Rome';
+  clearTimeout(notifyT); notifyT = setTimeout(() => { store && store.saveNotify(n).catch(e => toast('Non sono riuscito a salvare le notifiche' + (e && /notify/.test(String(e.message)) ? ': esegui aggiornamento-4.sql su Supabase.' : '.'))); }, 600);
+}
+async function enablePush(){
+  if(!PUSH.supported){ toast('Questo browser non supporta le notifiche.'); return; }
+  const perm = await Notification.requestPermission();
+  if(perm !== 'granted'){ toast(perm === 'denied' ? 'Notifiche bloccate: sbloccale da Chrome (lucchetto accanto all\'indirizzo → Notifiche).' : 'Permesso non concesso.'); renderSettings(); return; }
+  try{
+    const reg = await swReg(); if(!reg) throw {code: 'sw'};
+    const {publicKey} = await store.fn({action: 'push_key'});
+    let sub = await reg.pushManager.getSubscription();
+    if(sub && sub.options && sub.options.applicationServerKey){
+      const a = new Uint8Array(sub.options.applicationServerKey), b = b64uToU8(publicKey);
+      if(a.length !== b.length || a.some((x, i) => x !== b[i])){ await sub.unsubscribe(); sub = null; }
+    }
+    if(!sub) sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: b64uToU8(publicKey)});
+    const res = await store.fn({action: 'push_subscribe', subscription: sub.toJSON(), device: deviceName()});
+    PUSH.sub = sub; S.pushOn = true;
+    if(!S.notify) S.notify = notifyDefaults();
+    saveNotifySoon(); updateDigest(true); tPushResync();
+    toast(res.cron === false ? 'Notifiche attive, ma i promemoria non partono: esegui aggiornamento-4.sql su Supabase.' : 'Notifiche attive su questo dispositivo');
+  }catch(e){
+    toast(e && e.code === 'sw' ? 'Le notifiche funzionano solo dall\'indirizzo pubblico dell\'app (https).' : e && e.code === 'not_signed_in' ? 'Accedi di nuovo e riprova.' : 'Non sono riuscito ad attivarle' + (e && e.detail ? ' (' + String(e.detail).slice(0, 80) + ')' : '') + '. Hai aggiornato la funzione su Supabase?');
+  }
+  renderSettings();
+}
+async function disablePush(){
+  try{ if(PUSH.sub){ const ep = PUSH.sub.endpoint; await PUSH.sub.unsubscribe().catch(() => {}); await store.fn({action: 'push_unsubscribe', endpoint: ep}).catch(() => {}); } }catch(e){}
+  PUSH.sub = null; S.pushOn = false; toast('Notifiche disattivate su questo dispositivo'); renderSettings();
+}
+async function testPush(){
+  try{ const r = await store.fn({action: 'push_test'}); toast(r.sent ? 'Inviata: blocca il telefono o esci dall\'app per vederla' : 'Nessun dispositivo raggiunto: riattiva le notifiche.'); }
+  catch(e){ toast('Prova non riuscita' + (e && e.detail ? ': ' + String(e.detail).slice(0, 80) : '')); }
+}
+function notifySectionHtml(){
+  const n = S.notify || notifyDefaults(), perm = PUSH.supported ? Notification.permission : 'unsupported';
+  let top;
+  if(!PUSH.supported) top = '<p class="hint">Questo browser non supporta le notifiche. Su Android usa Chrome.</p>';
+  else if(perm === 'denied') top = '<p class="hint">Le notifiche sono bloccate per questo sito. In Chrome tocca il lucchetto accanto all\'indirizzo (o ⋮ → Informazioni sull\'app) → Notifiche → Consenti, poi torna qui.</p>';
+  else if(!S.pushOn) top = '<div class="set-line"><span class="grow"><b>Notifiche su questo dispositivo</b><small>Timer finiti anche a telefono bloccato, ricette pronte, menù di domani, frequenze e integratori.</small></span></div><div class="set-actions"><button class="btn primary" data-st="push-on">Attiva le notifiche</button></div>';
+  else top = '<div class="set-line"><span class="grow"><b>Attive su questo dispositivo</b><small>' + esc(deviceName()) + '</small></span><button class="btn small" data-st="push-test">Prova</button><button class="btn small ghost danger" data-st="push-off">Disattiva</button></div>';
+  const sw = (id, on, title, sub, extra) => '<label class="set-line" style="cursor:pointer"><span class="grow"><b>' + title + '</b><small>' + sub + '</small></span><input type="checkbox" class="switch" id="' + id + '"' + (on ? ' checked' : '') + '></label>' + (extra || '');
+  const prefs = !PUSH.supported ? '' :
+    sw('set_n_timer', n.timer !== false, 'Timer finiti', 'Suona anche con lo schermo spento o l\'app chiusa.') +
+    sw('set_n_ai', n.ai !== false, 'Ricette e piani pronti', 'Quando l\'assistente AI finisce mentre sei altrove.') +
+    sw('set_n_menu', n.menu && n.menu.on, 'Menù di domani', 'La sera prima: cosa c\'è a pranzo e a cena, e se tirare fuori qualcosa dal freezer.',
+      n.menu && n.menu.on ? '<div class="set-sub-row"><span>Alle</span><input class="inp" type="time" id="set_n_menu_t" value="' + esc(n.menu.time || '20:30') + '"></div>' : '') +
+    sw('set_n_weekly', n.weekly && n.weekly.on, 'Frequenze della settimana', 'Cosa manca ancora rispetto al piano (pesce, legumi…). Serve il piano alimentare con le frequenze.',
+      n.weekly && n.weekly.on ? '<div class="set-sub-row"><select class="inp" id="set_n_weekly_d">' + WEEKDAYS.map(([k, l]) => '<option value="' + k + '"' + (Number(n.weekly.day) === k ? ' selected' : '') + '>' + l + '</option>').join('') + '</select><span>alle</span><input class="inp" type="time" id="set_n_weekly_t" value="' + esc(n.weekly.time || '19:00') + '"></div>' : '') +
+    '<div class="set-line"><span class="grow"><b>Integratori</b><small>' + (supsActive().length ? supsActive().length + ' con promemoria' : 'Nessun promemoria') + ': si impostano nel piano alimentare.</small></span><button class="btn small" data-st="health">Apri</button></div>';
+  return '<section class="section"><h2>Notifiche</h2><div class="set-card">' + top + (S.pushOn || S.notify ? prefs : '') + '</div></section>';
+}
+function notifyChange(t){
+  const id = t.id; if(!id || !id.startsWith('set_n_')) return false;
+  const n = N();
+  if(id === 'set_n_timer'){ n.timer = t.checked; tPushResync(); }
+  else if(id === 'set_n_ai') n.ai = t.checked;
+  else if(id === 'set_n_menu'){ n.menu = Object.assign({time: '20:30'}, n.menu, {on: t.checked}); renderSettings(); }
+  else if(id === 'set_n_menu_t'){ n.menu = Object.assign({}, n.menu, {time: t.value || '20:30'}); }
+  else if(id === 'set_n_weekly'){ n.weekly = Object.assign({day: 4, time: '19:00'}, n.weekly, {on: t.checked}); renderSettings(); updateDigest(true); }
+  else if(id === 'set_n_weekly_d'){ n.weekly = Object.assign({}, n.weekly, {day: Number(t.value)}); }
+  else if(id === 'set_n_weekly_t'){ n.weekly = Object.assign({}, n.weekly, {time: t.value || '19:00'}); }
+  saveNotifySoon();
+  return true;
+}
+/* --- timer: notifica programmata sul server alla scadenza --- */
+function tPushWanted(){ return !!(store && S.pushOn && (!S.notify || S.notify.timer !== false)); }
+function tPushSync(t){
+  if(!tPushWanted() || !t) return;
+  const ref = 'timer-' + t.id;
+  if(!t.done && !t.paused && t.end > Date.now() + 1500) store.schedulePush(ref, t.end, 'Timer finito', t.label + ' · ' + fmtMin(t.total / 60000), {tag: ref, url: './?apri=timer', kind: 'timer'}).catch(() => {});
+  else store.cancelPush(ref).catch(() => {});
+}
+function tPushCancel(id){ if(store && S.pushOn) store.cancelPush('timer-' + id).catch(() => {}); }
+function tPushResync(){ T.list.forEach(t => { if(tPushWanted()) tPushSync(t); else tPushCancel(t.id); }); }
+/* --- riepilogo frequenze, preparato qui e mandato dal server il giorno scelto --- */
+let digestT = null;
+function updateDigest(force){
+  const n = S.notify; if(!n || !n.weekly || !n.weekly.on || !store) return;
+  const thisWeek = isoDate(mondayOf(new Date()));
+  if(S.planKey !== thisWeek || !S.planLoaded) return;
+  const ws = (H().weekly || []).length ? weeklyStatus() : [];
+  if(!ws.length) return;
+  const under = ws.filter(x => x.st === 'under').map(x => x.w.name + ' (' + x.c + ' su ' + x.w.min + ')');
+  const over = ws.filter(x => x.st === 'over').map(x => x.w.name + ' (' + x.c + ', max ' + x.w.max + ')');
+  const text = (under.length ? 'Mancano ancora: ' + under.join(', ') + '.' : 'Finora tutto in linea con le frequenze.') + (over.length ? ' Già oltre: ' + over.join(', ') + '.' : '');
+  if(!force && n.digest && n.digest.week === thisWeek && n.digest.text === text) return;
+  n.digest = {week: thisWeek, text};
+  clearTimeout(digestT); digestT = setTimeout(saveNotifySoon, 1500);
+}
+/* --- link dalle notifiche: ?apri=menu|integratori|timer|job --- */
+function handleOpen(url){
+  let what = null; try{ what = new URL(url || location.href).searchParams.get('apri'); }catch(e){}
+  if(!what) return;
+  if(location.search.includes('apri=')){ try{ history.replaceState(null, '', location.pathname + location.hash); }catch(e){} }
+  if(what === 'menu' || what === 'integratori'){
+    if(S.openId) closeDetail();
+    setTab('menu');
+    if(what === 'integratori') setTimeout(() => { const el = document.getElementById('supToday'); el && el.scrollIntoView({behavior: 'smooth', block: 'center'}); }, 400);
+  } else if(what === 'timer') openTimers();
+  else if(what === 'job') scheduleRecovery(300);
+}
+if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => {
+  const m = e.data || {};
+  if(m.type === 'open') handleOpen(m.url);
+  if(m.type === 'push' && m.payload && m.payload.kind === 'job') scheduleRecovery(300);
+});
+
+/* ====================================================================
+   Integratori: facoltativi, con promemoria (orari, giorni, dose)
+   ==================================================================== */
+const DAY_SHORT = ['L', 'M', 'M', 'G', 'V', 'S', 'D'];
+function normSupps(list){
+  return (Array.isArray(list) ? list : []).map(s => {
+    if(!s || !String(s.name || '').trim()) return null;
+    const times = (Array.isArray(s.times) ? s.times : []).map(t => {
+      if(typeof t === 'string') t = {time: t};
+      const m = String(t && t.time || '').match(/^(\d{1,2})[:.](\d{2})$/); if(!m) return null;
+      const hh = Math.min(23, Number(m[1])), mm = Math.min(59, Number(m[2]));
+      const days = Array.isArray(t.days) ? [...new Set(t.days.map(Number).filter(d => d >= 1 && d <= 7))].sort() : [];
+      return {time: String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0'), days: days.length === 7 ? [] : days};
+    }).filter(Boolean);
+    return {id: String(s.id || uuid()), name: String(s.name).trim().slice(0, 60), dose: String(s.dose || '').trim().slice(0, 60), note: String(s.note || '').trim().slice(0, 160), remind: s.remind !== false, times};
+  }).filter(Boolean);
+}
+function supsActive(){ const h = H(); return h.supplementsOn ? (h.supplements || []).filter(s => s.remind !== false && s.times.length) : []; }
+const isoWd = d => ((d.getDay() + 6) % 7) + 1;
+function supTodayList(){
+  const h = H(); if(!h.supplementsOn) return [];
+  const wd = isoWd(new Date()), out = [];
+  (h.supplements || []).forEach(s => {
+    const ts = s.times.filter(t => !t.days.length || t.days.includes(wd));
+    if(ts.length) ts.forEach(t => out.push({s, time: t.time, key: s.id + '@' + t.time}));
+    else if(!s.times.length) out.push({s, time: '', key: s.id});
+  });
+  return out.sort((a, b) => (a.time || '99') < (b.time || '99') ? -1 : 1);
+}
+const supDoneKey = () => 'sup.done.' + isoDate(new Date());
+function supTodayHtml(){
+  const list = supTodayList(); if(!list.length) return '';
+  const done = lsJ(supDoneKey(), []);
+  return '<div class="sup-today" id="supToday"><div class="weekly-h">' + IC.leaf + ' Integratori di oggi</div>' + list.map(x => '<label class="sup-item' + (done.includes(x.key) ? ' done' : '') + '"><input type="checkbox" data-supchk="' + esc(x.key) + '"' + (done.includes(x.key) ? ' checked' : '') + '><span class="sup-time">' + esc(x.time || '—') + '</span><span class="grow"><b>' + esc(x.s.name) + '</b>' + (x.s.dose || x.s.note ? '<small>' + esc([x.s.dose, x.s.note].filter(Boolean).join(' · ')) + '</small>' : '') + '</span></label>').join('') + '</div>';
+}
+function supChk(t){
+  const k = supDoneKey(), done = lsJ(k, []), key = t.dataset.supchk;
+  const i = done.indexOf(key); if(t.checked && i < 0) done.push(key); if(!t.checked && i >= 0) done.splice(i, 1);
+  lsW(k, done); t.closest('.sup-item').classList.toggle('done', t.checked);
+  try{ Object.keys(localStorage).filter(x => x.startsWith('sup.done.') && x !== k).forEach(x => localStorage.removeItem(x)); }catch(e){}
+}
+/* sezione nella pagina del piano */
+function hpSuppsHtml(){
+  const on = !!HP.supplementsOn, list = HP.supplements || [];
+  const timeRow = (si, ti, t) => '<div class="sup-trow"><input class="inp" type="time" data-hpsupt="' + si + ':' + ti + '" value="' + esc(t.time) + '" aria-label="Orario"><div class="daychips" role="group" aria-label="Giorni">' + DAY_SHORT.map((l, d) => '<button class="daychip" data-hpsupd="' + si + ':' + ti + ':' + (d + 1) + '" aria-pressed="' + (!t.days.length || t.days.includes(d + 1)) + '" aria-label="' + WEEKDAYS[d][1] + '">' + l + '</button>').join('') + '</div><button class="hp-x" data-hpsuptdel="' + si + ':' + ti + '" aria-label="Togli orario">' + IC.x + '</button></div>';
+  const card = (s, si) => '<div class="hp-slot sup-card"><div class="hp-slot-h"><input class="inp hp-sname" data-hpsupn="' + si + '" value="' + esc(s.name) + '" placeholder="Es. Creatina" aria-label="Nome"><button class="hp-x" data-hpsupdel="' + si + '" aria-label="Elimina ' + esc(s.name) + '">' + IC.trash + '</button></div>' +
+    '<div class="sup-fields"><input class="inp" data-hpsupq="' + si + '" value="' + esc(s.dose) + '" placeholder="Quanto: es. 3-4 g, 1 capsula" aria-label="Dose"><input class="inp" data-hpsupnote="' + si + '" value="' + esc(s.note) + '" placeholder="Come: es. sciolta in acqua, a stomaco pieno" aria-label="Nota"></div>' +
+    '<label class="sup-remind"><input type="checkbox" class="switch" data-hpsupr="' + si + '"' + (s.remind !== false ? ' checked' : '') + '><span>Promemoria</span></label>' +
+    (s.remind !== false ? s.times.map((t, ti) => timeRow(si, ti, t)).join('') + '<button class="btn small ghost hp-add" data-hpsuptadd="' + si + '">+ orario</button>' : '') + '</div>';
+  return '<section class="section"><h2>Integratori</h2><label class="switch-row"><span><b>Uso integratori</b><small>Facoltativo: promemoria con orario e dose, e la lista di oggi nel menù.</small></span><input type="checkbox" class="switch" id="hp_sup_on"' + (on ? ' checked' : '') + '></label>' +
+    (on ? '<div class="hp-slots">' + list.map(card).join('') + '</div><button class="btn small hp-add" data-hpsupadd="1">+ integratore</button>' +
+      (S.pushOn ? '' : '<p class="hint">Per ricevere i promemoria attiva le notifiche: ⚙ → Notifiche.</p>') : '') + '</section>';
+}
+function hpSuppInput(t){
+  if(!HP) return false;
+  const d = t.dataset, L = HP.supplements = HP.supplements || [];
+  if(d.hpsupn != null){ L[Number(d.hpsupn)].name = t.value; return true; }
+  if(d.hpsupq != null){ L[Number(d.hpsupq)].dose = t.value; return true; }
+  if(d.hpsupnote != null){ L[Number(d.hpsupnote)].note = t.value; return true; }
+  if(d.hpsupt != null){ const [si, ti] = d.hpsupt.split(':').map(Number); L[si].times[ti].time = t.value; return true; }
+  return false;
+}
+function hpSuppChange(t){
+  if(!HP) return false;
+  if(t.id === 'hp_sup_on'){ HP.supplementsOn = t.checked; if(t.checked && !(HP.supplements || []).length) HP.supplements = [{id: uuid(), name: '', dose: '', note: '', remind: true, times: [{time: '08:00', days: []}]}]; renderHealthPlan(); return true; }
+  if(t.dataset && t.dataset.hpsupr != null){ const s = HP.supplements[Number(t.dataset.hpsupr)]; s.remind = t.checked; if(t.checked && !s.times.length) s.times.push({time: '08:00', days: []}); renderHealthPlan(); return true; }
+  return false;
+}
+function hpSuppClick(d){
+  if(!HP) return false;
+  const L = HP.supplements = HP.supplements || [];
+  if(d.hpsupadd){ L.push({id: uuid(), name: '', dose: '', note: '', remind: true, times: [{time: '08:00', days: []}]}); renderHealthPlan(); const ins = $('#sheetHealth').querySelectorAll('[data-hpsupn]'); ins[ins.length - 1] && ins[ins.length - 1].focus(); return true; }
+  if(d.hpsupdel != null){ L.splice(Number(d.hpsupdel), 1); renderHealthPlan(); return true; }
+  if(d.hpsuptadd != null){ const s = L[Number(d.hpsuptadd)]; s.times.push({time: s.times.length ? '20:00' : '08:00', days: []}); renderHealthPlan(); return true; }
+  if(d.hpsuptdel != null){ const [si, ti] = d.hpsuptdel.split(':').map(Number); L[si].times.splice(ti, 1); renderHealthPlan(); return true; }
+  if(d.hpsupd != null){
+    const [si, ti, day] = d.hpsupd.split(':').map(Number), t = L[si].times[ti];
+    let days = t.days.length ? t.days.slice() : [1, 2, 3, 4, 5, 6, 7];
+    days = days.includes(day) ? days.filter(x => x !== day) : days.concat(day).sort();
+    if(!days.length) return true;
+    t.days = days.length === 7 ? [] : days; renderHealthPlan(); return true;
+  }
+  return false;
+}
+
 /* --- impostazioni --- */
 async function openSettings(){
   const el = $('#sheetSettings'); el.classList.remove('hidden'); document.body.style.overflow = 'hidden';
@@ -3052,6 +3711,7 @@ function renderSettings(){
       '<section class="section"><h2>Aspetto</h2><div class="set-card"><div class="set-sub">Colore</div><div class="swatches">' + ACCENTS.map(([k, l, c]) => '<button class="swatch" data-st="accent" data-v="' + k + '" aria-pressed="' + (curAccent() === k) + '" style="--sw:' + c + '"><span></span>' + l + '</button>').join('') + '</div></div></section>' +
       '<section class="section"><h2>Ricette base</h2><div class="set-card"><label class="set-line" style="cursor:pointer"><span class="grow"><b>Mostra le ricette base</b><small>' + baseList().length + ' ricette classiche incluse nell\'app: le trovi nell\'elenco, in «Cosa cucino?» e nel menù. Quelle che salvi o che hai già con lo stesso nome prendono il loro posto.</small></span><input type="checkbox" class="switch" id="set_base"' + (baseOn() ? ' checked' : '') + '></label></div></section>' +
       '<section class="section"><h2>Healthy</h2><div class="set-card"><div class="set-line"><span class="grow"><b>Il mio piano alimentare</b><small>' + (healthOn() ? 'Attivo: le ricette mostrano se sono in linea con il piano' : 'Spento') + '</small></span><button class="btn small' + (healthOn() ? '' : ' primary') + '" data-st="health">' + (healthOn() ? 'Modifica' : 'Imposta') + '</button></div><p class="hint">Il piano è solo tuo: anche nei ricettari condivisi gli altri non lo vedono.</p></div></section>' +
+      notifySectionHtml() +
       '<section class="section"><h2>Il tuo account</h2><div class="set-card">' +
         '<div class="set-line"><span class="grow"><b>' + esc((BOOT.profile && BOOT.profile.display_name) || '') + '</b><small>' + esc((BOOT.profile && BOOT.profile.email) || '') + '</small></span><button class="btn small" data-st="name">Cambia nome</button></div>' +
         (BOOT.usage != null ? '<div class="set-line"><span class="grow"><b>Assistente AI questo mese</b><small>' + BOOT.usage + (BOOT.usage === 1 ? ' richiesta' : ' richieste') + ' usate</small></span></div>' : '') +
@@ -3088,6 +3748,9 @@ async function settingsAction(btn){
   if(a === 'logout'){ if(!(await confirmBox('Uscire dall\'account?', 'Su questo dispositivo dovrai accedere di nuovo. Le ricette restano salvate.', 'Esci'))) return; try{ Object.keys(localStorage).filter(k => k.startsWith('cache.') || k === 'book').forEach(k => localStorage.removeItem(k)); }catch(e){} await store.auth.signOut(); location.reload(); return; }
   if(a === 'backup'){ openMenu(); return; }
   if(a === 'health'){ openHealthPlan(); return; }
+  if(a === 'push-on'){ btn.disabled = true; await enablePush(); return; }
+  if(a === 'push-off'){ await disablePush(); return; }
+  if(a === 'push-test'){ await testPush(); return; }
   if(a === 'accent'){ setAccent(btn.dataset.v); renderSettings(); return; }
   if(a === 'install' && BOOT.installEvt){ BOOT.installEvt.prompt(); try{ await BOOT.installEvt.userChoice; }catch(e){} BOOT.installEvt = null; renderSettings(); return; }
 }
@@ -3117,7 +3780,7 @@ async function boot(){
   if(session) afterLogin(); else showAuth(localStorage.getItem('pendingInvite') ? 'signup' : 'login');
 }
 window.addEventListener('offline', () => toast('Sei offline: puoi consultare le ricette, le modifiche richiedono la rete.'));
-window.S = S; window.T = T; window.BOOT = BOOT; window.showAuth = showAuth; window.getStore = () => store; window.parseIngredient = parseIngredient;
+window.S = S; window.T = T; window.BOOT = BOOT; window.showAuth = showAuth; window.getStore = () => store; window.parseIngredient = parseIngredient; window.openDetail = openDetail; window.closeDetail = closeDetail; window.H = H; window.handleOpen = handleOpen;
 boot();
 </script>
 </body>

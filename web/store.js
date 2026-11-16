@@ -297,17 +297,39 @@ export function makeStore(cfg) {
   };
   // ---------- impostazioni personali (piano alimentare) ----------
   async function getSettings() {
-    const { data, error } = await sb.from('user_settings').select('health').eq('user_id', userId).maybeSingle();
+    let { data, error } = await sb.from('user_settings').select('health, notify').eq('user_id', userId).maybeSingle();
+    if (error && /notify/.test(String(error.message))) ({ data, error } = await sb.from('user_settings').select('health').eq('user_id', userId).maybeSingle()); // database non ancora aggiornato
     if (error) { const c = lsGet('cache.settings.' + userId); return c || {}; }
-    const out = { health: (data && data.health) || null };
+    const out = { health: (data && data.health) || null, notify: (data && data.notify) || null };
     lsSet('cache.settings.' + userId, out);
     return out;
   }
   async function saveHealth(health) {
     const { error } = await sb.from('user_settings').upsert({ user_id: userId, health, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
     if (error) throw error;
-    lsSet('cache.settings.' + userId, { health });
+    const c = lsGet('cache.settings.' + userId) || {}; c.health = health; lsSet('cache.settings.' + userId, c);
   }
+  async function saveNotify(notify) {
+    const { error } = await sb.from('user_settings').upsert({ user_id: userId, notify, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+    if (error) throw error;
+    const c = lsGet('cache.settings.' + userId) || {}; c.notify = notify; lsSet('cache.settings.' + userId, c);
+  }
+  // chiamate dirette alla funzione server (notifiche)
+  async function fn(body) {
+    const { data, error } = await sb.functions.invoke('claude', { body });
+    if (error) {
+      let info = null;
+      try { info = error.context && typeof error.context.json === 'function' ? await error.context.json() : null; } catch (e) { /* non json */ }
+      throw { code: (info && info.error) || (error.name === 'FunctionsFetchError' ? 'offline' : 'server'), detail: (info && info.detail) || String(error.message || '') };
+    }
+    return data || {};
+  }
+  // notifica a un'ora precisa (fine timer); se il database non è aggiornato non fa niente
+  async function schedulePush(ref, dueAt, title, body, extra = {}) {
+    const { error } = await sb.from('scheduled_pushes').upsert({ user_id: userId, ref, due_at: new Date(dueAt).toISOString(), title, body, tag: extra.tag || ref, url: extra.url || './', kind: extra.kind || 'timer', sent_at: null }, { onConflict: 'user_id,ref' });
+    if (error) console.warn('push', error.message);
+  }
+  async function cancelPush(ref) { await sb.from('scheduled_pushes').delete().eq('user_id', userId).eq('ref', ref); }
   async function profile() { const { data } = await sb.from('profiles').select('display_name, email').eq('id', userId).single(); return data; }
   async function setName(name) { await sb.from('profiles').update({ display_name: name }).eq('id', userId); }
 
@@ -318,7 +340,7 @@ export function makeStore(cfg) {
   }
 
   return {
-    sb, db, assets, photoUrl, ai, aiUsage, markJobSeen, pendingJobs, jobResult, getSettings, saveHealth, auth, books, profile, setName, setBook,
+    sb, db, assets, photoUrl, ai, aiUsage, markJobSeen, pendingJobs, jobResult, getSettings, saveHealth, saveNotify, fn, schedulePush, cancelPush, auth, books, profile, setName, setBook,
     get book() { return book; }, get userId() { return userId; },
     onPhotosLoaded(cb) { onPhotos = cb; },
     refreshAll,
