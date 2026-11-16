@@ -1,6 +1,6 @@
 {
-  "name": "Ricettario",
-  "short_name": "Ricettario",
+  "name": "Cookin",
+  "short_name": "Cookin",
   "description": "Ricette, menù della settimana, lista della spesa e piano alimentare, anche in famiglia.",
   "lang": "it",
   "start_url": "./",
@@ -8,8 +8,9 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#F3F4EF",
-  "theme_color": "#2E6A4E",
+  "theme_color": "#D93A22",
   "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" },
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
     { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }

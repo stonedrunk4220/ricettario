@@ -3,17 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ricettario</title>
-<meta name="theme-color" content="#2E6A4E" media="(prefers-color-scheme: light)">
+<title>Cookin</title>
+<meta name="theme-color" content="#F3F4EF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111613" media="(prefers-color-scheme: dark)">
 <meta name="description" content="Ricette, menù della settimana, lista della spesa e piano alimentare, anche in famiglia.">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-48.png" type="image/png" sizes="48x48">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Ricettario">
+<meta name="apple-mobile-web-app-title" content="Cookin">
 <script src="config.js"></script>
 <script src="ingredienti.js"></script>
 <script src="ricette-base.js"></script>
@@ -464,6 +465,7 @@ header.top{padding-top:env(safe-area-inset-top)}
 .auth{position:fixed;inset:0;z-index:60;overflow-y:auto;display:flex;align-items:center;justify-content:center;padding:24px 16px calc(24px + env(safe-area-inset-bottom));background:radial-gradient(50% 40% at 10% 10%, var(--blob1), transparent 70%), radial-gradient(45% 40% at 95% 25%, var(--blob2), transparent 70%), radial-gradient(50% 40% at 60% 100%, var(--blob3), transparent 70%), var(--bg)}
 .auth-card{width:100%;max-width:400px;background:var(--glass-strong);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--glass-line);border-radius:26px;padding:28px 22px;box-shadow:0 30px 80px -30px rgba(0,0,0,.45);display:grid;gap:14px;animation:pop .45s var(--ease)}
 .auth-card h1{font-size:30px;text-align:center}
+.auth-logo-img{display:block;margin:0 auto;width:76px;height:76px;filter:drop-shadow(0 10px 18px rgba(160,40,20,.28))}
 .auth-logo{width:64px;height:64px;border-radius:20px;margin:0 auto;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 55%,var(--spice)));color:#fff;box-shadow:0 12px 30px -10px color-mix(in srgb,var(--accent) 70%,transparent)}
 .auth-logo svg{width:32px;height:32px}
 .auth-sub{color:var(--muted);text-align:center;margin:0}
@@ -3482,7 +3484,7 @@ function showAuth(mode){
   mode = mode || 'login';
   const signup = mode === 'signup', recover = mode === 'recover', newpw = mode === 'newpw';
   let pendingInv = null; try{ pendingInv = localStorage.getItem('pendingInvite'); }catch(e){}
-  el.innerHTML = '<div class="auth-card"><div class="auth-logo">' + IC.book + '</div><h1>Ricettario</h1>' +
+  el.innerHTML = '<div class="auth-card"><img class="auth-logo-img" src="icons/icon.svg" width="76" height="76" alt=""><h1>Cookin</h1>' +
     '<p class="auth-sub">' + (newpw ? 'Scegli una nuova password.' : recover ? 'Ti mandiamo una mail per reimpostare la password.' : pendingInv ? 'Hai ricevuto un invito: ' + (signup ? 'crea il tuo account' : 'accedi') + ' per unirti al ricettario.' : 'Ricette, menù della settimana e lista della spesa, sincronizzati su tutti i tuoi dispositivi.') + '</p>' +
     (newpw || recover ? '' : '<div class="seg" role="tablist"><button data-am="login" aria-pressed="' + !signup + '">Accedi</button><button data-am="signup" aria-pressed="' + signup + '">Registrati</button></div>') +
     '<form id="authForm" class="auth-form" novalidate>' +
@@ -3526,7 +3528,7 @@ function showAuth(mode){
 function hideAuth(){ $('#auth').classList.add('hidden'); document.body.classList.remove('locked'); }
 function showSetupNeeded(){
   const el = $('#auth'); el.classList.remove('hidden'); document.body.classList.add('locked');
-  el.innerHTML = '<div class="auth-card"><div class="auth-logo">' + IC.book + '</div><h1>Quasi pronto</h1><p class="auth-sub">Manca il collegamento al database. Apri il file <b>config.js</b> e incolla l\'indirizzo del progetto Supabase e la chiave pubblica, come spiegato nella guida (passo 3).</p></div>';
+  el.innerHTML = '<div class="auth-card"><img class="auth-logo-img" src="icons/icon.svg" width="76" height="76" alt=""><h1>Quasi pronto</h1><p class="auth-sub">Manca il collegamento al database. Apri il file <b>config.js</b> e incolla l\'indirizzo del progetto Supabase e la chiave pubblica, come spiegato nella guida (passo 3).</p></div>';
 }
 
 /* --- dopo l'accesso: ricettari e dati --- */
@@ -3876,7 +3878,7 @@ function renderSettings(){
         '<div class="set-actions"><button class="btn" data-st="pw">Cambia password</button><button class="btn ghost danger" data-st="logout">Esci</button></div>' +
       '</div></section>' +
       '<section class="section"><h2>Dati</h2><div class="set-card"><div class="set-actions"><button class="btn" data-st="backup">Backup e ripristino</button></div><p class="hint">Esporta tutte le ricette con le foto in un file e ripristinale quando vuoi, anche su un altro account.</p></div></section>' +
-      '<section class="section"><h2>Informazioni</h2><div class="set-card"><div class="set-line"><span class="grow"><b>Ricettario</b><small>Versione ' + APP_VERSION + '</small></span></div><p class="hint">Le indicazioni nutrizionali sono stime indicative e non sostituiscono il parere di un medico o di un professionista della nutrizione. I contenuti inviati all\'assistente AI sono elaborati da fornitori esterni.</p></div></section>' +
+      '<section class="section"><h2>Informazioni</h2><div class="set-card"><div class="set-line"><span class="grow"><b>Cookin</b><small>Versione ' + APP_VERSION + '</small></span></div><p class="hint">Le indicazioni nutrizionali sono stime indicative e non sostituiscono il parere di un medico o di un professionista della nutrizione. I contenuti inviati all\'assistente AI sono elaborati da fornitori esterni.</p></div></section>' +
       (standalone ? '' : '<section class="section"><h2>App sul telefono</h2><div class="set-card">' +
         (BOOT.installEvt ? '<div class="set-actions"><button class="btn primary" data-st="install">Installa l\'app</button></div>' : '') +
         '<p class="hint">' + (isIOS ? 'Su iPhone: apri questa pagina con Safari, tocca Condividi (il quadrato con la freccia) e poi «Aggiungi alla schermata Home».' : 'Su Android: nel menu ⋮ di Chrome tocca «Installa app» o «Aggiungi a schermata Home». Avrai un\'icona e l\'app si apre a tutto schermo.') + '</p></div></section>') +
@@ -3892,8 +3894,8 @@ async function settingsAction(btn){
     try{
       const code = await store.books.invite(b.id);
       const link = location.origin + location.pathname + '?invito=' + code;
-      const text = 'Ti invito nel mio ricettario «' + b.name + '»: ' + link;
-      if(navigator.share){ try{ await navigator.share({title: b.name, text: 'Ti invito nel mio ricettario «' + b.name + '»', url: link}); return; }catch(x){ if(x && x.name === 'AbortError') return; } }
+      const text = 'Ti invito nel mio ricettario «' + b.name + '» su Cookin: ' + link;
+      if(navigator.share){ try{ await navigator.share({title: b.name, text: 'Ti invito nel mio ricettario «' + b.name + '» su Cookin', url: link}); return; }catch(x){ if(x && x.name === 'AbortError') return; } }
       modal('<h3>Invita nel ricettario</h3><p>Manda questo link a chi vuoi invitare. Vale 14 giorni.</p><input class="inp" readonly value="' + esc(link) + '"><div class="modal-actions"><button class="btn" data-a="x">Chiudi</button><button class="btn primary" data-a="cp">Copia il link</button></div>',
         (m, close) => { m.querySelector('[data-a=x]').onclick = close; m.querySelector('[data-a=cp]').onclick = async () => { try{ await navigator.clipboard.writeText(text); toast('Link copiato'); close(); }catch(x){ m.querySelector('input').select(); } }; });
     }catch(e){ toast('Impossibile creare l\'invito.'); }
