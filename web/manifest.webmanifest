@@ -1,7 +1,7 @@
 {
-  "name": "Il mio ricettario",
+  "name": "Ricettario",
   "short_name": "Ricettario",
-  "description": "Ricette, menù della settimana e lista della spesa, anche in famiglia.",
+  "description": "Ricette, menù della settimana, lista della spesa e piano alimentare, anche in famiglia.",
   "lang": "it",
   "start_url": "./",
   "scope": "./",

@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Il mio ricettario</title>
+<title>Ricettario</title>
 <meta name="theme-color" content="#2E6A4E" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111613" media="(prefers-color-scheme: dark)">
-<meta name="description" content="Il tuo ricettario personale: ricette, menù della settimana e lista della spesa, anche in famiglia.">
+<meta name="description" content="Ricette, menù della settimana, lista della spesa e piano alimentare, anche in famiglia.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -371,7 +371,7 @@ input[type=checkbox]:active{transform:scale(.85)}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,12px)}}
 .timer{animation:pop .3s var(--ease);background:color-mix(in srgb,var(--ink) 88%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 
-/* Editor: campi cambiati da Claude */
+/* Editor: campi cambiati dall'assistente AI */
 .inp.chg{border-color:var(--spice);box-shadow:0 0 0 3px color-mix(in srgb,var(--spice) 22%,transparent);animation:glow 1.6s ease-out}
 @keyframes glow{0%{box-shadow:0 0 0 8px color-mix(in srgb,var(--spice) 35%,transparent)}}
 .draft-banner{animation:rise .4s var(--ease);background:color-mix(in srgb,var(--spice) 14%,var(--glass))}
@@ -1029,9 +1029,9 @@ function renderChips(){
 }
 function renderBanner(){
   let h = '';
-  if(S.noDb) h = '<div class="banner warn">Il salvataggio nel cloud non è disponibile in questa vista. Apri il ricettario dal tuo account Claude (app o claude.ai) per vedere e salvare le ricette.</div>';
+  if(S.noDb) h = '<div class="banner warn">Il salvataggio nel cloud non è disponibile in questa vista. Accedi al tuo account per vedere e salvare le ricette.</div>';
   else if(S.readOnly) h = '<div class="banner warn">Questo ricettario è in sola lettura per te.</div>';
-  else if(S.unreachable) h = '<div class="banner warn">Non riesco ancora a raggiungere le tue ricette. Controlla la connessione: si aggiornano da sole appena torna la rete.</div>';
+  else if(S.unreachable) h = '<div class="banner warn">Le tue ricette non sono ancora raggiungibili. Controlla la connessione: si aggiornano da sole appena torna la rete.</div>';
   $('#banner').innerHTML = h;
 }
 function renderList(){
@@ -1112,7 +1112,7 @@ async function saveBaseCopy(b, open){
     if(open) openDetail(id, null);
     if(healthOn() && planHasMacros()) setTimeout(() => analyzeNutrition(id, null, {silent: true}), 300);
     return id;
-  }catch(e){ toast('Non sono riuscito a salvarla.'); return null; }
+  }catch(e){ toast('Impossibile salvarla.'); return null; }
 }
 
 /* ---------- Dettaglio ---------- */
@@ -1441,7 +1441,7 @@ function planHasMacros(){ return Object.values(H().meals || {}).some(m => m.macr
 const rKey = r => (r.id || '') + '|' + (r.variantId || '');
 function pairsFor(r, meal){ const p = (H().pairs || {})[rKey(r)]; return (p && Array.isArray(p[meal])) ? p[meal] : []; }
 let pairSaveT = null;
-function savePairsSoon(){ clearTimeout(pairSaveT); pairSaveT = setTimeout(() => { store && store.saveHealth(H()).catch(() => toast('Non sono riuscito a salvare l\'abbinamento')); }, 500); }
+function savePairsSoon(){ clearTimeout(pairSaveT); pairSaveT = setTimeout(() => { store && store.saveHealth(H()).catch(() => toast('Impossibile salvare l\'abbinamento')); }, 500); }
 function setPairs(r, meal, list){
   const h = H(); h.pairs = h.pairs || {};
   const k = rKey(r), cur = h.pairs[k] || {};
@@ -1593,7 +1593,7 @@ function healthCardHtml(r, opts){
   const sum = fit.slots.map(x => x.s.name + ' ' + (x.st === 'ok' ? '✓' : fmtPortion(x.f))).join(' · ');
   let h = '<section class="hcard v-' + vc + '">' + head;
   if(fit.slots.length) h += '<div class="hc-verdict"><span class="dot st-' + vc + '"></span><div><b>' + vt + '</b><small>' + esc(mealName + ', 1 porzione: ' + sum) + '</small></div></div>';
-  if(busy) h += '<div class="hc-wait"><span class="spin"></span> Stimo i pesi con l\'AI…</div>';
+  if(busy) h += '<div class="hc-wait"><span class="spin"></span> Stima dei pesi in corso…</div>';
   // gruppi
   h += '<div class="hslots">' + fit.slots.map((x, si) => {
     const pct = Math.max(x.f > 0 ? 4 : 0, Math.min(100, x.f / Math.max(1.5, x.hi) * 100)), mark = Math.min(100, 1 / Math.max(1.5, x.hi) * 100);
@@ -1619,7 +1619,7 @@ function healthCardHtml(r, opts){
   }
   if(fit.unknown.length && !r.isBase && !busy) h += '<div class="hc-stale">Non so quanto pesano: ' + esc(fit.unknown.map(f => f.raw).slice(0, 3).join(', ')) + '. <button class="btn small" data-act="analyze">Stima con l\'AI</button></div>';
   h += '<div class="detail-actions">' + ((fit.verdict === 'out' || fit.verdict === 'todo' || fit.verdict === 'near') && !r.isBase ? '<button class="btn" data-act="fitplan">' + IC.spark + ' Variante adatta al piano</button>' : '') + '<button class="btn ghost small" data-act="healthplan">Modifica il piano</button></div>';
-  h += '<p class="hint">Per 1 porzione' + (Number(r.servings) ? ' (la ricetta è per ' + Number(r.servings) + ')' : ' — porzioni non indicate: conto l\'intera ricetta') + '. Gli abbinamenti valgono per ' + mealName.toLowerCase() + ' e finiscono anche nella spesa e nel menù.</p>';
+  h += '<p class="hint">Per 1 porzione' + (Number(r.servings) ? ' (la ricetta è per ' + Number(r.servings) + ')' : ' — porzioni non indicate: viene considerata l\'intera ricetta') + '. Gli abbinamenti valgono per ' + mealName.toLowerCase() + ' e finiscono anche nella spesa e nel menù.</p>';
   return h + '</section>';
 }
 /* etichetta accanto all'ingrediente */
@@ -1764,7 +1764,7 @@ function renderHealthPlan(){
         '<div class="hp-row"><div class="hp-l"><b>Pasto predefinito</b><small>Con cosa confrontare le ricette (puoi cambiarlo anche da ogni ricetta)</small></div><select class="inp" id="hp_def" style="width:auto">' + MEAL_LIST.map(([k, l]) => '<option value="' + k + '"' + (k === HP.defaultMeal ? ' selected' : '') + '>' + l + '</option>').join('') + '</select></div>' +
         '<div class="hp-row"><div class="hp-l"><b>Tolleranza</b><small>Entro questo margine una porzione è considerata giusta</small></div><select class="inp" id="hp_tol" style="width:auto">' + [5, 10, 15, 20].map(v => '<option value="' + v + '"' + (Number(HP.tolerance) === v ? ' selected' : '') + '>' + v + '%</option>').join('') + '</select></div>' +
       '</div></section>' +
-      '<p class="hint">I pesi delle ricette sono stimati dagli ingredienti: usali come indicazione. Il riferimento resta il tuo piano e chi te l\'ha dato.</p>' +
+      '<p class="hint">Pesi e valori sono stime basate sugli ingredienti e hanno valore indicativo. Le informazioni non sostituiscono il parere di un medico o di un professionista della nutrizione.</p>' +
     '</div>' +
     '<div class="save-bar"><div class="save-bar-inner"><button class="btn" data-hp="close">Annulla</button><button class="btn primary" data-hp="save">Salva il piano</button></div></div>';
 }
@@ -1820,7 +1820,7 @@ async function healthPlanAction(t){
     const clean = hpClean(HP);
     t.disabled = true;
     try{ await store.saveHealth(clean); S.health = clean; closeHealthPlan(); updateDigest();  toast(clean.enabled ? 'Piano salvato: Healthy è attivo' : 'Piano salvato'); renderList(); if(S.openId) renderDetail(); if(S.tab === 'menu') renderPlan(); if(!$('#sheetSettings').classList.contains('hidden')) renderSettings(); }
-    catch(e){ t.disabled = false; toast('Non sono riuscito a salvare il piano.' + (e && e.message ? ' (' + e.message + ')' : '')); }
+    catch(e){ t.disabled = false; toast('Impossibile salvare il piano.' + (e && e.message ? ' (' + e.message + ')' : '')); }
   }
 }
 /* --- importazione del piano dall'AI (PDF, foto, testo, dettatura) --- */
@@ -1833,7 +1833,7 @@ function applyPlanImport(res){
   MEAL_LIST.forEach(([m]) => { const nm = normMeal(meals[m]); if(nm){ HP.meals[m] = nm; filled.push(m); } });
   const weekly = normWeekly(res.weekly), sups = normSupps(res.supplements);
   if(sups.length){ HP.supplements = sups; HP.supplementsOn = true; }
-  if(!filled.length && !weekly.length && !sups.length){ toast('Non ho trovato valori utili nel piano: prova con una foto più nitida o scrivi i pasti.'); return false; }
+  if(!filled.length && !weekly.length && !sups.length){ toast('Nessun valore riconosciuto nel piano: prova con una foto più nitida o inserisci i pasti a mano.'); return false; }
   if(weekly.length) HP.weekly = weekly;
   HP.ai = new Set(filled); HP.enabled = true;
   if(!filled.includes(HP.tab)) HP.tab = filled.includes(HP.defaultMeal) ? HP.defaultMeal : (filled[0] || HP.tab);
@@ -1865,7 +1865,7 @@ function openPlanImport(){
         const box = m.querySelector('#ai_atts');
         box.innerHTML = atts.map((a, i) => '<span class="att' + (a.error ? ' err' : '') + '">' +
           (a.loading ? '<span class="spin"></span>' : a.thumb ? '<img src="' + a.thumb + '" alt="">' : '<span class="att-ic">' + esc((a.ext || '?').slice(0, 4).toUpperCase()) + '</span>') +
-          '<span class="att-t"><b>' + esc(a.name) + '</b><small>' + esc(a.loading ? 'Leggo il file…' : a.error || a.label) + '</small></span><button data-rmatt="' + i + '" aria-label="Togli ' + esc(a.name) + '">✕</button></span>').join('');
+          '<span class="att-t"><b>' + esc(a.name) + '</b><small>' + esc(a.loading ? 'Lettura del file…' : a.error || a.label) + '</small></span><button data-rmatt="' + i + '" aria-label="Togli ' + esc(a.name) + '">✕</button></span>').join('');
       };
       m.addEventListener('click', e => { const b = e.target.closest('[data-rmatt]'); if(b){ const a = atts.splice(Number(b.dataset.rmatt), 1)[0]; if(a && a.thumb) URL.revokeObjectURL(a.thumb); drawAtts(); } });
       const fi = m.querySelector('#ai_img');
@@ -1874,7 +1874,7 @@ function openPlanImport(){
         for(const f of files.slice(0, 6)){
           const a = {name: f.name || 'file', ext: (f.name || '').split('.').pop(), loading: true}; atts.push(a); drawAtts();
           try{ Object.assign(a, await readAttachment(f)); if(a.images && a.images[0]) a.thumb = URL.createObjectURL(a.images[0]); }
-          catch(err){ a.error = err && err.message && err.message.length < 200 ? err.message : 'Non sono riuscito a leggere questo file.'; }
+          catch(err){ a.error = err && err.message && err.message.length < 200 ? err.message : 'Impossibile leggere questo file.'; }
           a.loading = false; drawAtts();
         }
       };
@@ -1887,8 +1887,8 @@ function openPlanImport(){
         const imgs = ok.flatMap(a => a.images || []).slice(0, Math.max(4, S.sampleMaxImages || 0));
         const fileText = ok.filter(a => a.text).map(a => '--- Contenuto del file «' + a.name + '» ---\n' + a.text).join('\n\n');
         if(!txt && !imgs.length && !fileText){ st.textContent = 'Allega il piano, incollalo o dettalo.'; return; }
-        btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Compilo…';
-        st.textContent = 'Invio all\'assistente…';
+        btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Elaborazione…';
+        st.textContent = 'Invio all\'assistente AI…';
         try{
           const res = await store.ai({action: 'plan', text: [txt, fileText].filter(Boolean).join('\n\n').slice(0, 120000), images: imgs, meta: {source: 'piano'}}, {onJob: id => {
             ctrl.jobId = id; S.waitingJobs.add(id);
@@ -1897,11 +1897,11 @@ function openPlanImport(){
           if(ctrl.jobId){ S.waitingJobs.delete(ctrl.jobId); store.markJobSeen(ctrl.jobId).catch(() => {}); }
           if(ctrl.aborted) return;
           if(applyPlanImport(res.result)){ closeFn(); toast('Piano compilato: controlla e salva'); }
-          else { btn.disabled = false; btn.textContent = 'Compila il piano'; st.textContent = 'Non ho trovato valori utili: prova con una foto più nitida o scrivi i pasti.'; }
+          else { btn.disabled = false; btn.textContent = 'Compila il piano'; st.textContent = 'Nessun valore riconosciuto: prova con una foto più nitida o inserisci i pasti a mano.'; }
         }catch(e){
           if(ctrl.jobId){ S.waitingJobs.delete(ctrl.jobId); store.markJobSeen(ctrl.jobId).catch(() => {}); }
           btn.disabled = false; btn.textContent = 'Compila il piano';
-          st.textContent = e && e.code ? aiErrorText(e) : 'Non ci sono riuscito. Riprova, magari con una foto più nitida.';
+          st.textContent = e && e.code ? aiErrorText(e) : 'Operazione non riuscita. Riprova, magari con una foto più nitida.';
         }
       };
       setTimeout(() => { if(!S.dict) m.querySelector('#ai_txt').focus({preventScroll: true}); }, 60);
@@ -1968,7 +1968,7 @@ async function saveVariant(){
     closeEditor(); toast('Variante salvata');
     openDetail(parent.id, v.id);
     if(healthOn() && planHasMacros() && !v.nutrition) analyzeNutrition(parent.id, v.id, {silent: true});
-  }catch(e){ E.saving = false; renderEditor(); toast('Non sono riuscito a salvare la variante.'); }
+  }catch(e){ E.saving = false; renderEditor(); toast('Impossibile salvare la variante.'); }
 }
 async function deleteVariant(r0, vid){
   const v = (r0.variants || []).find(x => x.id === vid); if(!v) return;
@@ -1976,7 +1976,7 @@ async function deleteVariant(r0, vid){
   try{
     await S.db.collection('recipes').doc(r0.id).update({variants: (r0.variants || []).filter(x => x.id !== vid), updatedAt: new Date().toISOString()});
     S.variantId = null; renderDetail(); toast('Variante eliminata');
-  }catch(e){ toast('Non sono riuscito a eliminarla.'); }
+  }catch(e){ toast('Impossibile eliminarla.'); }
 }
 
 /* ====================================================================
@@ -2081,7 +2081,7 @@ function renderComposer(){
   const res = composerResults();
   const chips = P.have.map((n, i) => '<span class="pchip">' + esc(n) + '<button data-pdel="' + i + '" aria-label="Togli ' + esc(n) + '">✕</button></span>').join('');
   const bought = S.shop.filter(i => i.checked).length;
-  let h = '<div class="view-head"><div class="ttl"><h2>Cosa cucino?</h2><div class="sub">Scegli cosa hai in casa: ti dico quali ricette puoi fare</div></div></div>' + modeSeg +
+  let h = '<div class="view-head"><div class="ttl"><h2>Cosa cucino?</h2><div class="sub">Indica cosa hai in casa e scopri quali ricette puoi preparare</div></div></div>' + modeSeg +
     '<div class="pt-box"><div class="pt-input">' + IC.search + '<input id="pt_in" placeholder="Aggiungi un ingrediente: uova, zucchine, riso…" autocomplete="off" enterkeyhint="done" value="' + esc(P.q) + '" aria-label="Ingrediente" aria-autocomplete="list" aria-controls="pt_ac"></div><div class="ac-list" id="pt_ac" role="listbox"></div>' +
     (P.have.length ? '<div class="pchips">' + chips + '</div>' : '') +
     '<div class="pt-tools">' + (bought ? '<button class="btn small" data-pt="fromshop">' + IC.basket + ' Dalla spesa fatta (' + bought + ')</button>' : '') + (P.have.length ? '<button class="btn small ghost" data-pt="clear">Svuota</button>' : '') + '</div>' +
@@ -2091,7 +2091,7 @@ function renderComposer(){
     (P.showStaples ? '<div class="pt-staples">' + ING.list.filter(e => e.b || P.staples.includes(e.n)).map(e => '<button class="pchip-t" data-pstaple="' + esc(e.n) + '" aria-pressed="' + P.staples.includes(e.n) + '">' + esc(e.n) + '</button>').join('') + '<span class="hint">Questi ingredienti non contano: si dà per scontato che li hai.</span></div>' : '') +
     '</div>';
   if(!P.have.length){
-    h += '<div class="empty">' + doodle('fridge') + '<h2>Apri il frigo</h2><p>Aggiungi gli ingredienti che hai: cerco tra le tue ricette quelle che puoi fare subito o a cui ti manca poco. Un ingrediente simile vale come sostituto (per esempio linguine al posto degli spaghetti).</p></div>';
+    h += '<div class="empty">' + doodle('fridge') + '<h2>Apri il frigo</h2><p>Aggiungi gli ingredienti che hai: l\'app cerca tra le tue ricette quelle che puoi preparare subito o a cui manca poco. Un ingrediente simile vale come sostituto (per esempio linguine al posto degli spaghetti).</p></div>';
   } else if(!res.length){
     h += '<div class="empty">' + doodle('search') + '<h2>Nessuna ricetta per ora</h2><p>' + (P.tol < 3 ? 'Prova ad aumentare quanti ingredienti possono mancare, oppure ' : '') + 'chiedi all\'assistente di inventarne una con quello che hai.</p></div>';
   } else {
@@ -2144,7 +2144,7 @@ function flashLine(text){
     const base = /^risotto$/i.test(dish[1]) ? 'riso' : /^lasagn/i.test(dish[1]) ? "pasta all'uovo" : dish[1].toLowerCase();
     const eb = canon(base), gd = gramsOf(Object.assign({}, p, {name: base}), eb);
     const fb = eb ? (COOK_FACTOR[eb.f] || 1) : 1;
-    if(gd){ const raw = Math.round(gd * 0.8 / fb); return {text: raw + ' g ' + base, note: 'Piatto pronto: conto la base, ≈ ' + raw + ' g di ' + base + (fb > 1 ? ' a crudo' : ''), e: eb, g: raw}; }
+    if(gd){ const raw = Math.round(gd * 0.8 / fb); return {text: raw + ' g ' + base, note: 'Piatto pronto: considerata la base, ≈ ' + raw + ' g di ' + base + (fb > 1 ? ' a crudo' : ''), e: eb, g: raw}; }
   }
   const fac = e && COOKED_RE.test(text) ? COOK_FACTOR[e.f] : null;
   const g = gramsOf(p, e);
@@ -2199,8 +2199,8 @@ function flashHtml(){
     '<div class="fl-opts"><div class="seg" role="group" aria-label="Pasto">' + MEAL_LIST.map(([k, l]) => '<button data-flmeal="' + k + '" aria-pressed="' + (k === F.meal) + '">' + l + '</button>').join('') + '</div>' +
     '<div class="stepper" aria-label="Persone"><button data-flp="-1" aria-label="Meno persone">−</button><span>' + F.persons + (F.persons === 1 ? ' persona' : ' persone') + '</span><button data-flp="1" aria-label="Più persone">+</button></div></div>' +
     (F.items.length ? '<div class="pt-tools"><button class="btn small ghost" data-flclear="1">Svuota</button></div>' : '') + '</div>';
-  if(!F.items.length) return h + '<div class="empty">' + doodle('fridge') + '<h2>Un pasto con quello che hai</h2><p>Hai del riso avanzato, mezza zucchina, due uova? Scrivili qui: ti dico quanto coprono del pasto del tuo piano, cosa togliere e cosa abbinarci per completarlo, a partire da quello che hai in casa.</p></div>';
-  if(!hasPlan) return h + '<section class="hcard"><p class="hc-msg">Per il prospetto mi serve il tuo piano alimentare: lo usi come riferimento per porzioni e abbinamenti.</p><div class="detail-actions"><button class="btn primary" data-flplan="1">Imposta il piano</button></div></section>';
+  if(!F.items.length) return h + '<div class="empty">' + doodle('fridge') + '<h2>Un pasto con quello che hai</h2><p>Hai del riso avanzato, mezza zucchina, due uova? Inseriscili qui: vedrai quanto coprono del pasto previsto dal tuo piano, cosa ridurre e cosa abbinare per completarlo, a partire da ciò che hai in casa.</p></div>';
+  if(!hasPlan) return h + '<section class="hcard"><p class="hc-msg">Per il prospetto è necessario impostare il piano alimentare: è il riferimento per porzioni e abbinamenti.</p><div class="detail-actions"><button class="btn primary" data-flplan="1">Imposta il piano</button></div></section>';
   const mealName = (MEAL_LIST.find(x => x[0] === F.meal) || ['', F.meal])[1];
   if(!fit || !fit.slots.length) return h + '<section class="hcard"><p class="hc-msg">Nel tuo piano non c\'è ancora nulla per ' + mealName.toLowerCase() + '.</p><div class="detail-actions"><button class="btn" data-flplan="1">Modifica il piano</button></div></section>';
   const [vc, vt] = VERDICTS[fit.verdict];
@@ -2217,7 +2217,7 @@ function flashHtml(){
         (sug.length ? '<div class="hs-sug"><span>' + (x.f < 0.05 ? 'Abbina:' : 'Aggiungi:') + '</span>' + sug.slice(0, all ? 40 : 5).map((s, k) => '<button class="sug' + (s.home ? ' home' : '') + '" data-flsug="' + esc(s.label) + '">+ ' + esc(s.label) + (s.home ? '<em>in casa</em>' : '') + '</button>').join('') + (sug.length > 5 && !all ? '<button class="sug more" data-flmore="' + si + '">altre ' + (sug.length - 5) + '</button>' : '') + '</div>' : '') +
         (tip ? '<div class="hs-tip">' + esc(tip.replace('oppure servitene meno.', 'il resto conservalo per un altro pasto.')) + '</div>' : '') + '</div>';
     }).join('') + '</div>' +
-    '<p class="hint">Tocca un suggerimento per aggiungerlo. «In casa» viene dalla tua dispensa (modalità «Dalle ricette») e da «Sempre in casa».</p>' +
+    '<p class="hint">Tocca un suggerimento per aggiungerlo. «In casa» si basa sulla dispensa (modalità «Dalle ricette») e su «Sempre in casa». Stime indicative, non sostituiscono il parere di un professionista della nutrizione.</p>' +
     '<div class="detail-actions">' + (S.sample ? '<button class="btn primary" data-flai="1">' + IC.spark + ' Trasformalo in un piatto</button>' : '') + '<button class="btn" data-flsave="1">' + IC.plus + ' Salva come ricetta</button><button class="btn" data-flmenu="1">Metti nel menù</button></div></section>';
   return h;
 }
@@ -2481,7 +2481,7 @@ function renderEditor(){
     '<div class="sheet-content">' +
       (E.meta ? '<div class="draft-banner">' +
         (E.meta.source === 'modifica'
-          ? '<strong>Ho applicato le modifiche che hai chiesto.</strong><span>I campi cambiati sono evidenziati. Controlla e tocca «Salva ricetta» per confermare, oppure «Annulla» per lasciare tutto com\'era.</span>'
+          ? '<strong>Modifiche applicate.</strong><span>I campi cambiati sono evidenziati. Controlla e tocca «Salva ricetta» per confermare, oppure «Annulla» per lasciare tutto com\'era.</span>'
           : '<strong>L\'assistente ha compilato la ricetta ' + ({dictate:'da quello che hai dettato', link:'dalla pagina che hai incollato', create:'dal tuo testo'}[E.meta.source] || '') + '.</strong><span>Controlla e correggi quello che non torna: sotto ogni ingrediente vedi come è stato interpretato. Niente è salvato finché non tocchi «Salva ricetta».</span>') +
         (E.meta.changes && E.meta.changes.length ? '<div><b>Modifiche:</b><ul>' + E.meta.changes.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' : '') +
         (E.meta.doubts && E.meta.doubts.length ? '<div><b>Da controllare:</b><ul>' + E.meta.doubts.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' : '') +
@@ -2568,7 +2568,7 @@ async function saveEditor(){
     openDetail(id, null);
   }catch(e){
     E.saving = false; renderEditor();
-    toast(e && e.code === 'quota_exceeded' ? 'Spazio esaurito: elimina qualche ricetta o foto.' : 'Non sono riuscito a salvare. Riprova tra poco.');
+    toast(e && e.code === 'quota_exceeded' ? 'Spazio esaurito: elimina qualche ricetta o foto.' : 'Impossibile salvare. Riprova tra poco.');
   }
 }
 
@@ -2629,10 +2629,10 @@ async function readAttachment(file){
   const name = file.name || 'file', ext = (name.split('.').pop() || '').toLowerCase(), type = file.type || '';
   if(type.startsWith('image/') || ['jpg','jpeg','png','webp','gif','heic','heif'].includes(ext)){
     try{ return {kind:'img', label:'Foto', images:[await downscale(file, 1600)]}; }
-    catch(e){ throw new Error('Non riesco ad aprire questa immagine (se è HEIC, prova a esportarla come JPG).'); }
+    catch(e){ throw new Error('Impossibile aprire questa immagine (se è HEIC, prova a esportarla come JPG).'); }
   }
   if(ext === 'pdf' || type === 'application/pdf'){
-    let pdfjs; try{ pdfjs = await loadPdfjs(); }catch(e){ throw new Error('Non riesco a caricare il lettore PDF in questa vista. Prova a fare uno screenshot delle pagine.'); }
+    let pdfjs; try{ pdfjs = await loadPdfjs(); }catch(e){ throw new Error('Impossibile caricare il lettore PDF in questa vista. Prova a fare uno screenshot delle pagine.'); }
     const pdf = await pdfjs.getDocument({data: new Uint8Array(await file.arrayBuffer()), isEvalSupported:false}).promise;
     let text = '';
     for(let i = 1; i <= Math.min(pdf.numPages, 40) && text.length < MAX_FILE_TEXT; i++){
@@ -2719,7 +2719,7 @@ function openAI(mode, ctx){
         const box = m.querySelector('#ai_atts'); if(!box) return;
         box.innerHTML = atts.map((a, i) => '<span class="att' + (a.error ? ' err' : '') + '">' +
           (a.loading ? '<span class="spin"></span>' : a.thumb ? '<img src="' + a.thumb + '" alt="">' : '<span class="att-ic">' + esc((a.ext || '?').slice(0,4).toUpperCase()) + '</span>') +
-          '<span class="att-t"><b>' + esc(a.name) + '</b><small>' + esc(a.loading ? 'Leggo il file…' : a.error || a.label) + '</small></span><button data-rmatt="' + i + '" aria-label="Togli ' + esc(a.name) + '">✕</button></span>').join('');
+          '<span class="att-t"><b>' + esc(a.name) + '</b><small>' + esc(a.loading ? 'Lettura del file…' : a.error || a.label) + '</small></span><button data-rmatt="' + i + '" aria-label="Togli ' + esc(a.name) + '">✕</button></span>').join('');
       };
       m.addEventListener('click', e => { const b = e.target.closest('[data-rmatt]'); if(b){ const a = atts.splice(Number(b.dataset.rmatt), 1)[0]; if(a && a.thumb) URL.revokeObjectURL(a.thumb); drawAtts(); } });
       const fi = m.querySelector('#ai_img');
@@ -2728,7 +2728,7 @@ function openAI(mode, ctx){
         for(const f of files.slice(0, 6)){
           const a = {name: f.name || 'file', ext: (f.name || '').split('.').pop(), loading: true}; atts.push(a); drawAtts();
           try{ Object.assign(a, await readAttachment(f)); if(a.images && a.images[0]) a.thumb = URL.createObjectURL(a.images[0]); }
-          catch(err){ a.error = err && err.message && err.message.length < 200 ? err.message : 'Non sono riuscito a leggere questo file.'; }
+          catch(err){ a.error = err && err.message && err.message.length < 200 ? err.message : 'Impossibile leggere questo file.'; }
           a.loading = false; drawAtts();
         }
       };
@@ -2742,11 +2742,11 @@ function openAI(mode, ctx){
         const imgs = okAtts.flatMap(a => a.images || []).slice(0, maxImgs);
         const fileText = okAtts.filter(a => a.text).map(a => '--- Contenuto del file «' + a.name + '» ---\n' + a.text).join('\n\n');
         if(!txt && !imgs.length && !fileText && !(mode === 'link' && /^https?:\/\//i.test(url))){
-          st.textContent = isEdit ? 'Dimmi cosa cambiare, a voce o scrivendo.' : mode === 'dictate' ? 'Non ho ancora sentito niente: detta la ricetta o scrivila nel riquadro.' : mode === 'link' ? (url ? 'Il link deve iniziare con https://' : 'Incolla il link della ricetta.') : 'Scrivi qualcosa o aggiungi una foto.';
+          st.textContent = isEdit ? 'Descrivi cosa modificare, a voce o per iscritto.' : mode === 'dictate' ? 'Nessun testo rilevato: detta la ricetta o scrivila nel riquadro.' : mode === 'link' ? (url ? 'Il link deve iniziare con https://' : 'Incolla il link della ricetta.') : 'Scrivi qualcosa o aggiungi una foto.';
           return;
         }
-        btn.disabled = true; btn.innerHTML = '<span class="spin"></span> ' + (isEdit ? 'Applico…' : 'Compilo…');
-        st.textContent = 'Invio all\'assistente…';
+        btn.disabled = true; btn.innerHTML = '<span class="spin"></span> ' + (isEdit ? 'Applicazione…' : 'Elaborazione…');
+        st.textContent = 'Invio all\'assistente AI…';
         const onJob = id => {
           ctrl.jobId = id; S.waitingJobs.add(id);
           st.innerHTML = 'L\'assistente ci sta lavorando. <b>Puoi anche bloccare il telefono o chiudere l\'app</b>: ' + (isEdit ? 'le modifiche vengono preparate' : 'la ricetta viene preparata') + ' lo stesso e la ritrovi qui.';
@@ -2766,7 +2766,7 @@ function openAI(mode, ctx){
         }catch(e){
           done();
           btn.disabled = false; btn.textContent = T.go;
-          st.textContent = e && e.code && !['images_unavailable','image_rejected','not_granted'].includes(e.code) ? aiErrorText(e) : e && e.code === 'images_unavailable' ? 'In questa app non posso ricevere immagini: incolla il testo della pagina, oppure apri il ricettario da Chrome (claude.ai) o mandami gli screenshot nella chat di Claude.' : e && e.code === 'image_rejected' ? 'Questa immagine non va bene (troppo grande o troppe immagini): provane un\'altra.' : e && e.code === 'rate_limited' ? 'Troppe richieste ravvicinate: aspetta un minuto e riprova.' : e && e.code === 'not_granted' ? 'Permesso non concesso: puoi comunque fare tutto a mano.' : 'Non ci sono riuscito. Riprova, magari con parole diverse.';
+          st.textContent = e && e.code && !['images_unavailable','image_rejected','not_granted'].includes(e.code) ? aiErrorText(e) : e && e.code === 'images_unavailable' ? 'Le immagini non sono disponibili in questa modalità: incolla il testo della ricetta.' : e && e.code === 'image_rejected' ? 'Questa immagine non va bene (troppo grande o troppe immagini): provane un\'altra.' : e && e.code === 'rate_limited' ? 'Troppe richieste ravvicinate: aspetta un minuto e riprova.' : e && e.code === 'not_granted' ? 'Permesso non concesso: puoi comunque fare tutto a mano.' : 'Operazione non riuscita. Riprova, magari con parole diverse.';
         }
       };
     });
@@ -2840,7 +2840,7 @@ function snapshotForm(r){
 
 /* ---------- Backup ---------- */
 function openMenu(){
-  modal('<h3>Backup delle ricette</h3><p>Le ricette sono già salvate sul server e le ritrovi su ogni dispositivo. Il backup è una copia in più, da tenere dove vuoi. Puoi anche ripristinare un backup del vecchio ricettario su Claude.</p>' +
+  modal('<h3>Backup delle ricette</h3><p>Le ricette sono già salvate sul server e le ritrovi su ogni dispositivo. Il backup è una copia in più, da tenere dove vuoi.</p>' +
     '<div style="display:grid;gap:10px">' +
     (S.downloads ? '<button class="btn" data-a="dl">Scarica backup completo, con foto (.json)</button>' : '') +
     '<button class="btn" data-a="cp">Copia backup negli appunti</button>' +
@@ -2865,7 +2865,7 @@ function openMenu(){
       m.querySelector('[data-a=x]').onclick = close;
       const dl = m.querySelector('[data-a=dl]');
       if(dl) dl.onclick = async () => {
-        dl.disabled = true; const lbl = dl.textContent; dl.innerHTML = '<span class="spin"></span> Preparo il backup con le foto…';
+        dl.disabled = true; const lbl = dl.textContent; dl.innerHTML = '<span class="spin"></span> Preparazione del backup con le foto…';
         try{ const d = await fullData(); await S.downloads.save({filename:'ricettario-' + new Date().toISOString().slice(0,10) + '.json', data:d}); toast('Backup scaricato'); }
         catch(e){ toast('Download annullato'); }
         dl.disabled = false; dl.textContent = lbl;
@@ -3054,7 +3054,7 @@ async function addToPlan(weekKey, slot, entry){
     const slots = snap.exists && snap.data().slots ? JSON.parse(JSON.stringify(snap.data().slots)) : {};
     (slots[slot] = slots[slot] || []).push(entry);
     await ref.set({slots, weekStart: weekKey, updatedAt: new Date().toISOString()});
-  }catch(e){ toast('Non sono riuscito a salvare il menù'); throw e; }
+  }catch(e){ toast('Impossibile salvare il menù'); throw e; }
 }
 function renderPlan(){
   const el = $('#viewPlan'); if(S.tab !== 'menu') return;
@@ -3064,7 +3064,7 @@ function renderPlan(){
     '<div class="ttl" style="text-align:center"><h2>Menù della settimana</h2><div class="sub">' + esc(weekLabel(S.planMonday)) + (isThis ? ' · questa settimana' : '') + '</div></div>' +
     '<button class="btn icon-btn" data-plan="next" aria-label="Settimana successiva" style="transform:scaleX(-1)">' + IC.back + '</button></div>' +
     '<div class="actions" style="justify-content:center">' + (nRec ? '<button class="btn small primary" data-plan="toshop">Aggiungi tutto alla spesa</button>' : '') + (isThis ? '' : '<button class="btn small" data-plan="today">Torna a oggi</button>') + (all.length ? '<button class="btn small ghost danger" data-plan="clear">Svuota settimana</button>' : '') + '</div>';
-  if(S.noDb){ el.innerHTML = h + '<div class="empty"><p>Apri il ricettario dal tuo account Claude per usare il menù.</p></div>'; return; }
+  if(S.noDb){ el.innerHTML = h + '<div class="empty"><p>Accedi al tuo account per usare il menù.</p></div>'; return; }
   h += supTodayHtml() + weeklyHtml() + '<div class="days">';
   DAYS.forEach((dn, di) => {
     const date = addDays(S.planMonday, di), isToday = isoDate(date) === today;
@@ -3178,7 +3178,7 @@ document.addEventListener('click', async e => {
   const d = t.dataset;
   if(d.f !== undefined && t.tagName === 'BUTTON' && !t.closest('#sheetEdit')){ S.filter = d.f; if(!t.classList.contains('chip')) window.scrollTo(0, 0); renderList(); return; }
   if(d.open){ openDetail(d.open); return; }
-  if(d.act === 'new' || t.id === 'btnNew'){ if(S.noDb){ toast('Apri il ricettario dal tuo account Claude per salvare.'); } openEditor(null, true); return; }
+  if(d.act === 'new' || t.id === 'btnNew'){ if(S.noDb){ toast('Accedi al tuo account per salvare.'); } openEditor(null, true); return; }
   if(d.act === 'ai' || t.closest('#btnAI')){ openAI(); return; }
   if(d.act === 'dictate' || t.id === 'btnDictate'){ openAI('dictate'); return; }
   if(d.tab){ setTab(d.tab); return; }
@@ -3235,14 +3235,14 @@ document.addEventListener('click', async e => {
     else if(d.act === 'analyze') analyzeNutrition(r0.id, S.variantId);
     else if(d.act === 'healthplan') openHealthPlan();
     else if(d.act === 'cook') openCook();
-    else if(d.act === 'toshop'){ if(S.noDb) return toast('Apri il ricettario dal tuo account Claude.'); openAddToShop(recipeItems(r, S.servings || Number(r.servings) || null).concat(pairShopItems(r, mealFor(r), S.servings || Number(r.servings) || 1, titleWithVariant(r))), titleWithVariant(r) + (S.servings ? ', per ' + S.servings + ' ' + (r.servingsUnit || 'porzioni') : '')); }
-    else if(d.act === 'toplan'){ if(S.noDb) return toast('Apri il ricettario dal tuo account Claude.'); openAddToPlan(r); }
-    else if(d.act === 'fav'){ try{ await S.db.collection('recipes').doc(r0.id).update({favorite:!r0.favorite, updatedAt:new Date().toISOString()}); }catch(err){ toast('Non sono riuscito a salvare'); } }
+    else if(d.act === 'toshop'){ if(S.noDb) return toast('Accedi al tuo account.'); openAddToShop(recipeItems(r, S.servings || Number(r.servings) || null).concat(pairShopItems(r, mealFor(r), S.servings || Number(r.servings) || 1, titleWithVariant(r))), titleWithVariant(r) + (S.servings ? ', per ' + S.servings + ' ' + (r.servingsUnit || 'porzioni') : '')); }
+    else if(d.act === 'toplan'){ if(S.noDb) return toast('Accedi al tuo account.'); openAddToPlan(r); }
+    else if(d.act === 'fav'){ try{ await S.db.collection('recipes').doc(r0.id).update({favorite:!r0.favorite, updatedAt:new Date().toISOString()}); }catch(err){ toast('Impossibile salvare'); } }
     else if(d.act === 'copy'){ try{ await navigator.clipboard.writeText(recipeAsText(r)); toast('Ricetta copiata: incollala dove vuoi'); }catch(err){ toast('Copia non riuscita'); } }
     else if(d.act === 'dup'){ const c = JSON.parse(JSON.stringify(r)); delete c.id; delete c.variants; delete c.nutrition; c.title = titleWithVariant(r) + ' (copia)'; c.photoId = null; c.favorite = false; openEditor(c, true); }
     else if(d.act === 'del'){
       if(await confirmBox('Eliminare «' + (r0.title || 'questa ricetta') + '»?', 'La ricetta' + ((r0.variants || []).length ? ', tutte le sue varianti' : '') + ' e la sua foto vengono cancellate da tutti i tuoi dispositivi. Non si può annullare.', 'Elimina')){
-        try{ await S.db.collection('recipes').doc(r0.id).delete(); if(r0.photoId && S.assets){ try{ await S.assets.delete(r0.photoId); }catch(x){} } closeDetail(); toast('Ricetta eliminata'); }catch(err){ toast('Non sono riuscito a eliminarla'); }
+        try{ await S.db.collection('recipes').doc(r0.id).delete(); if(r0.photoId && S.assets){ try{ await S.assets.delete(r0.photoId); }catch(x){} } closeDetail(); toast('Ricetta eliminata'); }catch(err){ toast('Impossibile eliminarla'); }
       }
     }
     else if(d.serv){
@@ -3357,7 +3357,7 @@ document.addEventListener('change', async e => {
   if(t.id === 'e_photo' && S.edit){
     const f = t.files[0]; if(!f) return;
     try{ const b = await downscale(f, 1600); if(S.edit.newPhotoUrl) URL.revokeObjectURL(S.edit.newPhotoUrl); S.edit.newPhoto = b; S.edit.newPhotoUrl = URL.createObjectURL(b); S.edit.removePhoto = false; renderEditor(); }
-    catch(err){ toast('Non riesco a leggere questa immagine'); }
+    catch(err){ toast('Impossibile leggere questa immagine'); }
     return;
   }
   if(t.id === 'fileImport'){ const f = t.files[0]; t.value = ''; if(f) importFile(f); }
@@ -3416,22 +3416,22 @@ function makeDictation(){
   };
 }
 
-/* --- messaggi di errore di Claude --- */
+/* --- messaggi di errore dell'assistente AI --- */
 function aiErrorText(e){
   const c = e && e.code;
   if(c === 'limit_user') return 'Hai usato tutte le richieste all\'AI di questo mese' + (e.limit ? ' (' + e.limit + ')' : '') + '. Si azzerano il 1° del mese.';
-  if(c === 'limit_total') return 'Il ricettario ha raggiunto il limite mensile di richieste all\'AI. Si azzera il 1° del mese.';
-  if(c === 'missing_api_key') return 'L\'assistente AI non è ancora configurato sul server: manca una chiave (vedi la guida, passo 5).';
-  if(c === 'page_unreachable' || c === 'bad_url') return 'Non riesco ad aprire quella pagina (il sito potrebbe bloccare l\'accesso). Incolla il testo o allega uno screenshot.';
-  if(c === 'rate_limited') return 'I servizi AI gratuiti hanno raggiunto il loro limite per ora: riprova tra qualche minuto (o domani).';
+  if(c === 'limit_total') return 'Il servizio ha raggiunto il limite mensile di richieste all\'AI. Si azzera il 1° del mese.';
+  if(c === 'missing_api_key') return 'L\'assistente AI non è al momento disponibile. Riprova più tardi.';
+  if(c === 'page_unreachable' || c === 'bad_url') return 'Impossibile aprire quella pagina (il sito potrebbe bloccare l\'accesso). Incolla il testo o allega uno screenshot.';
+  if(c === 'rate_limited') return 'L\'assistente AI è molto richiesto in questo momento: riprova tra qualche minuto.';
   if(c === 'ai_failed') return 'Nessun servizio AI ha risposto in questo momento: riprova tra poco.';
   if(c === 'offline') return 'Sembra che tu sia offline: controlla la connessione e riprova.';
   if(c === 'not_signed_in') return 'La sessione è scaduta: esci e rientra.';
   if(c === 'invalid_json') return 'L\'assistente ha risposto in modo inatteso: riprova.';
-  if(c === 'timeout') return 'L\'assistente ci sta mettendo troppo: riprova tra poco.';
+  if(c === 'timeout') return 'La richiesta sta richiedendo troppo tempo: riprova tra poco.';
   if(c === 'too_many_jobs') return 'Hai già alcune richieste in preparazione: aspetta che finiscano.';
   if(c === 'cancelled') return '';
-  return 'Non ci sono riuscito. Riprova tra poco.' + (e && e.detail ? ' (Dettaglio: ' + String(e.detail).slice(0, 160) + ')' : '');
+  return 'Si è verificato un errore. Riprova tra poco.' + (e && e.detail ? ' (' + String(e.detail).slice(0, 120) + ')' : '');
 }
 
 /* --- inviti --- */
@@ -3456,7 +3456,7 @@ async function handlePendingInvite(){
     const id = await store.books.accept(code);
     toast('Benvenuto in «' + info.book_name + '»');
     return id;
-  }catch(e){ toast('Non sono riuscito ad aprire l\'invito.'); return null; }
+  }catch(e){ toast('Impossibile aprire l\'invito.'); return null; }
 }
 function askBox(title, msg, okLabel){
   return new Promise(res => {
@@ -3482,15 +3482,15 @@ function showAuth(mode){
   mode = mode || 'login';
   const signup = mode === 'signup', recover = mode === 'recover', newpw = mode === 'newpw';
   let pendingInv = null; try{ pendingInv = localStorage.getItem('pendingInvite'); }catch(e){}
-  el.innerHTML = '<div class="auth-card"><div class="auth-logo">' + IC.book + '</div><h1>Il mio ricettario</h1>' +
+  el.innerHTML = '<div class="auth-card"><div class="auth-logo">' + IC.book + '</div><h1>Ricettario</h1>' +
     '<p class="auth-sub">' + (newpw ? 'Scegli una nuova password.' : recover ? 'Ti mandiamo una mail per reimpostare la password.' : pendingInv ? 'Hai ricevuto un invito: ' + (signup ? 'crea il tuo account' : 'accedi') + ' per unirti al ricettario.' : 'Ricette, menù della settimana e lista della spesa, sincronizzati su tutti i tuoi dispositivi.') + '</p>' +
     (newpw || recover ? '' : '<div class="seg" role="tablist"><button data-am="login" aria-pressed="' + !signup + '">Accedi</button><button data-am="signup" aria-pressed="' + signup + '">Registrati</button></div>') +
     '<form id="authForm" class="auth-form" novalidate>' +
-      (signup ? '<div class="field"><label for="au_name">Il tuo nome</label><input class="inp" id="au_name" autocomplete="name" placeholder="Es. Manuel" required></div>' : '') +
+      (signup ? '<div class="field"><label for="au_name">Il tuo nome</label><input class="inp" id="au_name" autocomplete="name" placeholder="Come vuoi essere chiamato" required></div>' : '') +
       (newpw ? '' : '<div class="field"><label for="au_email">Email</label><input class="inp" id="au_email" type="email" autocomplete="email" inputmode="email" required></div>') +
       (recover ? '' : '<div class="field"><label for="au_pw">' + (newpw ? 'Nuova password' : 'Password') + '</label><input class="inp" id="au_pw" type="password" autocomplete="' + (signup || newpw ? 'new-password' : 'current-password') + '" minlength="8" required>' + (signup || newpw ? '<span class="hint">Almeno 8 caratteri.</span>' : '') + '</div>') +
       '<div id="au_msg" class="auth-msg" role="alert"></div>' +
-      '<button class="btn primary auth-go" type="submit">' + (newpw ? 'Salva la nuova password' : recover ? 'Mandami la mail' : signup ? 'Crea il mio account' : 'Accedi') + '</button>' +
+      '<button class="btn primary auth-go" type="submit">' + (newpw ? 'Salva la nuova password' : recover ? 'Invia il link' : signup ? 'Crea il mio account' : 'Accedi') + '</button>' +
     '</form>' +
     (newpw ? '' : recover ? '<button class="btn ghost small" data-am="login">Torna all\'accesso</button>' : !signup ? '<button class="btn ghost small" data-am="recover">Password dimenticata?</button>' : '') +
     '</div>';
@@ -3538,7 +3538,7 @@ async function afterLogin(){
     if(!BOOT.books.length){ await store.books.create('Il mio ricettario'); BOOT.books = await store.books.list(); }
     BOOT.profile = await store.profile();
     try{ const st = await store.getSettings(); S.health = Object.assign(defaultHealth(), (st && st.health) || {}); S.notify = (st && st.notify) || null; }catch(x){ S.health = defaultHealth(); }
-  }catch(e){ BOOT.started = false; toast('Non riesco a raggiungere il server: controlla la connessione.'); setTimeout(afterLogin, 5000); return; }
+  }catch(e){ BOOT.started = false; toast('Connessione al servizio non riuscita: controlla la rete.'); setTimeout(afterLogin, 5000); return; }
   const joined = await handlePendingInvite();
   if(joined) BOOT.books = await store.books.list();
   let last = null; try{ last = localStorage.getItem('book'); }catch(e){}
@@ -3627,6 +3627,7 @@ function setAccent(k){
    Notifiche (Web Push): attivazione per dispositivo, preferenze,
    timer programmati sul server, riepilogo frequenze, link dalle notifiche
    ==================================================================== */
+const APP_VERSION = '2.0';
 const PUSH = {supported: 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window, sub: null, checked: false};
 const WEEKDAYS = [[1, 'Lunedì'], [2, 'Martedì'], [3, 'Mercoledì'], [4, 'Giovedì'], [5, 'Venerdì'], [6, 'Sabato'], [7, 'Domenica']];
 function notifyDefaults(){ return {timer: true, ai: true, menu: {on: true, time: '20:30'}, weekly: {on: true, day: 4, time: '19:00'}}; }
@@ -3645,7 +3646,7 @@ async function pushInit(){
 let notifyT = null;
 function saveNotifySoon(){
   const n = N(); n.tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Rome';
-  clearTimeout(notifyT); notifyT = setTimeout(() => { store && store.saveNotify(n).catch(e => toast('Non sono riuscito a salvare le notifiche' + (e && /notify/.test(String(e.message)) ? ': esegui aggiornamento-4.sql su Supabase.' : '.'))); }, 600);
+  clearTimeout(notifyT); notifyT = setTimeout(() => { store && store.saveNotify(n).catch(e => toast('Impossibile salvare le preferenze delle notifiche. Riprova più tardi.')); }, 600);
 }
 async function enablePush(){
   if(!PUSH.supported){ toast('Questo browser non supporta le notifiche.'); return; }
@@ -3664,9 +3665,9 @@ async function enablePush(){
     PUSH.sub = sub; S.pushOn = true;
     if(!S.notify) S.notify = notifyDefaults();
     saveNotifySoon(); updateDigest(true); tPushResync();
-    toast(res.cron === false ? 'Notifiche attive, ma i promemoria non partono: esegui aggiornamento-4.sql su Supabase.' : 'Notifiche attive su questo dispositivo');
+    toast(res.cron === false ? 'Notifiche attive. I promemoria programmati non sono ancora disponibili.' : 'Notifiche attive su questo dispositivo');
   }catch(e){
-    toast(e && e.code === 'sw' ? 'Le notifiche funzionano solo dall\'indirizzo pubblico dell\'app (https).' : e && e.code === 'not_signed_in' ? 'Accedi di nuovo e riprova.' : 'Non sono riuscito ad attivarle' + (e && e.detail ? ' (' + String(e.detail).slice(0, 80) + ')' : '') + '. Hai aggiornato la funzione su Supabase?');
+    toast(e && e.code === 'sw' ? 'Le notifiche non sono disponibili da questo indirizzo.' : e && e.code === 'not_signed_in' ? 'Accedi di nuovo e riprova.' : 'Impossibile attivare le notifiche. Riprova più tardi.');
   }
   renderSettings();
 }
@@ -3846,7 +3847,7 @@ async function openSettings(){
     BOOT.books = books; BOOT.members = members; BOOT.usage = usage;
     const cur = books.find(b => b.id === BOOT.book.id); if(cur){ BOOT.book = cur; $('#bookName').textContent = cur.name; }
     renderSettings();
-  }catch(e){ toast('Non riesco a caricare le impostazioni.'); }
+  }catch(e){ toast('Impossibile caricare le impostazioni.'); }
 }
 function closeSettings(){ $('#sheetSettings').classList.add('hidden'); if(!S.openId && !S.edit) document.body.style.overflow = ''; }
 function renderSettings(){
@@ -3874,7 +3875,8 @@ function renderSettings(){
         (BOOT.usage != null ? '<div class="set-line"><span class="grow"><b>Assistente AI questo mese</b><small>' + BOOT.usage + (BOOT.usage === 1 ? ' richiesta' : ' richieste') + ' usate</small></span></div>' : '') +
         '<div class="set-actions"><button class="btn" data-st="pw">Cambia password</button><button class="btn ghost danger" data-st="logout">Esci</button></div>' +
       '</div></section>' +
-      '<section class="section"><h2>Dati</h2><div class="set-card"><div class="set-actions"><button class="btn" data-st="backup">Backup e ripristino</button></div><p class="hint">Per portare qui le ricette dal vecchio ricettario su Claude: là apri ⋮ → «Scarica backup completo, con foto», poi qui «Backup e ripristino» → «Ripristina».</p></div></section>' +
+      '<section class="section"><h2>Dati</h2><div class="set-card"><div class="set-actions"><button class="btn" data-st="backup">Backup e ripristino</button></div><p class="hint">Esporta tutte le ricette con le foto in un file e ripristinale quando vuoi, anche su un altro account.</p></div></section>' +
+      '<section class="section"><h2>Informazioni</h2><div class="set-card"><div class="set-line"><span class="grow"><b>Ricettario</b><small>Versione ' + APP_VERSION + '</small></span></div><p class="hint">Le indicazioni nutrizionali sono stime indicative e non sostituiscono il parere di un medico o di un professionista della nutrizione. I contenuti inviati all\'assistente AI sono elaborati da fornitori esterni.</p></div></section>' +
       (standalone ? '' : '<section class="section"><h2>App sul telefono</h2><div class="set-card">' +
         (BOOT.installEvt ? '<div class="set-actions"><button class="btn primary" data-st="install">Installa l\'app</button></div>' : '') +
         '<p class="hint">' + (isIOS ? 'Su iPhone: apri questa pagina con Safari, tocca Condividi (il quadrato con la freccia) e poi «Aggiungi alla schermata Home».' : 'Su Android: nel menu ⋮ di Chrome tocca «Installa app» o «Aggiungi a schermata Home». Avrai un\'icona e l\'app si apre a tutto schermo.') + '</p></div></section>') +
@@ -3884,8 +3886,8 @@ async function settingsAction(btn){
   const a = btn.dataset.st, b = BOOT.book;
   if(a === 'close') return closeSettings();
   if(a === 'book'){ if(btn.dataset.id !== b.id){ selectBook(btn.dataset.id); toast('Ricettario: ' + BOOT.book.name); } closeSettings(); return; }
-  if(a === 'newbook'){ const n = await promptBox('Nuovo ricettario', 'Nome', 'Ricettario di famiglia', 'Crea'); if(!n) return; try{ const id = await store.books.create(n); BOOT.books = await store.books.list(); selectBook(id); toast('Creato «' + n + '»'); openSettings(); }catch(e){ toast('Non sono riuscito a crearlo.'); } return; }
-  if(a === 'rename'){ const n = await promptBox('Rinomina ricettario', 'Nome', b.name, 'Salva'); if(!n) return; try{ await store.books.rename(b.id, n); b.name = n; $('#bookName').textContent = n; openSettings(); }catch(e){ toast('Non sono riuscito a rinominarlo.'); } return; }
+  if(a === 'newbook'){ const n = await promptBox('Nuovo ricettario', 'Nome', 'Ricettario di famiglia', 'Crea'); if(!n) return; try{ const id = await store.books.create(n); BOOT.books = await store.books.list(); selectBook(id); toast('Creato «' + n + '»'); openSettings(); }catch(e){ toast('Impossibile crearlo.'); } return; }
+  if(a === 'rename'){ const n = await promptBox('Rinomina ricettario', 'Nome', b.name, 'Salva'); if(!n) return; try{ await store.books.rename(b.id, n); b.name = n; $('#bookName').textContent = n; openSettings(); }catch(e){ toast('Impossibile rinominarlo.'); } return; }
   if(a === 'invite'){
     try{
       const code = await store.books.invite(b.id);
@@ -3894,12 +3896,12 @@ async function settingsAction(btn){
       if(navigator.share){ try{ await navigator.share({title: b.name, text: 'Ti invito nel mio ricettario «' + b.name + '»', url: link}); return; }catch(x){ if(x && x.name === 'AbortError') return; } }
       modal('<h3>Invita nel ricettario</h3><p>Manda questo link a chi vuoi invitare. Vale 14 giorni.</p><input class="inp" readonly value="' + esc(link) + '"><div class="modal-actions"><button class="btn" data-a="x">Chiudi</button><button class="btn primary" data-a="cp">Copia il link</button></div>',
         (m, close) => { m.querySelector('[data-a=x]').onclick = close; m.querySelector('[data-a=cp]').onclick = async () => { try{ await navigator.clipboard.writeText(text); toast('Link copiato'); close(); }catch(x){ m.querySelector('input').select(); } }; });
-    }catch(e){ toast('Non sono riuscito a creare l\'invito.'); }
+    }catch(e){ toast('Impossibile creare l\'invito.'); }
     return;
   }
-  if(a === 'kick'){ const m = (BOOT.members || []).find(x => x.user_id === btn.dataset.id); if(!(await confirmBox('Rimuovere ' + (m ? (m.name || m.email) : 'questa persona') + '?', 'Non vedrà più questo ricettario. Potrai reinvitarla quando vuoi.', 'Rimuovi'))) return; try{ await store.books.removeMember(b.id, btn.dataset.id); openSettings(); }catch(e){ toast('Non sono riuscito a rimuoverla.'); } return; }
-  if(a === 'leave'){ if(!(await confirmBox('Uscire da «' + b.name + '»?', 'Non vedrai più le sue ricette. Per rientrare ti servirà un nuovo invito.', 'Esci'))) return; try{ await store.books.leave(b.id); BOOT.books = await store.books.list(); selectBook(BOOT.books[0].id); closeSettings(); }catch(e){ toast('Non ci sono riuscito.'); } return; }
-  if(a === 'delbook'){ if(!(await confirmBox('Eliminare «' + b.name + '»?', 'Tutte le sue ricette, il menù e la lista della spesa vengono cancellati per tutti i membri. Non si può annullare.', 'Elimina'))) return; try{ await store.books.remove(b.id); BOOT.books = await store.books.list(); selectBook(BOOT.books[0].id); closeSettings(); toast('Ricettario eliminato'); }catch(e){ toast('Non sono riuscito a eliminarlo.'); } return; }
+  if(a === 'kick'){ const m = (BOOT.members || []).find(x => x.user_id === btn.dataset.id); if(!(await confirmBox('Rimuovere ' + (m ? (m.name || m.email) : 'questa persona') + '?', 'Non vedrà più questo ricettario. Potrai reinvitarla quando vuoi.', 'Rimuovi'))) return; try{ await store.books.removeMember(b.id, btn.dataset.id); openSettings(); }catch(e){ toast('Impossibile rimuoverla.'); } return; }
+  if(a === 'leave'){ if(!(await confirmBox('Uscire da «' + b.name + '»?', 'Non vedrai più le sue ricette. Per rientrare ti servirà un nuovo invito.', 'Esci'))) return; try{ await store.books.leave(b.id); BOOT.books = await store.books.list(); selectBook(BOOT.books[0].id); closeSettings(); }catch(e){ toast('Operazione non riuscita.'); } return; }
+  if(a === 'delbook'){ if(!(await confirmBox('Eliminare «' + b.name + '»?', 'Tutte le sue ricette, il menù e la lista della spesa vengono cancellati per tutti i membri. Non si può annullare.', 'Elimina'))) return; try{ await store.books.remove(b.id); BOOT.books = await store.books.list(); selectBook(BOOT.books[0].id); closeSettings(); toast('Ricettario eliminato'); }catch(e){ toast('Impossibile eliminarlo.'); } return; }
   if(a === 'name'){ const n = await promptBox('Il tuo nome', 'Nome', BOOT.profile && BOOT.profile.display_name, 'Salva'); if(!n) return; await store.setName(n); BOOT.profile = await store.profile(); openSettings(); return; }
   if(a === 'pw'){ closeSettings(); showAuth('newpw'); return; }
   if(a === 'logout'){ if(!(await confirmBox('Uscire dall\'account?', 'Su questo dispositivo dovrai accedere di nuovo. Le ricette restano salvate.', 'Esci'))) return; try{ Object.keys(localStorage).filter(k => k.startsWith('cache.') || k === 'book').forEach(k => localStorage.removeItem(k)); }catch(e){} await store.auth.signOut(); location.reload(); return; }
