@@ -1,155 +1,150 @@
-# Pubblicare «Il mio ricettario»
+# Ricettario · Guida all'installazione
 
-Questa guida ti porta da zero all'app online, installabile sul telefono, con i dati su un database tuo e gratuito. Servono circa **40 minuti** la prima volta, senza installare niente sul computer: si fa tutto dal browser.
+Questa guida descrive come pubblicare Ricettario: un'applicazione web installabile (PWA) con database, autenticazione, archiviazione delle foto, assistente AI e notifiche push. L'installazione si svolge interamente dal browser e richiede circa 40 minuti.
 
-## Cosa ti serve
+Per l'uso dell'app consulta il [Manuale d'uso](MANUALE.md).
 
-| Servizio | A cosa serve | Costo |
+## Requisiti
+
+| Servizio | Funzione | Piano |
 |---|---|---|
-| **Supabase** (supabase.com) | Database, accessi, foto, funzione per l'assistente AI | Gratis (500 MB di dati, 1 GB di foto) |
-| **GitHub** (github.com) | Pubblica l'app su un indirizzo tuo | Gratis |
-| **Google AI Studio** (aistudio.google.com) | Assistente AI (Gemini) | Gratis, con limiti di richieste |
-| **Groq** (console.groq.com) | Assistente AI di riserva | Gratis, con limiti di richieste (facoltativo) |
+| **Supabase** (supabase.com) | Database, autenticazione, foto, funzione server, pianificazione | Gratuito (500 MB di dati, 1 GB di file) |
+| **GitHub** (github.com) | Pubblicazione dell'app (GitHub Pages) | Gratuito |
+| **Google AI Studio** (aistudio.google.com) | Assistente AI principale (Gemini) | Gratuito, con limiti di utilizzo |
+| **Groq** (console.groq.com) | Assistente AI di riserva | Gratuito, con limiti di utilizzo (facoltativo) |
+| **Anthropic** (platform.claude.com) | Assistente AI aggiuntivo | A consumo (facoltativo) |
 
-> Facoltativo: una chiave **Claude** (platform.claude.com), a pagamento a consumo, se un giorno vorrai la qualità migliore. Il tuo abbonamento Claude non vale per le app esterne.
-
-Tieni a portata di mano la cartella `ricettario-app` (lo zip che ti ho mandato, estratto).
+Contenuto del pacchetto: le cartelle `web`, `supabase`, `tools` e `.github` e i documenti di progetto.
 
 ---
 
-## 1. Crea il progetto Supabase
+## 1. Progetto Supabase
 
-1. Vai su **supabase.com** → *Start your project* → accedi (anche con GitHub).
-2. *New project*:
-   - **Name**: `ricettario`
-   - **Database password**: generane una e salvala in un posto sicuro (non serve all'app, ma ti servirà se un giorno vorrai spostare i dati).
-   - **Region**: *Central EU (Frankfurt)* o un'altra in Europa.
-3. *Create new project* e aspetta un paio di minuti.
+1. Accedi a **supabase.com** e crea un nuovo progetto (*New project*).
+2. Imposta:
+   - **Name**: `ricettario`;
+   - **Database password**: una password robusta, da conservare in un luogo sicuro. All'app non serve, ma è necessaria per le operazioni di manutenzione.
+   - **Region**: un'area europea, per esempio *Central EU (Frankfurt)*.
+3. Conferma e attendi il completamento (circa due minuti).
 
-## 2. Crea le tabelle
+## 2. Struttura del database
 
-1. Nel menu a sinistra apri **SQL Editor** → *New query*.
-2. Apri il file `supabase/schema.sql`, copia **tutto** il contenuto e incollalo.
-3. Premi **Run**. Deve comparire *Success*.
+1. Apri **SQL Editor** → *New query*.
+2. Incolla l'intero contenuto di `supabase/schema.sql` e premi **Run**.
 
-Questo crea ricettari, ricette, menù, spesa, inviti, lo spazio per le foto e le regole di sicurezza: ognuno vede solo i ricettari di cui fa parte. Puoi rieseguirlo senza problemi.
+Lo script crea tabelle, regole di sicurezza a livello di riga (ogni utente accede solo ai ricettari di cui è membro), lo spazio per le foto e le tabelle per le notifiche. Attiva anche le estensioni `pg_cron` e `pg_net`. Se Supabase segnala che un'estensione non è disponibile, abilitala da **Database → Extensions** e riesegui lo script. Lo script è idempotente: si può rieseguire senza perdere dati.
 
-## 3. Collega l'app al database
+## 3. Configurazione dell'app
 
-1. **Project Settings** (l'ingranaggio in basso a sinistra) → **Data API**: copia il **Project URL** (tipo `https://abcdefgh.supabase.co`).
-2. **Project Settings → API Keys**: copia la **Publishable key** (inizia con `sb_publishable_`). Se vedi il pulsante *Create new API keys*, premilo prima.
-3. Apri `web/config.js` con un editor di testo qualsiasi e sostituisci i due segnaposto:
+1. **Project Settings → Data API**: copia il **Project URL** (`https://<id>.supabase.co`).
+2. **Project Settings → API Keys**: copia la **Publishable key** (`sb_publishable_…`). Se richiesto, crea prima le nuove chiavi con *Create new API keys*.
+3. Inserisci i due valori in `web/config.js`:
 
 ```js
 window.RICETTARIO_CONFIG = {
-  supabaseUrl: 'https://abcdefgh.supabase.co',
+  supabaseUrl: 'https://<id>.supabase.co',
   supabaseAnonKey: 'sb_publishable_...'
 };
 ```
 
-> Questi due valori sono pubblici per natura: chiunque usi l'app li riceve. La protezione dei dati sta nelle regole del database (passo 2). **Non** mettere mai qui la *secret key*.
+> Questi valori sono pubblici per natura: la protezione dei dati è affidata alle regole del database. Non inserire mai in questo file la *secret key* o altre chiavi riservate.
 
-## 4. Imposta gli accessi
+## 4. Autenticazione
 
-**Authentication → Sign In / Providers → Email**:
-- Lascia attivo *Email*.
-- Ti consiglio di **disattivare *Confirm email***: il servizio email gratuito di Supabase manda poche mail all'ora, e così chi si registra entra subito. Se preferisci la conferma via mail, lasciala attiva: l'app gestisce entrambi i casi.
+In **Authentication → Sign In / Providers → Email** mantieni attivo l'accesso con email.
 
-L'indirizzo dell'app lo inserirai al passo 7, quando lo avrai.
+La conferma dell'indirizzo (*Confirm email*) è facoltativa. Il servizio email incluso in Supabase ha limiti orari ridotti: se la conferma è attiva con molti utenti, conviene configurare un server SMTP dedicato in **Authentication → Emails → SMTP Settings**. L'app gestisce entrambe le configurazioni.
 
-## 5. Attiva l'assistente AI (gratis)
+## 5. Funzione server e assistente AI
 
-L'assistente usa **Gemini** di Google, gratuito. Se Gemini è al limite passa da solo a **Groq**, anche lui gratuito, e poi a Claude, se hai messo la sua chiave. Basta una chiave; con due sei più tranquillo.
+La funzione server gestisce l'assistente AI, che prova in ordine Gemini, poi Groq, poi Anthropic, e le notifiche push.
 
-**La chiave Gemini (consigliata)**
-1. Vai su **aistudio.google.com** e accedi con il tuo account Google.
-2. **Get API key → Create API key** (se te lo chiede, crea un progetto nuovo). Copia la chiave.
-3. Non serve carta di credito: senza fatturazione resti sul piano gratuito.
+**Chiavi dei servizi AI**
+- **Gemini**: su aistudio.google.com → *Get API key* → *Create API key*. Non serve una carta di credito per il piano gratuito.
+- **Groq** (facoltativa): su console.groq.com → *API Keys* → *Create API Key*.
+- **Anthropic** (facoltativa): su platform.claude.com → *API Keys*.
 
-> Nel piano gratuito Google può usare i testi inviati per migliorare i suoi modelli. Per delle ricette di solito non è un problema.
+> Nel piano gratuito, Google può usare i contenuti inviati per migliorare i propri servizi. Valuta i termini del fornitore in base all'uso previsto.
 
-**La chiave Groq (riserva, facoltativa)**
-1. Vai su **console.groq.com** → accedi → **API Keys → Create API Key**. Copia la chiave.
+**Pubblicazione della funzione**
+1. **Edge Functions → Deploy a new function → Via Editor**.
+2. Nome: **`claude`**. Il nome è richiesto dall'app e non va modificato.
+3. Sostituisci il codice di esempio con il contenuto di `supabase/functions/claude/index.ts` → **Deploy**.
+4. Nelle impostazioni della funzione disattiva **Enforce JWT verification**: l'autenticazione degli utenti è verificata all'interno della funzione.
+5. **Edge Functions → Secrets** → aggiungi i segreti:
+   - `GEMINI_API_KEY` (consigliato);
+   - `GROQ_API_KEY` (facoltativo);
+   - `ANTHROPIC_API_KEY` (facoltativo).
 
-**La funzione sul server**
-1. In Supabase: **Edge Functions → Deploy a new function → Via Editor**.
-2. Nome della funzione: **`claude`** (esattamente così, anche se usa Gemini).
-3. Cancella il codice di esempio, incolla tutto il contenuto di `supabase/functions/claude/index.ts` e premi **Deploy**.
-4. Apri la funzione → **Details** (o *Settings*) e **disattiva *Verify JWT*** (*Enforce JWT verification*), poi salva. Il controllo dell'utente lo fa già la funzione.
-5. **Edge Functions → Secrets** → *Add new secret*, uno per chiave:
-   - `GEMINI_API_KEY` = la chiave di Google AI Studio
-   - `GROQ_API_KEY` = la chiave di Groq (se l'hai creata)
-   - `ANTHROPIC_API_KEY` = la chiave Claude (solo se la vuoi usare)
+Le chiavi delle notifiche push (VAPID) e la chiave della pianificazione vengono generate automaticamente al primo utilizzo. Sono conservate in una tabella non accessibile dall'app.
 
-Facoltativi, se vuoi cambiare i valori predefiniti:
+**Parametri facoltativi** (impostabili come segreti)
 
-| Segreto | Predefinito | Significato |
+| Segreto | Predefinito | Descrizione |
 |---|---|---|
-| `AI_PROVIDERS` | `gemini,groq,anthropic` | Ordine in cui provare i servizi (es. `anthropic,gemini` per usare prima Claude) |
-| `AI_LIMIT_PER_USER` | `60` | Richieste al mese per persona |
-| `AI_LIMIT_TOTAL` | `600` | Richieste al mese in totale |
+| `AI_PROVIDERS` | `gemini,groq,anthropic` | Ordine dei fornitori |
+| `AI_LIMIT_PER_USER` | `60` | Richieste mensili per utente |
+| `AI_LIMIT_TOTAL` | `600` | Richieste mensili complessive |
 | `GEMINI_MODEL` | `gemini-flash-latest` | Modello Gemini |
-| `GROQ_MODEL` / `GROQ_VISION_MODEL` | `llama-3.3-70b-versatile` / `meta-llama/llama-4-scout-17b-16e-instruct` | Modelli Groq per testo e per foto |
-| `CLAUDE_MODEL` | `claude-sonnet-5-5` | Modello Claude |
+| `GROQ_MODEL` / `GROQ_VISION_MODEL` | `llama-3.3-70b-versatile` / `meta-llama/llama-4-scout-17b-16e-instruct` | Modelli Groq per testo e immagini |
+| `CLAUDE_MODEL` | `claude-sonnet-5-5` | Modello Anthropic |
 
-I limiti gratuiti di Google e Groq cambiano nel tempo. Se un giorno l'app risponde «i servizi AI gratuiti hanno raggiunto il loro limite», riprova più tardi oppure aggiungi la chiave di riserva.
+## 6. Pubblicazione su GitHub Pages
 
-## 6. Pubblica l'app su GitHub
+1. Su github.com crea un repository (*New repository*), per esempio `ricettario`.
+2. Carica il contenuto del pacchetto: le cartelle `web`, `supabase`, `tools` e `.github` e i documenti. Sulla pagina del repository usa *uploading an existing file*, oppure Git.
+   > La cartella `.github` è nascosta su alcuni sistemi: su macOS premi `Cmd + Shift + .` nel Finder, su Windows scegli *Visualizza → Elementi nascosti*. È necessaria per la pubblicazione automatica.
+3. **Settings → Pages → Build and deployment → Source**: seleziona **GitHub Actions**.
+4. Nella scheda **Actions** il flusso «Pubblica l'app» si completa in circa un minuto e mostra l'indirizzo pubblico (`https://<utente>.github.io/ricettario/`).
 
-1. Su **github.com** → *New repository*: nome `ricettario`, **Public**, *Create repository*.
-2. Nella pagina del repository vuoto clicca *uploading an existing file*.
-3. Trascina nella pagina **il contenuto** della cartella `ricettario-app`: le cartelle `web`, `supabase` e `.github` e i file `GUIDA.md` e `README.md`.
-   - La cartella `.github` è nascosta su Mac e su alcuni Windows. Su Mac premi `Cmd + Shift + .` nel Finder per vederla. Su Windows: *Visualizza → Elementi nascosti*. Senza quella cartella l'app non viene pubblicata.
-4. *Commit changes*.
-5. **Settings → Pages** → in *Build and deployment*, alla voce *Source* scegli **GitHub Actions**.
-6. Apri la scheda **Actions**: vedrai «Pubblica l'app» in corso. Dopo circa un minuto diventa verde e trovi l'indirizzo, tipo `https://tuonome.github.io/ricettario/`.
+Il codice dell'app è pubblico; i dati degli utenti restano nel database, protetti dalle regole di sicurezza.
 
-> Il codice dell'app è pubblico, ma le ricette no: stanno nel database, protette dalle regole.
+## 7. Indirizzi di reindirizzamento
 
-## 7. Collega l'indirizzo dell'app a Supabase
+In **Authentication → URL Configuration** imposta:
+- **Site URL**: l'indirizzo pubblico dell'app;
+- **Redirect URLs**: lo stesso indirizzo.
 
-**Authentication → URL Configuration**:
-- **Site URL**: l'indirizzo dell'app (es. `https://tuonome.github.io/ricettario/`).
-- **Redirect URLs** → *Add URL*: lo stesso indirizzo.
+Sono necessari perché i link di conferma e di recupero della password riportino all'app.
 
-Serve perché le mail di conferma e di recupero password riportino all'app.
+## 8. Verifica
 
-## 8. Primo accesso e ricette dal vecchio ricettario
-
-1. Apri l'indirizzo dell'app → **Registrati**.
-2. Nel vecchio ricettario su Claude: ⋮ → **Scarica backup completo, con foto**.
-3. Nell'app nuova: ⚙ (in alto a destra) → **Backup e ripristino** → **Ripristina o importa un backup** → scegli il file. Ricette e foto vengono copiate.
-
-## 9. Installa sul telefono
-
-- **Android (Chrome)**: apri l'indirizzo → menu ⋮ → **Installa app** (o *Aggiungi a schermata Home*).
-- **iPhone (Safari)**: apri l'indirizzo → **Condividi** → **Aggiungi alla schermata Home**.
-
-L'app si apre a tutto schermo con la sua icona. Fuori dall'app Claude, la **dettatura funziona con il pulsante microfono** (Chrome e Safari), e **«Da link»** apre davvero le pagine delle ricette.
-
-## 10. Condividi con la famiglia
-
-- ⚙ → **Nuovo ricettario** (es. «Famiglia») → **Invita qualcuno** → manda il link.
-- Chi lo apre si registra (o accede) e conferma: da quel momento vede e modifica ricette, menù e spesa di quel ricettario, in tempo reale.
-- Ognuno ha comunque anche il suo ricettario personale. Si passa dall'uno all'altro toccando il nome in alto.
-- Chiunque abbia l'indirizzo può registrarsi e avere un ricettario suo. Le richieste all'assistente AI sono limitate per persona (passo 5), così nessuno esaurisce la quota gratuita.
+1. Apri l'indirizzo dell'app e registra un account.
+2. Crea una ricetta con l'assistente AI («Crea con l'AI») per verificare la funzione server.
+3. In ⚙ → **Notifiche** attiva le notifiche e usa **Prova**. Alla prima attivazione la funzione registra da sola il controllo pianificato (ogni minuto) per timer e promemoria.
 
 ---
 
-## Domande frequenti
+## Aggiornamenti
 
-**Il database va in pausa?** I progetti gratuiti si fermano dopo 7 giorni senza uso. Il controllo «Tieni sveglio il database» (in *Actions*) fa una piccola lettura ogni 3 giorni. GitHub sospende i controlli automatici dopo 60 giorni senza modifiche al repository: in quel caso riattivalo da *Actions*. Se il progetto va comunque in pausa, riattivalo dalla dashboard di Supabase: i dati restano.
+Ogni nuova versione è distribuita come pacchetto completo. Le note di rilascio indicano quali componenti sono cambiati.
 
-**L'assistente risponde «non è ancora configurato»?** Manca il segreto `GEMINI_API_KEY` (o `GROQ_API_KEY`), oppure la funzione non si chiama esattamente `claude` (passo 5).
+1. **Database**: se il pacchetto contiene un nuovo `supabase/aggiornamento-N.sql`, eseguilo dal SQL Editor. Gli script sono idempotenti.
+2. **Funzione server**: Edge Functions → `claude` → **Code** → sostituisci il codice con il nuovo `index.ts` → **Deploy**.
+3. **App**: sostituisci su GitHub i file modificati della cartella `web`. Non sostituire `config.js`, che contiene la configurazione della tua installazione.
 
-**Un modello non esiste più?** Google e Groq ogni tanto ritirano dei modelli. La funzione passa da sola al servizio successivo; per sistemare, imposta `GEMINI_MODEL` o `GROQ_MODEL` con un modello attuale, che trovi nelle loro console.
+Gli utenti ricevono la nuova versione alla successiva apertura dell'app.
 
-**«Non riesco ad aprire quella pagina» con un link?** Alcuni siti bloccano gli accessi automatici. Incolla il testo della ricetta o allega uno screenshot nello stesso riquadro.
+## Manutenzione
 
-**Ho cambiato qualcosa ma l'app non si aggiorna?** Chiudi e riapri l'app: la prima apertura scarica la versione nuova.
+- **Pausa dei progetti gratuiti**: Supabase sospende i progetti gratuiti dopo 7 giorni di inattività. Il flusso «Tieni sveglio il database» (scheda *Actions*) esegue una lettura periodica. GitHub disattiva i flussi pianificati dopo 60 giorni senza modifiche al repository: in quel caso riattivali da *Actions*.
+- **Modelli AI ritirati**: se un modello non è più disponibile, la funzione passa al fornitore successivo. Aggiorna `GEMINI_MODEL` o `GROQ_MODEL` con un modello attuale.
+- **Catalogo delle ricette base**: le ricette si trovano in `tools/ricette_base_*.txt`. Dopo una modifica rigenera `web/ricette-base.js` con `python3 tools/ricette_base.py`.
+- **Database degli ingredienti**: si modifica in `tools/ingredienti.py`, che genera `web/ingredienti.js`.
+- **Dominio personalizzato**: *Settings → Pages → Custom domain*. Aggiorna poi gli indirizzi al passo 7.
 
-**Come modifico l'app?** Cambia i file su GitHub (anche dal sito, con la matita): ogni modifica al ramo `main` ripubblica l'app in un minuto.
+## Risoluzione dei problemi
 
-**Voglio un indirizzo mio (es. ricettario.it)?** Si può collegare un dominio in *Settings → Pages → Custom domain*.
+| Sintomo | Causa probabile |
+|---|---|
+| L'assistente AI «non è al momento disponibile» | Manca `GEMINI_API_KEY` (o un'altra chiave), oppure la funzione non si chiama `claude` |
+| Registrazione non riuscita | `supabaseUrl` errato in `config.js`: deve contenere solo `https://<id>.supabase.co`, senza percorsi |
+| «Promemoria programmati non ancora disponibili» | Estensioni `pg_cron`/`pg_net` non attive, oppure `schema.sql` / `aggiornamento-4.sql` non eseguito |
+| Notifiche non ricevute | Permesso negato nel browser, oppure risparmio energetico del dispositivo attivo per il browser |
+| L'app mostra una versione precedente | Chiudi e riapri l'app: il primo avvio scarica l'aggiornamento |
 
-**Posso spostare i dati altrove?** Sì: dall'app scarichi il backup completo in un file aperto (JSON), e il database Supabase è un normale Postgres esportabile.
+## Dati e privacy
+
+- I dati sono conservati nel progetto Supabase dell'installazione. Gli utenti possono esportare ricette e foto da ⚙ → **Backup e ripristino**.
+- Il piano alimentare, gli abbinamenti, gli integratori e le preferenze delle notifiche sono personali: non sono visibili agli altri membri dei ricettari condivisi.
+- I contenuti inviati all'assistente AI vengono elaborati dai fornitori configurati, secondo i rispettivi termini di servizio.
